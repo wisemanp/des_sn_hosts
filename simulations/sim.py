@@ -30,7 +30,7 @@ class Sim():
     def __init__(self,pop_obj,cat_fn='/media/data3/wiseman/des/photoz/eazy-py/eazy-photoz/outputs/X3_21.eazypy.zout.fits',
         pz_code='eazy',f_deep = 'SN-X3',f_shallow='SN-X2',ccd=21,y=2):
         self.pop_obj = pop_obj
-        if pz_code =='easy':
+        if pz_code =='eazy':
             self.small_hostlib = self._get_zphot_res_easy(cat_fn)
         self.cat_deep = self._load_deep_cat(f_deep,ccd,y)
         self.gal_pool = self.cat_deep.dropna(subset=['A_IMAGE'])
