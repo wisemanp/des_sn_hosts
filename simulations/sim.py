@@ -98,7 +98,7 @@ class Sim():
         print('Saved population DataFrame to %s'%savename)
     def plot_pop(self,ax=None):
         if not ax:
-            f,ax1=plt.subplots(figsize=(12,7))
+            f,ax=plt.subplots(figsize=(12,7))
         ax.scatter(population.distances,population.latent_fluxes,alpha=0.05,label='Popsynth')
         ax.set_ylim(1E-22,1E-10)
         ax.set_yscale('log')
