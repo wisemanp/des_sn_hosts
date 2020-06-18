@@ -84,8 +84,6 @@ class Constants():
             'i': [6710, 7540.0, 8370],
             'z': [7930, 8690.0, 9450]
             }
-        self.fluxlim_ergcms_des = (filter_vals['i'][2]-self.des_filters['i'][0])*2.99792458E-05*self.fluxlim_Jy_des/(self.des_filters['i'][1]**2)
+        self.fluxlim_ergcms_des = (self.des_filters['i'][2]-self.des_filters['i'][0])*2.99792458E-05*self.fluxlim_Jy_des/(self.des_filters['i'][1]**2)
         self.des_area_frac = 27/41252.96125
         self.V_co_1 = cosmo.comoving_volume(1)
-
-    
