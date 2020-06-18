@@ -276,7 +276,7 @@ def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fake_res/'):
         for counter,sn in enumerate(snlist):
             res_fn = fn.replace('fakes','matched_fakes')
             res_fn = res_fn.replace('csv','result')
-            main_f = open(','a')
+            main_f = open(res_fn,'a')
             cat = os.path.join(resdir,'%s.result'%sn)
             c = open(cat,'r')
                 #print ('Adding cat: %s'%cat, ' of length ',len(c.readlines()))
