@@ -28,7 +28,7 @@ def parser():
 
 def main():
     c = Constants()
-    sim = ZPowerSchechterSim(Lstar=10*c.Lsun,alpha=-0.25,Lambda=c.lam_D08_z,delta=1.5,r_max=0.2)
+    sim = ZPowerSchechterSim(Lstar=1*c.Lsun,alpha=-0.25,Lambda=c.lam_D08_z,delta=1.5,r_max=0.2)
     sim.pop_df = sim.synth_pop()
     sim.plot_pop()
 if __name__=="__main__":
