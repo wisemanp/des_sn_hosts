@@ -21,14 +21,15 @@ import networkx as nx
 import warnings
 warnings.simplefilter('ignore')
 
-from des_mismatch.utils.utils import compute_HC,compute_features
-from des_mismatch.utils.utils import Constants as c
+from des_mismatch.utils.utils import compute_HC,compute_features, Constants
+≈
 
 sns.set_color_codes(palette='colorblind')
 
 class Sim():
     def __init__(self,pop_obj,cat_fn='/media/data3/wiseman/des/photoz/eazy-py/eazy-photoz/outputs/X3_21.eazypy.zout.fits',
         pz_code='eazy',f_deep = 'SN-X3',f_shallow='SN-X2',ccd=21,y=2):
+        self.c = Constants()
         self.pop_obj = pop_obj
         if pz_code =='eazy':
             self.small_hostlib = self._get_zphot_res_easy(cat_fn)
@@ -76,8 +77,8 @@ class Sim():
                                      comment='#',skiprows=0,delimiter='\s+')
 
     def synth_pop(self):
-        pop = self.pop_obj.draw_survey(boundary = c.fluxlim_ergcms_des,hard_cut=True,flux_sigma=0.1)
-        self.pop_df = pd.DataFrame(np.array([pop.distances,pop.luminosities/c.Lsun,pop.latent_fluxes]).T,columns=['z','Lv','Fv'])
+        pop = self.pop_obj.draw_survey(boundary = self.c.fluxlim_ergcms_des,hard_cut=True,flux_sigma=0.1)
+        self.pop_df = pd.DataFrame(np.array([pop.distances,pop.luminosities/self.c.Lsun,pop.latent_fluxes]).T,columns=['z','Lv','Fv'])
 
     def plot_pop(self,ax=None):
         if not ax:
@@ -86,8 +87,8 @@ class Sim():
         ax.set_ylim(1E-22,1E-10)
         ax.set_yscale('log')
 
-        flux_ergcmsa = 2.99792458E-11*self.small_hostlib['F296']/(c.des_filters['i'][1]**2)
-        flux_ergcms = flux_ergcmsa*(c.des_filters['i'][2]-c.des_filters['i'][0])
+        flux_ergcmsa = 2.99792458E-11*self.small_hostlib['F296']/(self.c.des_filters['i'][1]**2)
+        flux_ergcms = flux_ergcmsa*(self.c.des_filters['i'][2]-self.c.des_filters['i'][0])
         ax.scatter(self.small_hostlib['z_phot'],flux_ergcms,alpha=0.1,color='b',marker='^',label='Data + photo_Z')
         ax.hlines(fluxlim_ergcms,0,2,linestyle='--',lw=2,color='w',label='DES-SN flux limit')
         leg=ax1.legend()
