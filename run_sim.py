@@ -42,7 +42,7 @@ def main():
     sim = ZPowerCosmoSchechterSim(
         Lstar=config['Luminosity']['Schechter']['Lstar'].get(float)*c.Lsun,
         alpha=config['Luminosity']['Schechter']['alpha'].get(float)+1,
-        Lambda=getattr(c,config['Spatial']['Lambda'].get(str))*config['Spatial']['des']['n_fields']*c.des_area_frac,
+        Lambda=getattr(c,config['Spatial']['Lambda'].get(str))*config['Spatial']['des']['n_fields'].get(float)*c.des_area_frac,
         delta=config['Spatial']['cosmo']['delta'].get(float),
         r_max=config['Spatial']['r_max'].get(float))
     print("Going to synthesise a population with these parameters: ")
