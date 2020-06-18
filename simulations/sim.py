@@ -41,6 +41,9 @@ class Sim():
         zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
         small_hostlib = zphot_res.to_pandas()
         small_hostlib =small_hostlib[(small_hostlib['mass']>0)&(small_hostlib['SFR']>0)&(small_hostlib['mass']<1E16)]
+        in_fn = cat_fn.replace('outputs','inputs')
+        in_fn = in_fn.replace('eazypy.zout.fits','cat')
+        zphot_in = Table.read(in_fn,format='ascii').to_pandas()
         small_hostlib = small_hostlib.merge(zphot_in,on='id',how='inner')
         return small_hostlib
     def _get_zphot_res_zpeg(self,cat_fn):
