@@ -25,12 +25,12 @@ from des_mismatch.utils.utils import Constants
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p','--pop',help='Type of galaxy population to sample: [ZPowerCosmoSchechter]',default='ZPowerCosmoSchechter')
-    parser.add_argument('--Lstar',help='Schechter L*',dest='Luminosity.Schechter.Lstar',required=False)
-    parser.add_argument('--alpha',help='Schechter alpha',dest='Luminosity.Schechter.alpha',required=False)
-    parser.add_argument('--r_max',help='Max distance or redshift to sample',dest='Spatial.r_max',required=False)
+    parser.add_argument('--Lstar',help='Schechter L*',dest='Luminosity.Schechter.Lstar',required=False,type=float)
+    parser.add_argument('--alpha',help='Schechter alpha',dest='Luminosity.Schechter.alpha',required=False,type=float)
+    parser.add_argument('--r_max',help='Max distance or redshift to sample',dest='Spatial.r_max',required=False,type=float)
     parser.add_argument('--Lambda',help='Reference to spatial density of galaxies/SNe: [D08_z]',dest='Spatial.Lambda',required=False)
-    parser.add_argument('--delta',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.cosmo.delta',required=False)
-    parser.add_argument('--n_fields',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.des.n_fields',required=False)
+    parser.add_argument('--delta',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.cosmo.delta',required=False,type=float)
+    parser.add_argument('--n_fields',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.des.n_fields',required=False,type=float)
 
     return parser.parse_args()
 
