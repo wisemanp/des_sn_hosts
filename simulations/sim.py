@@ -88,8 +88,8 @@ class Sim():
         pop = self.pop_obj.draw_survey(boundary = self.c.fluxlim_ergcms_des,hard_cut=True,flux_sigma=0.1)
         self.pop_df = pd.DataFrame(np.array([pop.distances,pop.luminosities/self.c.Lsun,pop.latent_fluxes]).T,columns=['z','Lv','Fv'])
         # save the file
-        if not os.path.isdir(root_dir+'populations'):
-            os.path.mkdir(root_dir+'populations')
+        if not os.path.isdir(self.root_dir+'populations'):
+            os.path.mkdir(self.root_dir+'populations')
         pop_name = self.pop_df.name
 
         pop_name.extend(['_%s'%v for v in self.pop_params.values()])
