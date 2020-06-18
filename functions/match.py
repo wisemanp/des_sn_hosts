@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import pathos.pools as pp
 import multiprocessing
 from multiprocessing import Process
 import os
 import subprocess
 import time
 import numpy as np
-import os
 import logging
-import time
 import progressbar
 import tqdm
 import pandas as pd
@@ -17,9 +14,6 @@ import astropy.io.fits as fits
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
 from astropy import units as u
-from astropy.cosmology import FlatLambdaCDM
-import time
-import _pickle as cpickle
 import itertools
 import warnings
 warnings.simplefilter('ignore')

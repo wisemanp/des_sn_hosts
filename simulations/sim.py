@@ -93,7 +93,7 @@ class Sim():
         pop_name = self.pop_df.name
 
         pop_name.extend(['_%s'%v for v in self.pop_params.values()])
-        self.pop_df.to_csv(root_dir+'populations/%s'pop_name)
+        self.pop_df.to_csv(root_dir+'populations/%s'%pop_name)
     def plot_pop(self,ax=None):
         if not ax:
             f,ax1=plt.subplots(figsize=(12,7))
@@ -171,14 +171,14 @@ class Sim():
         self.fakes = fakes
         return fakes
 
-class ZPowerSchechterSim(Sim):
+class ZPowerCosmoSchechterSim(Sim):
 
     def __init__(self,Lstar,alpha,Lambda,delta=0,r_max=2,cat_fn='/media/data3/wiseman/des/photoz/eazy-py/eazy-photoz/outputs/X3_21.eazypy.zout.fits',
         pz_code='eazy',f_deep = 'SN-X3',f_shallow='SN-X2',ccd=21,y=2,):
 
         pop_obj = popsynth.populations.SchechterZPowerCosmoPopulation(Lmin=Lstar, alpha=alpha,Lambda=Lambda,r_max=r_max,delta=delta)
 
-        super(ZPowerSchechterSim, self).__init__(
+        super(ZPowerCosmoSchechterSim, self).__init__(
             pop_obj,
             cat_fn=cat_fn,
             pz_code=pz_code,

@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import pathos.pools as pp
 import multiprocessing
 from multiprocessing import Process
 import os
 import subprocess
 import time
 import numpy as np
-import os
 import logging
-import time
 import progressbar
 import tqdm
 from tqdm.contrib.concurrent import process_map
@@ -18,9 +15,6 @@ import astropy.io.fits as fits
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
 from astropy import units as u
-from astropy.cosmology import FlatLambdaCDM
-import time
-import _pickle as cpickle
 import itertools
 import warnings
 warnings.simplefilter('ignore')
@@ -86,7 +80,7 @@ def multi(matched_fakes):
     all_args = []
     results = tqdm.tqdm(pool.imap_unordered(worker,[g for n,g in snidgroups]),total=len(snidgroups))
     return pd.concat(results)
-    
+
 def main():
     matched_fakes = pd.read_csv('/media/data3/wiseman/des/mismatch/matched_fakes.csv',index_col =0)
     matched_fakes = multi(matched_fakes)
