@@ -1,6 +1,7 @@
 
 import numpy as np
 from astropy.cosmology import WMAP9 as cosmo
+import astropy.units as u
 
 def compute_HC(DLR,SEP):
     dlr = np.sort(DLR) # first sort DLR array
@@ -87,3 +88,5 @@ class Constants():
         self.fluxlim_ergcms_des = (self.des_filters['i'][2]-self.des_filters['i'][0])*2.99792458E-05*self.fluxlim_Jy_des/(self.des_filters['i'][1]**2)
         self.des_area_frac = 27/41252.96125
         self.V_co_1 = cosmo.comoving_volume(1)
+        self.lam_D08_Mpc = lam = (2.6 * 1E-5)/(u.Mpc**3)
+        self.lam_D08_z = lam*self.V_co_1
