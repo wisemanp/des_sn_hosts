@@ -31,7 +31,7 @@ def parser():
     parser.add_argument('--Lambda',help='Reference to spatial density of galaxies/SNe: [D08_z]',dest='Spatial.Lambda',required=False)
     parser.add_argument('--delta',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.cosmo.delta',required=False)
     return parser.parse_args()
-    
+
 def main():
     c = Constants()
     args = parser()
@@ -43,6 +43,8 @@ def main():
         Lambda=getattr(c,config['Spatial']['Lambda'].get(str)),
         delta=config['Spatial']['cosmo']['delta'].get(float),
         r_max=config['Spatial']['r_max'].get(float))
+    print("Going to synthesise a population with these parameters: ")
+    print(sim.pop_params)
     sim.pop_df = sim.synth_pop()
     sim.plot_pop()
 if __name__=="__main__":
