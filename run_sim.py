@@ -30,8 +30,8 @@ def parser():
     parser.add_argument('--r_max',help='Max distance or redshift to sample',dest='Spatial.r_max',required=False)
     parser.add_argument('--Lambda',help='Reference to spatial density of galaxies/SNe: [D08_z]',dest='Spatial.Lambda',required=False)
     parser.add_argument('--delta',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.cosmo.delta',required=False)
-    args = parser.parse_args()
-
+    return parser.parse_args()
+    
 def main():
     c = Constants()
     args = parser()
