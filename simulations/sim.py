@@ -160,7 +160,7 @@ class ZPowerSchechterSim(Sim):
 
         pop_obj = popsynth.populations.SchechterZPowerCosmoPopulation(Lmin=Lstar, alpha=alpha,Lambda=Lambda,r_max=r_max,delta=delta)
 
-        super(Sim, self).__init__(
+        super(ZPowerSchechterSim, self).__init__(
             pop_obj,
             cat_fn=cat_fn,
             pz_code=pz_code,
