@@ -37,6 +37,8 @@ class Sim():
         self.gal_pool = self.cat_deep.dropna(subset=['A_IMAGE'])
         self.cat_shallow = self._load_shallow_cat(f_shallow,ccd,y)
         self.root_dir = '/media/data3/wiseman/des/mismatch/'
+        self.pop_params = self._get_pop_params()
+
     def _get_zphot_res_easy(self,cat_fn):
         zphot_res = Table.read(cat_fn)
         zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
@@ -71,15 +73,27 @@ class Sim():
 
     def _load_hostlibs(self):
         # Load in HOSTLIBs so we can estiamte the DLR distribution
-        self.sv_hostlib =pd.read_csv('/media/data3/wiseman/des/mismatch/MV_SVAvsMICECAT/1_SIM/DESSVA/PIP_MV_DET_EFF_DESSVA/PIP_MV_DET_EFF_DESSVA.DUMP',
+        self.sv_hostlib =pd.read_csv(self.root_dir+'MV_SVAvsMICECAT/1_SIM/DESSVA/PIP_MV_DET_EFF_DESSVA/PIP_MV_DET_EFF_DESSVA.DUMP',
                                 comment='#',skiprows=0,delimiter='\s+')
-        self.micecat_hostlib =pd.read_csv('/media/data3/wiseman/des/mismatch/MV_SVAvsMICECAT/1_SIM/MICE5/PIP_MV_DET_EFF_MICE5/PIP_MV_DET_EFF_MICE5.DUMP',
+        self.micecat_hostlib =pd.read_csv(self.root_dir+'MV_SVAvsMICECAT/1_SIM/MICE5/PIP_MV_DET_EFF_MICE5/PIP_MV_DET_EFF_MICE5.DUMP',
                                      comment='#',skiprows=0,delimiter='\s+')
 
+    def _get_pop_params(self):
+        params = self.pop_obj._params
+        for k,v in params.items():
+            if type(v) ==u.quantity.Quantity:
+                params[k] = v.value
+        return params
     def synth_pop(self):
         pop = self.pop_obj.draw_survey(boundary = self.c.fluxlim_ergcms_des,hard_cut=True,flux_sigma=0.1)
         self.pop_df = pd.DataFrame(np.array([pop.distances,pop.luminosities/self.c.Lsun,pop.latent_fluxes]).T,columns=['z','Lv','Fv'])
+        # save the file
+        if not os.path.isdir(root_dir+'populations'):
+            os.path.mkdir(root_dir+'populations')
+        pop_name = self.pop_df.name
 
+        pop_name.extend(['_%s'%v for v in self.pop_params.values()])
+        self.pop_df.to_csv(root_dir+'populations/%s'pop_name)
     def plot_pop(self,ax=None):
         if not ax:
             f,ax1=plt.subplots(figsize=(12,7))
