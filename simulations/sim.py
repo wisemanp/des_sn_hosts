@@ -93,9 +93,9 @@ class Sim():
         pop_name = self.pop_df.name
 
         pop_name.extend(['_%s'%v for v in self.pop_params.values()])
-        self.pop_df.to_hdf(self.root_dir+'populations/%s.hdf5'%pop_name,key='default_pop')
-        print('Saved population DataFrame to '
-        )
+        savename = self.root_dir+'populations/%s.hdf5'%pop_name
+        self.pop_df.to_hdf(savename,key='default_pop')
+        print('Saved population DataFrame to %s'%savename)
     def plot_pop(self,ax=None):
         if not ax:
             f,ax1=plt.subplots(figsize=(12,7))
