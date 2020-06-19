@@ -38,7 +38,11 @@ class Sim():
         self.cat_shallow = self._load_shallow_cat(f_shallow,ccd,y)
         self.root_dir = '/media/data3/wiseman/des/mismatch/'
         self.pop_params = self._get_pop_params()
+        self._get_filename()
+    def _get_filename(self):
+        pop_name = self.pop_obj.name
 
+        self.pop_name = pop_name.join(['_%s'%v for v in self.pop_params.values()])
     def _get_zphot_res_easy(self,cat_fn):
         zphot_res = Table.read(cat_fn)
         zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
@@ -90,12 +94,14 @@ class Sim():
         # save the file
         if not os.path.isdir(self.root_dir+'populations'):
             os.mkdir(self.root_dir+'populations')
-        pop_name = self.pop_obj.name
 
-        pop_name.join(['_%s'%v for v in self.pop_params.values()])
-        savename = self.root_dir+'populations/%s.hdf5'%pop_name
+        savename = self.root_dir+'populations/%s.h5'%self.pop_name
         self.pop_df.to_hdf(savename,key='default_pop')
         print('Saved population DataFrame to %s'%savename)
+    def load_pop(self,fn=None,key='default_pop'):
+        if fn==None:
+            fn =self.root_dir+'populations/%s.h5'%self.pop_name
+        self.pop_df = pd.read_hdf(fn,key=key)
     def plot_pop(self,ax=None):
         if not ax:
             f,ax=plt.subplots(figsize=(12,7))
@@ -112,7 +118,7 @@ class Sim():
             lh.set_alpha(1)
         ax.set_xlabel('Redshift',size=18)
         ax.set_ylabel('$i$ band flux (erg/cm/s)',size=18)
-        plt.savefig(self.root_dir+'drawn_population_test') #add population name!!!
+        plt.savefig(self.root_dir+'figs/%s_drawn_population'%self.pop_name) #add population name!!!
 
     def gen_fakes(self,n_samples=1E+5):
         RAs,DECs,GAL_RAs,GAL_DECs,DLRs,GALID,Pz,mass,ID =[],[],[],[],[],[],[],[],[]

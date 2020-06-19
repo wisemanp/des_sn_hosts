@@ -31,7 +31,9 @@ def parser():
     parser.add_argument('--Lambda',help='Reference to spatial density of galaxies/SNe: [D08_z]',dest='Spatial.Lambda',required=False)
     parser.add_argument('--delta',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.cosmo.delta',required=False,type=float)
     parser.add_argument('--n_fields',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.des.n_fields',required=False,type=float)
-
+    parser.add_argument('-df','--df',help='Path to load a population DataFrame',required=False,type=str)
+    parser.add_argument('-pl','--plot',help='Plot the final population?',required=False,action='store_true')
+    parser.add_argument('--n_sn',help='Number of fake SNe to generate [1E+3]',required=False,type=float)
     return parser.parse_args()
 
 def main():
@@ -39,15 +41,23 @@ def main():
     args = parser()
     config = confuse.Configuration('des_mismatch')
     config.set_args(args,dots=True)
+
     sim = ZPowerCosmoSchechterSim(
         Lstar=config['Luminosity']['Schechter']['Lstar'].get(float)*c.Lsun,
         alpha=config['Luminosity']['Schechter']['alpha'].get(float)+1,
         Lambda=getattr(c,config['Spatial']['Lambda'].get(str))*config['Spatial']['des']['n_fields'].get(float)*c.des_area_frac,
         delta=config['Spatial']['cosmo']['delta'].get(float),
         r_max=config['Spatial']['r_max'].get(float))
-    print("Going to synthesise a population with these parameters: ")
-    print(sim.pop_params)
-    sim.pop_df = sim.synth_pop()
-    sim.plot_pop()
+    if not os.path.isfile(args.df):
+        print("Going to synthesise a population with these parameters: ")
+        print(sim.pop_params)
+        sim.pop_df = sim.synth_pop()
+    else:
+        print("Loading population dataframe!")
+        sim.pop_df
+
+    if args.plot:
+        sim.plot_pop()
+
 if __name__=="__main__":
     main()
