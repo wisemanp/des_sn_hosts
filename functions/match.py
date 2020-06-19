@@ -20,7 +20,7 @@ warnings.simplefilter('ignore')
 
 hashes = '#'*100
 
-def match_fakes(galid,snid,ra,dec,dist_thresh = 5,y=2,chip=21,f='SN-X3'):
+def match_fakes(galid,snid,ra,dec,resdir,dist_thresh = 5,y=2,chip=21,f='SN-X3'):
     logger = logging.getLogger(__name__)
     logger.handlers =[]
     ch = logging.StreamHandler()
@@ -188,7 +188,7 @@ def match_fakes(galid,snid,ra,dec,dist_thresh = 5,y=2,chip=21,f='SN-X3'):
 
     main_res_df['SN_RA'] = ra
     main_res_df['SN_DEC'] = dec
-    main_res_df.to_csv('/media/data3/wiseman/des/mismatch/fake_res/%s.result'%int(snid),index=True)
+    main_res_df.to_csv(resdir+'%s.result'%int(snid),index=True)
 
 def get_DLR_ABT(RA_SN, DEC_SN, RA, DEC, A_IMAGE, B_IMAGE, THETA_IMAGE, angsep):
     '''Function for calculating the DLR of a galaxy - SN pair (taken from dessne)'''
@@ -235,11 +235,11 @@ def get_edge_flags(xs,ys,dist=20):
 
 def worker(args):
 
-    galid,snid,ra,dec = [args[i]for i in range(len(args))]
-    match_fakes(galid,snid,ra,dec,dist_thresh = 60,y=2,chip=21,f='SN-X3')
+    galid,snid,ra,dec,resdir = [args[i]for i in range(len(args))]
+    match_fakes(galid,snid,ra,dec,resdir,dist_thresh = 60,y=2,chip=21,f='SN-X3')
     return
 
-def multi(fakes):
+def multi(fakes,resdir):
 
     pool_size = multiprocessing.cpu_count()*2
     act = multiprocessing.active_children()
@@ -251,7 +251,7 @@ def multi(fakes):
     for snrow in fakes.iterrows():
 
         sn = snrow[1]
-        all_args.append([sn['GALID'],sn['ID'],sn['SN_RA'],sn['SN_DEC']])
+        all_args.append([sn['GALID'],sn['ID'],sn['SN_RA'],sn['SN_DEC'],resdir])
     results=[]
     for _ in tqdm.tqdm(pool.imap_unordered(worker,all_args),total=len(all_args)):
         results.append(_)
@@ -261,15 +261,21 @@ def multi(fakes):
     pool.close()
     return results
 
-def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fake_res/'):
-    fakes = pd.read_csv(fn,index_col=0)
-    multi(fakes)
+def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fakes/',key=fakes):
+    if not os.path.isdir(resdir):
+        os.mkdir(resdir)
+    fn_suffix = fn.split('.')[-1]
+    if fn_suffix=='csv':
+        fakes = pd.read_csv(fn,index_col=0)
+    elif fn_suffix=='h5':
+        fakes = pd.read_hdf(fn,key=key)
+    multi(fakes,resdir)
 
     snlist = fakes['ID'].values
     with progressbar.ProgressBar(max_value=len(snlist)) as bar:
         for counter,sn in enumerate(snlist):
             res_fn = fn.replace('fakes','matched_fakes')
-            res_fn = res_fn.replace('csv','result')
+            res_fn = res_fn.replace(fn_suffix,'result')
             main_f = open(res_fn,'a')
             cat = os.path.join(resdir,'%s.result'%sn)
             c = open(cat,'r')
@@ -279,5 +285,6 @@ def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fake_res/'):
                     main_f.write(l)
             main_f.close()
             bar.update(counter)
+    return res_fn
 if __name__=="__main__":
     main()

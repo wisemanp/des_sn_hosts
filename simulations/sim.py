@@ -38,11 +38,12 @@ class Sim():
         self.cat_shallow = self._load_shallow_cat(f_shallow,ccd,y)
         self.root_dir = '/media/data3/wiseman/des/mismatch/'
         self.pop_params = self._get_pop_params()
-        self._get_filename()
-    def _get_filename(self):
+        self._set_filenames()
+    def _set_filenames(self):
         pop_name = self.pop_obj.name
-
         self.pop_name = pop_name.join(['_%s'%v for v in self.pop_params.values()])
+        self.pop_fn = self.root_dir+'populations/%s.h5'%self.pop_name
+        self.fakes_fn = self.root_dir +'fakes/%s_fakes.h5'%self.pop_name
     def _get_zphot_res_easy(self,cat_fn):
         zphot_res = Table.read(cat_fn)
         zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
@@ -95,9 +96,8 @@ class Sim():
         if not os.path.isdir(self.root_dir+'populations'):
             os.mkdir(self.root_dir+'populations')
 
-        savename = self.root_dir+'populations/%s.h5'%self.pop_name
-        self.pop_df.to_hdf(savename,key='default_pop')
-        print('Saved population DataFrame to %s'%savename)
+        self.pop_df.to_hdf(self.pop_fn,key='default_pop')
+        print('Saved population DataFrame to %s'%self.pop_fn)
     def load_pop(self,fn=None,key='default_pop'):
         if fn==None:
             fn =self.root_dir+'populations/%s.h5'%self.pop_name
@@ -175,10 +175,131 @@ class Sim():
         fakes['DLR'] = DLRs
         fakes['PZ'] = Pz
         fakes['mass'] = mass
-        fakes.to_csv('/media/data3/wiseman/des/mismatch/X3_21_fakes_with_faint.csv')
+
+        fakes.to_hdf(self.fakes_fn,key='fakes')
         self.fakes = fakes
+
         return fakes
 
+    def match_fakes(self):
+        matched_fn = match.main(fn = self.fakes_fn,resdir = self.root_dir+'fakes/%s/'%self.pop_name)
+        self.matched_fakes = pd.read_csv(matched_fn,columns=[
+            'ANGSEP',
+            'A_IMAGE',
+            'B_IMAGE',
+            'CCDNUM',
+            'CLASS_STAR_g',
+            'CLASS_STAR_i',
+            'CLASS_STAR_r',
+            'CLASS_STAR_z',
+            'CXX_IMAGE',
+            'CXY_IMAGE',
+            'CYY_IMAGE',
+            'DLR',
+            'DLR_RANK',
+            'EDGE_FLAG',
+            'ELONGATION',
+            'FIELD',
+            'FLUXERR_APER_g',
+            'FLUXERR_APER_i',
+            'FLUXERR_APER_r',
+            'FLUXERR_APER_z',
+            'FLUXERR_AUTO_g',
+            'FLUXERR_AUTO_i',
+            'FLUXERR_AUTO_r',
+            'FLUXERR_AUTO_z',
+            'FLUX_APER_g',
+            'FLUX_APER_i',
+            'FLUX_APER_r',
+            'FLUX_APER_z',
+            'FLUX_AUTO_g',
+            'FLUX_AUTO_i',
+            'FLUX_AUTO_r',
+            'FLUX_AUTO_z',
+            'FLUX_RADIUS_g',
+            'FLUX_RADIUS_i',
+            'FLUX_RADIUS_r',
+            'FLUX_RADIUS_z',
+            'FWHM_WORLD_g',
+            'FWHM_WORLD_i',
+            'FWHM_WORLD_r',
+            'FWHM_WORLD_z',
+            'GALID_true',
+            'KRON_RADIUS',
+            'LIMFLUX_g',
+            'LIMFLUX_i',
+            'LIMFLUX_r',
+            'LIMFLUX_z',
+            'LIMMAG_g',
+            'LIMMAG_i',
+            'LIMMAG_r',
+            'LIMMAG_z',
+            'MAGERR_APER_g',
+            'MAGERR_APER_i',
+            'MAGERR_APER_r',
+            'MAGERR_APER_z',
+            'MAGERR_AUTO_g',
+            'MAGERR_AUTO_i',
+            'MAGERR_AUTO_r',
+            'MAGERR_AUTO_z',
+            'MAGERR_STATSYST_APER_g',
+            'MAGERR_STATSYST_APER_i',
+            'MAGERR_STATSYST_APER_r',
+            'MAGERR_STATSYST_APER_z',
+            'MAGERR_STATSYST_AUTO_g',
+            'MAGERR_STATSYST_AUTO_i',
+            'MAGERR_STATSYST_AUTO_r',
+            'MAGERR_STATSYST_AUTO_z',
+            'MAGERR_SYST_APER_g',
+            'MAGERR_SYST_APER_i',
+            'MAGERR_SYST_APER_r',
+            'MAGERR_SYST_APER_z',
+            'MAGERR_SYST_AUTO_g',
+            'MAGERR_SYST_AUTO_i',
+            'MAGERR_SYST_AUTO_r',
+            'MAGERR_SYST_AUTO_z',
+            'MAG_APER_g',
+            'MAG_APER_i',
+            'MAG_APER_r',
+            'MAG_APER_z',
+            'MAG_AUTO_g',
+            'MAG_AUTO_i',
+            'MAG_AUTO_r',
+            'MAG_AUTO_z',
+            'MAG_ZEROPOINT_ERR_g',
+            'MAG_ZEROPOINT_ERR_i',
+            'MAG_ZEROPOINT_ERR_r',
+            'MAG_ZEROPOINT_ERR_z',
+            'MAG_ZEROPOINT_g',
+            'MAG_ZEROPOINT_i',
+            'MAG_ZEROPOINT_r',
+            'MAG_ZEROPOINT_z',
+            'MY',
+            'PHOTOZ',
+            'PHOTOZ_ERR',
+            'SNID',
+            'THETA_IMAGE',
+            'X_IMAGE',
+            'X_WORLD',
+            'Y_IMAGE',
+            'Y_WORLD',
+            'Z_RANK',
+            'ez',
+            'flag',
+            'objtype_ozdes',
+            'source',
+            'transtype_ozdes',
+            'z',
+            'SN_RA',
+            'SN_DEC'],
+            index_col =0)
+        matched_fakes.reset_index(drop=False,inplace=True)
+        matched_fakes.rename(columns={'index':'GALID_obs'},inplace=True)
+        matched_fakes.replace(np.NaN,-9999,inplace=True)
+        matched_fakes.drop_duplicates(subset=['GALID_true','GALID_obs','SNID','Z_RANK'],inplace=True)
+        self.matched_fn = matched_fn.replace('result','h5')
+        matched_fakes.to_h5(self.matched_fn,key='fakes')
+        self.matched_fn = features.main(fn=self.matched_fn)
 class ZPowerCosmoSchechterSim(Sim):
 
     def __init__(self,Lstar,alpha,Lambda,delta=0,r_max=2,cat_fn='/media/data3/wiseman/des/photoz/eazy-py/eazy-photoz/outputs/X3_21.eazypy.zout.fits',

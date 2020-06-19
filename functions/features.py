@@ -69,7 +69,7 @@ def worker(g):
         g[feature_cols]=99
     return g
 
-def multi(matched_fakes):
+def multi(matched_fakes,key='fakes'):
     pool_size = multiprocessing.cpu_count()*2
     pool = multiprocessing.Pool(processes=pool_size,
                                 maxtasksperchild=2,
@@ -81,9 +81,15 @@ def multi(matched_fakes):
     results = tqdm.tqdm(pool.imap_unordered(worker,[g for n,g in snidgroups]),total=len(snidgroups))
     return pd.concat(results)
 
-def main():
-    matched_fakes = pd.read_csv('/media/data3/wiseman/des/mismatch/matched_fakes.csv',index_col =0)
+def main(fn='/media/data3/wiseman/des/mismatch/matched_fakes.csv'):
+    fn_suffix = fn.split('.')[-1]
+    if fn_suffix=='csv':
+        matched_fakes = pd.read_csv(fn,index_col =0)
+    elif fn_suffix=='h5':
+        matched_fakes = pd.read_hdf(fn,key=key)
     matched_fakes = multi(matched_fakes)
-    matched_fakes.to_csv('/media/data3/wiseman/des/mismatch/matched_fakes_features.csv',index=True)
+    features_fn = fn.replace('fakes','fakes_features')
+    matched_fakes.to_hdf(features_fn,key='fakes')
+    return features_fn
 if __name__=="__main__":
     main()
