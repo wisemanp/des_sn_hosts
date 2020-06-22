@@ -1,0 +1,19 @@
+features: ['DLR','ANGSEP','A_IMAGE','B_IMAGE','CLASS_STAR_i','HC','D12','D1D2','D13','D1D3','S12','S12_DLR','S1S2','S13','S1S3','MAG_AUTO_i']
+
+sizes:
+  n_train: 1.E+4
+  n_test: 5.E+4
+  split: 'even'
+
+params:
+  n_estimators:
+    distr: 'uniform'
+    args: [10,500]
+  max_features:
+    distr: 'uniform'
+    args: [1,n]
+  min_samples_split:
+    distr: 'uniform'
+    args: [2,100]
+  max_depth: [None, 15, 30, 50, 80,120,150]
+  criterion: ['gini','entropy']

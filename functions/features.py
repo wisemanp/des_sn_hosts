@@ -90,6 +90,6 @@ def main(fn='/media/data3/wiseman/des/mismatch/matched_fakes.csv'):
     matched_fakes = multi(matched_fakes)
     features_fn = fn.replace('fakes','fakes_features')
     matched_fakes.to_hdf(features_fn,key='fakes')
-    return features_fn
+    return features_fn,matched_fakes
 if __name__=="__main__":
     main()

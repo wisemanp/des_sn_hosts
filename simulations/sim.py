@@ -299,7 +299,22 @@ class Sim():
         matched_fakes.drop_duplicates(subset=['GALID_true','GALID_obs','SNID','Z_RANK'],inplace=True)
         self.matched_fn = matched_fn.replace('result','h5')
         matched_fakes.to_h5(self.matched_fn,key='fakes')
-        self.matched_fn = features.main(fn=self.matched_fn)
+        self.matched_fn, self.matched_fakes_features = features.main(fn=self.matched_fn)
+
+    def prep_rf(self):
+
+        DLRs = self.fakes['DLR']
+        self.matched_fakes = self.matched_fakes_features.merge(self.small_hostlib.rename(columns={'id':'GALID_obs'}),on='GALID_obs',how='left')
+        self.matched_fakes_features['GALID_diff'] = self.matched_fakes_features['GALID_true'] -self.matched_fakes_features['GALID_obs']
+        self.matched_fakes_features = self.matched_fakes_features.merge(self.fakes.drop(['GAL_RA','GAL_DEC','GALID'],axis=1).rename(columns={'ID':'SNID','DLR':'DLR_true'}),on='SNID',how='inner',suffixes=['_obs','_true'])
+        self.matched_closest = self.matched_fakes_features[((self.matched_fakes_features['DLR_RANK']==1)|(self.matched_fakes_features['DLR_RANK']==-1))&(self.matched_fakes_features['Z_RANK']<2)]
+        self.matched_closest =self.matched_closest[(self.matched_closest['HC']<95)&(self.matched_closest['HC']>-95)]
+        self.matched_closest.drop_duplicates('SNID',keep='last',inplace=True)
+        self.matched_hosts = self.matched_closest[(self.matched_closest['DLR_RANK']==1)&(self.matched_closest['Z_RANK']<2)]
+        self.matched_hostless = self.matched_closest[(self.matched_closest['DLR_RANK']==-1)&(self.matched_closest['Z_RANK']<2)&(self.matched_closest['GALID_true']>=0)]
+        self.matched_truehostless = self.matched_closest[self.matched_closest['GALID_true']<0]
+    def train_rf(self):
+
 class ZPowerCosmoSchechterSim(Sim):
 
     def __init__(self,Lstar,alpha,Lambda,delta=0,r_max=2,cat_fn='/media/data3/wiseman/des/photoz/eazy-py/eazy-photoz/outputs/X3_21.eazypy.zout.fits',
