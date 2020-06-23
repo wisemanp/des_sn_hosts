@@ -35,11 +35,11 @@ from des_mismatch.classification.classification_utils import (is_correct_host, p
 warnings.simplefilter('ignore')
 
 class Classifier():
-    def __init__(self,df,config_path,split='even'):
+    def __init__(self,df,config_path):
         self._df=df
-        self._config(config_path)
+        self.config = self._config(config_path)
         self._train,self._test = self._split_data()
-        self.X_train,self._y_train,self._X_test,self._y_test = self._prep_features(self,features)
+        self.X_train,self.y_train,self.X_test,self.y_test = self._prep_features(self,features)
         self.scorer_PFE = make_scorer(score_func_CV,needs_proba=True)
 
     def _config(self,config_path):
@@ -54,7 +54,7 @@ class Classifier():
                 if v['args'][1]=='n':
                     v['args'][1]= len(config['features'])
                 self._params[k] = stats.randint(v['args'][0],v['args'][1])
-
+        return config
     def _get_labels(self):
         ''' Return correct and incorrect fake host matches '''
         self._df['Correct'] = self._df['GALID_diff'].apply(is_correct_host)
@@ -78,3 +78,56 @@ class Classifier():
         y_train = self._train['Correct'] # class 1=correct match, 0=wrong match
         X_test = get_features(features, self._test)
         y_test = self._test['Correct']
+        return X_train, y_train, X_test, y_test
+    @property
+    def df(self):
+        return self._df
+
+    @property
+    def train(self):
+        return self._train
+    @property
+    def test(self):
+        return self._test
+
+    def CV(self,n_iter=None,cv=None,verbose=None,n_jobs=None,seed=None,dump=False,sf=None):
+        if not n_iter:
+            n_iter = self.config['crossVal']['n_iter']
+        if not cv:
+            cv = self.config['crossVal']['cv']
+        if not verbose:
+            verbose = self.config['crossVal']['verbose']
+        if not n_jobs:
+            n_jobs = self.config['crossVal']['n_jobs']
+        if not seed:
+            seed = self.config['crossVal']['seed']
+        self.clf = RandomizedSearchCV(RandomForestClassifier(),self._params,n_iter = n_iter, scoring = self.scorer_PFE,
+                random_state = seed, cv = cv,n_jobs=n_jobs)
+        self.clf.fit(self.X_train, self.y_train)
+        if dump:
+            pickle.dump(self.clf,open(sf,'wb'))
+        return self.clf
+    def load_clf(self,sf):
+        self.clf =pickle.load(open(sf,'rb'))
+
+    def fit_test(self,effT=None):
+        probs = self.clf.predict_proba(self.X_test)[:, 1] # good matches are class 1
+        pred = self.clf.predict(self.X_test)
+        correct = (self.y_test==1)
+        wrong = (self.y_test==0)
+        self.test['Prob'] = probs
+        pur, eff, thresh = precision_recall_curve(self.y_test, probs, pos_label=1)
+        x = eff[::-1][30001:-1]
+        y = thresh[::-1][30000:-1]
+        efficiency_func = interp1d(x, y, kind='linear') # reverse-order so x is monotonically increasing
+        if not effT:
+            effT = self.config['effT']
+        P_effT = efficiency_func(effT) # threshold probability at efficiency=98%
+        print ('\nProb (eff=98%) =', P_effT)
+        print ('Purity (P_thresh=0) = ', pur[0])
+        score = score_func(probs, self.y_test)
+        print ('SCORE (pur @ eff=98%) = ', score)
+        correct_match = self.test['Prob']>P_effT
+        print ('number of correct matches with P_thresh {} = {}'.format(P_effT, np.sum(correct_match)))
+        print ('number of wrong matches with P_thresh {} = {}'.format(P_effT, np.sum(~correct_match)))
+        self.P_effT = P_effT
