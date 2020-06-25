@@ -263,7 +263,7 @@ class Sim():
 
     def match_fakes(self):
         matched_fn = match.main(fn = self.fakes_fn,resdir = self.root_dir+'fakes/%s/'%self.pop_name)
-        self.matched_fakes = pd.read_csv(matched_fn,columns=[
+        self.matched_fakes = pd.read_csv(matched_fn,names=[
             'ANGSEP',
             'A_IMAGE',
             'B_IMAGE',
