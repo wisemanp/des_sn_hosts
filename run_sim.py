@@ -61,7 +61,7 @@ def main():
         sim.pop_df = sim.synth_pop()
     else:
         print("Loading population dataframe!")
-        sim.pop_df
+        sim.pop_df = pd.read_csv(args.df)
 
     # plot the simulated sample
     if args.plot:
