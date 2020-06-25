@@ -259,7 +259,7 @@ def multi(fakes,resdir):
     pool.close()
     pool.join()
     pool.close()
-    return 
+    return
 
 def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fakes/',key='fakes'):
     if not os.path.isdir(resdir):
@@ -270,7 +270,7 @@ def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fakes/',key='fakes'):
     elif fn_suffix=='h5':
         fakes = pd.read_hdf(fn,key=key)
     multi(fakes,resdir)
-
+    print('Successfully matched the fakes, now combining the results')
     snlist = fakes['ID'].values
     with progressbar.ProgressBar(max_value=len(snlist)) as bar:
         for counter,sn in enumerate(snlist):

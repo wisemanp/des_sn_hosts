@@ -262,7 +262,9 @@ class Sim():
         return fakes
 
     def match_fakes(self):
+        print('Matching fakes to hosts...')
         matched_fn = match.main(fn = self.fakes_fn,resdir = self.root_dir+'fakes/%s/'%self.pop_name)
+        print('Successfully matched fakes to hosts. Reading in the match!')
         self.matched_fakes = pd.read_csv(matched_fn,names=[
             'ANGSEP',
             'A_IMAGE',
