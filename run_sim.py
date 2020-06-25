@@ -31,7 +31,7 @@ def parser():
     parser.add_argument('--Lambda',help='Reference to spatial density of galaxies/SNe: [D08_z]',dest='Spatial.Lambda',required=False)
     parser.add_argument('--delta',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.cosmo.delta',required=False,type=float)
     parser.add_argument('--n_fields',help='Exponent of redshift evolution of spatial distribution',dest='Spatial.des.n_fields',required=False,type=float)
-    parser.add_argument('-df','--df',help='Path to load a population DataFrame',required=False,type=str)
+    parser.add_argument('-df','--df',help='Path to load a population DataFrame',default='none',required=False,type=str)
     parser.add_argument('-pl','--plot',help='Plot the final population?',required=False,action='store_true')
     parser.add_argument('-g','--gen_fakes',help='Generate fakes?',action='store_true')
     parser.add_argument('--n_sn',help='Number of fake SNe to generate [1E+3]',required=False,type=float)
