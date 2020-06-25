@@ -86,6 +86,7 @@ def main(fn='/media/data3/wiseman/des/mismatch/matched_fakes.csv',key='fakes'):
     if fn_suffix=='csv':
         matched_fakes = pd.read_csv(fn,index_col =0)
     elif fn_suffix=='h5':
+        print('Attempting to read in %s'%fn)
         matched_fakes = pd.read_hdf(fn,key=key)
     matched_fakes = multi(matched_fakes)
     features_fn = fn.replace('fakes','fakes_features')
