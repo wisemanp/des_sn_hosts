@@ -252,14 +252,14 @@ def multi(fakes,resdir):
 
         sn = snrow[1]
         all_args.append([sn['GALID'],sn['ID'],sn['SN_RA'],sn['SN_DEC'],resdir])
-    results=[]
+
     for _ in tqdm.tqdm(pool.imap_unordered(worker,all_args),total=len(all_args)):
-        results.append(_)
+        pass
 
     pool.close()
     pool.join()
     pool.close()
-    return results
+    return 
 
 def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fakes/',key='fakes'):
     if not os.path.isdir(resdir):
