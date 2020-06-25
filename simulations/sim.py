@@ -313,7 +313,7 @@ class Sim():
         self.matched_hosts = self.matched_closest[(self.matched_closest['DLR_RANK']==1)&(self.matched_closest['Z_RANK']<2)]
         self.matched_hostless = self.matched_closest[(self.matched_closest['DLR_RANK']==-1)&(self.matched_closest['Z_RANK']<2)&(self.matched_closest['GALID_true']>=0)]
         self.matched_truehostless = self.matched_closest[self.matched_closest['GALID_true']<0]
-    def train_rf(self,cv=True,sf,**kwargs):
+    def train_rf(self,sf,cv=True,**kwargs):
         self.classifier = Classifier(self.matched_closest,self.root_dir+'config/config_classifier.yaml')
         if cv:
             self.classifier.CV(sf=sf,**kwargs)
@@ -321,7 +321,7 @@ class Sim():
             self.classifier.load_clf(sf)
 
         self.classifier.fit_test()
-        
+
 
 class ZPowerCosmoSchechterSim(Sim):
 
