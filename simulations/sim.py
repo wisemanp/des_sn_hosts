@@ -381,7 +381,7 @@ class Sim():
         self.matched_fakes.drop_duplicates(subset=['GALID_true','GALID_obs','SNID','Z_RANK'],inplace=True)
         self.matched_fn = matched_fn.replace('result','h5')
         self.matched_fakes.to_hdf(self.matched_fn,key='fakes')
-        self.matched_fn, self.matched_fakes_features = features.main(fn=self.matched_fn)
+        self.matched_fn, self.matched_fakes_features = features.main(fn=self.matched_fn,key='fakes')
 
     def prep_rf(self):
 

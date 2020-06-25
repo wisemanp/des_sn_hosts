@@ -81,7 +81,7 @@ def multi(matched_fakes,key='fakes'):
     results = tqdm.tqdm(pool.imap_unordered(worker,[g for n,g in snidgroups]),total=len(snidgroups))
     return pd.concat(results)
 
-def main(fn='/media/data3/wiseman/des/mismatch/matched_fakes.csv'):
+def main(fn='/media/data3/wiseman/des/mismatch/matched_fakes.csv',key='fakes'):
     fn_suffix = fn.split('.')[-1]
     if fn_suffix=='csv':
         matched_fakes = pd.read_csv(fn,index_col =0)
@@ -89,7 +89,7 @@ def main(fn='/media/data3/wiseman/des/mismatch/matched_fakes.csv'):
         matched_fakes = pd.read_hdf(fn,key=key)
     matched_fakes = multi(matched_fakes)
     features_fn = fn.replace('fakes','fakes_features')
-    matched_fakes.to_hdf(features_fn,key='fakes')
+    matched_fakes.to_hdf(features_fn,key=key)
     return features_fn,matched_fakes
 if __name__=="__main__":
     main()
