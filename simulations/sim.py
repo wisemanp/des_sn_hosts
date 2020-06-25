@@ -373,12 +373,12 @@ class Sim():
             'SN_RA',
             'SN_DEC'],
             index_col =0)
-        matched_fakes.reset_index(drop=False,inplace=True)
-        matched_fakes.rename(columns={'index':'GALID_obs'},inplace=True)
-        matched_fakes.replace(np.NaN,-9999,inplace=True)
-        matched_fakes.drop_duplicates(subset=['GALID_true','GALID_obs','SNID','Z_RANK'],inplace=True)
+        self.matched_fakes.reset_index(drop=False,inplace=True)
+        self.matched_fakes.rename(columns={'index':'GALID_obs'},inplace=True)
+        self.matched_fakes.replace(np.NaN,-9999,inplace=True)
+        self.matched_fakes.drop_duplicates(subset=['GALID_true','GALID_obs','SNID','Z_RANK'],inplace=True)
         self.matched_fn = matched_fn.replace('result','h5')
-        matched_fakes.to_h5(self.matched_fn,key='fakes')
+        self.matched_fakes.to_h5(self.matched_fn,key='fakes')
         self.matched_fn, self.matched_fakes_features = features.main(fn=self.matched_fn)
 
     def prep_rf(self):
