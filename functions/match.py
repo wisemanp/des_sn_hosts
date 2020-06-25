@@ -261,7 +261,7 @@ def multi(fakes,resdir):
     pool.close()
     return results
 
-def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fakes/',key=fakes):
+def main(fn,resdir = '/media/data3/wiseman/des/mismatch/fakes/',key='fakes'):
     if not os.path.isdir(resdir):
         os.mkdir(resdir)
     fn_suffix = fn.split('.')[-1]
