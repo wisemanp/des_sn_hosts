@@ -91,7 +91,7 @@ def main(fn='/media/data3/wiseman/des/mismatch/matched_fakes.csv',key='fakes'):
     print('Calculating features for the host matches...')
     matched_fakes = multi(matched_fakes)
     print('Done calculating features!')
-    features_fn = fn.replace('_fakes','_fakes_features')
+    features_fn = fn.replace('_matched_fakes','_matched_fakes_features')
     print('Saving to %s'%features_fn)
     matched_fakes.to_hdf(features_fn,key=key)
     return features_fn,matched_fakes
