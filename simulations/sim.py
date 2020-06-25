@@ -92,7 +92,6 @@ class Sim():
     def synth_pop(self):
         pop = self.pop_obj.draw_survey(boundary = self.c.fluxlim_ergcms_des,hard_cut=True,flux_sigma=0.1)
         self.pop_df = pd.DataFrame(np.array([pop.distances,pop.luminosities/self.c.Lsun,pop.latent_fluxes]).T,columns=['z','Lv','Fv'])
-        print('Here is the population DF: ',self.pop_df)
         # save the file
         if not os.path.isdir(self.root_dir+'populations'):
             os.mkdir(self.root_dir+'populations')

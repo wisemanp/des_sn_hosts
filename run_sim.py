@@ -58,7 +58,7 @@ def main():
     if not os.path.isfile(args.df):
         print("Going to synthesise a population with these parameters: ")
         print(sim.pop_params)
-        sim.pop_df = sim.synth_pop()
+        sim.synth_pop()
     else:
         print("Loading population dataframe!")
         sim.pop_df = pd.read_csv(args.df)
