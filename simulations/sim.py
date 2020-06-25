@@ -41,7 +41,7 @@ class Sim():
         self._set_filenames()
     def _set_filenames(self):
         pop_name = self.pop_obj.name
-        self.pop_name = pop_name.join(['_%s'%v for v in self.pop_params.values()])
+        self.pop_name = pop_name + ''.join(['_%.3e'%v for v in self.pop_params.values()])
         self.pop_fn = self.root_dir+'populations/%s.h5'%self.pop_name
         self.fakes_fn = self.root_dir +'fakes/%s_fakes.h5'%self.pop_name
     def _get_zphot_res_easy(self,cat_fn):
@@ -92,10 +92,10 @@ class Sim():
     def synth_pop(self):
         pop = self.pop_obj.draw_survey(boundary = self.c.fluxlim_ergcms_des,hard_cut=True,flux_sigma=0.1)
         self.pop_df = pd.DataFrame(np.array([pop.distances,pop.luminosities/self.c.Lsun,pop.latent_fluxes]).T,columns=['z','Lv','Fv'])
+        print('Here is the population DF: ',self.pop_df)
         # save the file
         if not os.path.isdir(self.root_dir+'populations'):
             os.mkdir(self.root_dir+'populations')
-
         self.pop_df.to_hdf(self.pop_fn,key='default_pop')
         print('Saved population DataFrame to %s'%self.pop_fn)
     def load_pop(self,fn=None,key='default_pop'):
