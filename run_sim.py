@@ -18,9 +18,9 @@ import scipy.integrate as integrate
 import scipy.interpolate as interpolate
 import confuse
 import argparse
-from des_mismatch.simulations.sim import Sim,ZPowerCosmoSchechterSim
-from des_mismatch.functions import features, match
-from des_mismatch.utils.utils import Constants
+from des_sn_hosts.simulations.sim import Sim,ZPowerCosmoSchechterSim
+from des_sn_hosts.functions import features, match
+from des_sn_hosts.utils.utils import Constants
 
 def parser():
     parser = argparse.ArgumentParser()
@@ -42,7 +42,7 @@ def parser():
 def main():
     c = Constants()
     args = parser()
-    config = confuse.Configuration('des_mismatch')
+    config = confuse.Configuration('des_sn_hosts')
     config.set_args(args,dots=True)
 
     # set up the sim instance
