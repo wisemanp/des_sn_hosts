@@ -29,7 +29,7 @@ from sklearn.metrics import precision_recall_curve, roc_curve, confusion_matrix,
 from operator import itemgetter
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 
-from des_mismatch.classification.classification_utils import (is_correct_host, prep_classification,
+from des_sn_hosts.classification.classification_utils import (is_correct_host, prep_classification,
                                             get_features, find_nearest, score_func, score_func_CV)
 
 warnings.simplefilter('ignore')

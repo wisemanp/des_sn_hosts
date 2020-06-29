@@ -21,8 +21,8 @@ import networkx as nx
 import warnings
 warnings.simplefilter('ignore')
 
-from des_mismatch.utils.utils import compute_HC,compute_features, Constants
-from des_mismatch.functions import features, match
+from des_sn_hosts.utils.utils import compute_HC,compute_features, Constants
+from des_sn_hosts.functions import features, match
 
 sns.set_color_codes(palette='colorblind')
 
