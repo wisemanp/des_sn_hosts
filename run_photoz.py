@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import argparse
 import os
+import yaml 
 from des_sn_hosts.functions import photoz
 from des_sn_hosts.utils.utils import get_good_des_chips
 def parser():
