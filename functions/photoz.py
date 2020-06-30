@@ -238,7 +238,7 @@ def main(args):
 
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
-    df =df[df['SPECZ']>0]
+    #df =df[df['SPECZ']>0]
     prep_eazy_data(df,args)
     run_eazy(args)
 
