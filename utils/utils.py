@@ -75,15 +75,16 @@ def place_sn(galaxy,d_DLR):
     RA_SN = RA_GAL + (x/np.cos(DEC_SN*rad))
     return RA_SN,DEC_SN
 
-def get_edge_flags(xs,ys,dist=20):
+def get_edge_flags(xs,ys,dist=200):
     '''Flags objects that are near the edge of a chip'''
 
     flags = np.zeros_like(xs)
+    width= np.max(x)
     for counter,x in enumerate(xs):
-        if x<20 or x>4080:
+        if x<dist or x>width-dist:
             flags[counter]=1
     for counter,y in enumerate(ys):
-        if y<20 or y>2080:
+        if y<dist/2 or y>(2100 - (dist/2)):
             flags[counter]=1
     return flags
 class Constants():
