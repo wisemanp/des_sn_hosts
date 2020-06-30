@@ -94,7 +94,7 @@ def prep_eazy_data(allgals,args):
 
     for_eazy.drop(0,inplace=True)
 
-    for_eazy.to_csv(input_fn.replace('cat','tempcat')),sep='\t',index=False,header=False)
+    for_eazy.to_csv(input_fn.replace('cat','tempcat'),sep='\t',index=False,header=False)
     stringthing = open(input_fn.replace('cat','tempcat'),'r')
     psfstring = stringthing.read()
     stringthing.close()
