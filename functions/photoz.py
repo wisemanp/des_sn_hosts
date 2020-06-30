@@ -112,7 +112,7 @@ def run_eazy(args):
 
     if os.path.isdir(os.path.split(args.output)[0]):
         params['MAIN_OUTPUT_FILE'] = '%s.eazypy'%args.output
-        params['CATALOG_FILE'] = '%s.cat'%args.output)
+        params['CATALOG_FILE'] = '%s.cat'%args.output
     else:
         params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%args.output)
         params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%args.output)
