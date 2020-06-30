@@ -25,7 +25,7 @@ def parser():
     parser.add_argument('-c','--config',help='Config file path',required=False,default='config/config_photoz.yaml')
     return parser.parse_args()
 
-def prep_eazy_data(allgals,fname):
+def prep_eazy_data(allgals,args):
 
     allgals = allgals[['ID','SPECZ','Y_IMAGE',
                        'RA','DEC',
@@ -75,8 +75,11 @@ def prep_eazy_data(allgals,fname):
     for_eazy.loc[0] =['# id', 'z_spec', 'F294', 'F295', 'F296', 'F297', 'E294', 'E295',
            'E296', 'E297']
     for_eazy.sort_index(inplace=True)
-
-    catfile = open(os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%fname),'w')
+    if os.path.isdir(os.path.split(args.input)[:-1]):
+        input_fn = '%s.cat'%args.input
+    else:
+        input_fn = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.cat'%args.output)
+    catfile = open(input_fn,'w')
 
     reshead_line0 = ''
     for i in for_eazy.columns:
@@ -91,8 +94,8 @@ def prep_eazy_data(allgals,fname):
 
     for_eazy.drop(0,inplace=True)
 
-    for_eazy.to_csv(os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.tempcat'%fname),sep='\t',index=False,header=False)
-    stringthing = open(os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.tempcat'%fname),'r')
+    for_eazy.to_csv(input_fn.replace('cat','tempcat')),sep='\t',index=False,header=False)
+    stringthing = open(input_fn.replace('cat','tempcat'),'r')
     psfstring = stringthing.read()
     stringthing.close()
     #reshead = reshead_line0+'\n'
@@ -106,7 +109,10 @@ def prep_eazy_data(allgals,fname):
 def run_eazy(args):
     params = args.config['params']
     params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%args.output)
-    params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%args.output)
+    if os.path.isdir(os.path.split(args.output)[:-1]):
+        params['MAIN_OUTPUT_FILE'] = '%s.eazypy'%args.output
+    else:
+        params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%args.output)
     translate_file = os.path.join(os.getenv('EAZYCODE'), 'inputs/zphot.translate')
     ez = eazy.photoz.PhotoZ(param_file=None, translate_file=translate_file, zeropoint_file=None,
                           params=params, load_prior=True, load_products=False)
@@ -131,6 +137,7 @@ def run_eazy(args):
     ez.fit_parallel(ez.idx[sample], n_proc=16)
     zout, hdu = ez.standard_output(rf_pad_width=0.5, rf_max_err=2,
                                      prior=True, beta_prior=True)
+    print('Saved results to %s'%(params['MAIN_OUTPUT_FILE']+'.zout'))
 def main(args):
     df = pd.read_csv(args.input)
 
@@ -229,7 +236,7 @@ def main(args):
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
     df =df[df['SPECZ']>0]
-    prep_eazy_data(df,args.output)
+    prep_eazy_data(df,args)
     run_eazy(args)
 
 if __name__ == "__main__":
