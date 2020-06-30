@@ -22,6 +22,7 @@ def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i','--input',help='Catalog file to run photo-zs on',required=True)
     parser.add_argument('-o','--output',help='Name to give to the eazy output files',required=True)
+    parser.add_argument('-c','--config',help='Config file path',required=False,default='config/config_photoz.yaml')
     return parser.parse_args()
 
 def prep_eazy_data(allgals,fname):
@@ -103,22 +104,9 @@ def prep_eazy_data(allgals,fname):
     return for_eazy
 
 def run_eazy(args):
-    params = {}
+    params = args.config['params']
     params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%args.output)
     params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%args.output)
-    # Galactic extinction
-    params['MW_EBV'] = 0.0192 # X fields
-    params['Z_STEP'] = 0.01
-    params['Z_MIN'] = 0.01
-    params['Z_MAX'] = 8.
-    params['PRIOR_ABZP'] = 23.9
-    params['PRIOR_FILTER'] = 295 # r
-    params['PRIOR_FILE'] = 'templates/prior_R_extend.dat'
-    params['TEMPLATES_FILE'] = 'templates/fsps_full/tweak_fsps_QSF_12_v3.param'
-    params['FIX_ZSPEC'] = False
-    translate_file = os.path.join(os.getenv('EAZYCODE'), 'inputs/zphot.translate')
-    ez = eazy.photoz.PhotoZ(param_file=None, translate_file=translate_file, zeropoint_file=None,
-                              params=params, load_prior=True, load_products=False)
 
     NITER = 3
     NBIN = np.minimum(ez.NOBJ//100, 180)

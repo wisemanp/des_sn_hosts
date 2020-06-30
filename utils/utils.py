@@ -101,3 +101,10 @@ class Constants():
         self.V_co_1 = cosmo.comoving_volume(1)
         self.D08_Mpc = lam = (2.6 * 1E-5)/(u.Mpc**3)
         self.D08_z = lam*self.V_co_1
+def get_good_des_chips():
+    '''Returns a list of the good DECam science CCDs'''
+    good_des_chips = []
+    for c in range(1,63):
+        if c not in [2,31,61]:
+            good_des_chips.append(c)
+    return good_des_chips
