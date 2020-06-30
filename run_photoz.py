@@ -30,7 +30,7 @@ def main():
                 '5yr_stacks/MY%s/SN-%s/CAP/%s/%s_SN-%s_%s_obj_deep_v%s.cat'%(args.my,f,ch,args.my,f,ch,config['cat_version']))
             args.input = cat_fn
             args.output = os.path.join(config['des_root'],
-                '5yr_stacks/MY%s/SN-%s/CAP/%s/',
+                '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
                 '%s_%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP']))
             photoz.main(args)
 if __name__=="__main__":
