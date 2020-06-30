@@ -75,6 +75,7 @@ def prep_eazy_data(allgals,args):
     for_eazy.loc[0] =['# id', 'z_spec', 'F294', 'F295', 'F296', 'F297', 'E294', 'E295',
            'E296', 'E297']
     for_eazy.sort_index(inplace=True)
+    print('Working path: %s'%args.output)
     if os.path.isdir(os.path.split(args.output)[:-1]):
         input_fn = '%s.cat'%args.output
     else:
