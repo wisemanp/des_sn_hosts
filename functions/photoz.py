@@ -109,11 +109,13 @@ def prep_eazy_data(allgals,args):
 
 def run_eazy(args):
     params = args.config['params']
-    params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%args.output)
+
     if os.path.isdir(os.path.split(args.output)[0]):
         params['MAIN_OUTPUT_FILE'] = '%s.eazypy'%args.output
+        params['CATALOG_FILE'] = '%s.cat'%args.output)
     else:
         params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%args.output)
+        params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%args.output)
     translate_file = os.path.join(os.getenv('EAZYCODE'), 'inputs/zphot.translate')
     ez = eazy.photoz.PhotoZ(param_file=None, translate_file=translate_file, zeropoint_file=None,
                           params=params, load_prior=True, load_products=False)
