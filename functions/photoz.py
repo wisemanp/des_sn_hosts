@@ -14,7 +14,7 @@ from astropy.utils.exceptions import AstropyWarning
 
 from des_sn_hosts.utils.utils import get_edge_flags
 np.seterr(all='ignore')
-warnings.simplefilter('ignore', category=AstropyWarning)
+warnings.simplefilter('ignore')
 
 bands=['g','r','i','z']
 
