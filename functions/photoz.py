@@ -76,7 +76,7 @@ def prep_eazy_data(allgals,args):
            'E296', 'E297']
     for_eazy.sort_index(inplace=True)
     print('Working path: %s'%args.output)
-    if os.path.isdir(os.path.split(args.output)[:-1]):
+    if os.path.isdir(os.path.split(args.output)[0]):
         input_fn = '%s.cat'%args.output
     else:
         input_fn = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.cat'%args.output)
@@ -110,7 +110,7 @@ def prep_eazy_data(allgals,args):
 def run_eazy(args):
     params = args.config['params']
     params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%args.output)
-    if os.path.isdir(os.path.split(args.output)[:-1]):
+    if os.path.isdir(os.path.split(args.output)[0]):
         params['MAIN_OUTPUT_FILE'] = '%s.eazypy'%args.output
     else:
         params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%args.output)
