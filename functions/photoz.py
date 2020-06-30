@@ -107,7 +107,9 @@ def run_eazy(args):
     params = args.config['params']
     params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%args.output)
     params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%args.output)
-
+    translate_file = os.path.join(os.getenv('EAZYCODE'), 'inputs/zphot.translate')
+    ez = eazy.photoz.PhotoZ(param_file=None, translate_file=translate_file, zeropoint_file=None,
+                          params=params_des, load_prior=True, load_products=False)
     NITER = 3
     NBIN = np.minimum(ez.NOBJ//100, 180)
 
