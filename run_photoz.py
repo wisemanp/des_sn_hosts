@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import argparse
 import os
-import yaml 
+import yaml
 from des_sn_hosts.functions import photoz
 from des_sn_hosts.utils.utils import get_good_des_chips
 def parser():
@@ -22,7 +22,7 @@ def parser():
     return args
 def main():
     args = parser()
-    config = yaml.load(open(args.config_path))
+    config = yaml.load(open(args.config))
     args.config = config
     for f in args.fields:
         for ch in args.chips:
