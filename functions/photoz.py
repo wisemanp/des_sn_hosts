@@ -75,8 +75,8 @@ def prep_eazy_data(allgals,args):
     for_eazy.loc[0] =['# id', 'z_spec', 'F294', 'F295', 'F296', 'F297', 'E294', 'E295',
            'E296', 'E297']
     for_eazy.sort_index(inplace=True)
-    if os.path.isdir(os.path.split(args.input)[:-1]):
-        input_fn = '%s.cat'%args.input
+    if os.path.isdir(os.path.split(args.output)[:-1]):
+        input_fn = '%s.cat'%args.output
     else:
         input_fn = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.cat'%args.output)
     catfile = open(input_fn,'w')
