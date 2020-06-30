@@ -79,7 +79,7 @@ def get_edge_flags(xs,ys,dist=200):
     '''Flags objects that are near the edge of a chip'''
 
     flags = np.zeros_like(xs)
-    width= np.max(x)
+    width= np.max(xs)
     for counter,x in enumerate(xs):
         if x<dist or x>width-dist:
             flags[counter]=1
