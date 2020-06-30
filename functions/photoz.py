@@ -7,6 +7,7 @@ import os
 import astropy
 import sys
 import eazy
+import time
 eazy.symlink_eazy_inputs()
 eazy_dir = os.getenv('EAZYCODE')
 import warnings
@@ -142,6 +143,7 @@ def run_eazy(args):
                                      prior=True, beta_prior=True)
     print('Saved results to %s'%(params['MAIN_OUTPUT_FILE']+'.zout'))
 def main(args):
+    start_time = float(time.time())
     df = pd.read_csv(args.input)
 
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
@@ -241,7 +243,8 @@ def main(args):
     #df =df[df['SPECZ']>0]
     prep_eazy_data(df,args)
     run_eazy(args)
-
+    t = float(time.time()) - start_time
+    print('Took %.1f seconds'%t)
 if __name__ == "__main__":
     args = parser()
     main(args)
