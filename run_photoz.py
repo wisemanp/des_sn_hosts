@@ -31,7 +31,7 @@ def main():
             args.input = cat_fn
             args.output = os.path.join(config['des_root'],
                 '5yr_stacks/MY%s/SN-%s/CAP/%s/',
-                '%s_%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP'])
+                '%s_%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP']))
             photoz.main(args)
 if __name__=="__main__":
     main()
