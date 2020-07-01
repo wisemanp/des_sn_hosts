@@ -27,7 +27,7 @@ def parser():
     return parser.parse_args()
 
 def prep_eazy_data(allgals,args):
-
+    print('Working path: %s'%args.output)
     allgals = allgals[['ID','SPECZ','Y_IMAGE',
                        'RA','DEC',
                        'MAG_AUTO_G','MAGERR_STATSYST_AUTO_G',
@@ -76,7 +76,7 @@ def prep_eazy_data(allgals,args):
     for_eazy.loc[0] =['# id', 'z_spec', 'F294', 'F295', 'F296', 'F297', 'E294', 'E295',
            'E296', 'E297']
     for_eazy.sort_index(inplace=True)
-    print('Working path: %s'%args.output)
+
     if os.path.isdir(os.path.split(args.output)[0]):
         input_fn = '%s.cat'%args.output
     else:
@@ -241,7 +241,7 @@ def main(args):
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
-    print('Going to prep easy data in this path: ',args.output)
+    print('Working path: %s'%args.output)
     prep_eazy_data(df,args)
     run_eazy(args)
     t = float(time.time()) - start_time
