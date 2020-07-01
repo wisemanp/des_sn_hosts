@@ -7,6 +7,8 @@ import multiprocessing
 import multiprocessing.pool
 from multiprocessing.pool import ThreadPool
 import tqdm
+from concurrent.futures import as_completed, ThreadPoolExecutor
+
 from des_sn_hosts.functions import photoz
 from des_sn_hosts.utils.utils import get_good_des_chips, MyPool
 def parser():
@@ -41,14 +43,15 @@ def pz_worker(worker_args):
 def multi_pz(args,f):
     pool_size = multiprocessing.cpu_count()*2
     pool = ThreadPool(processes=pool_size,
-                                
+
                                 )
     #pool = MyPool(processes=pool_size)
+    executor = ThreadPoolExecutor()
     worker_args = []
     for ch in args.chips:
         worker_args.append([args,f,ch])
-
-    for _ in tqdm.tqdm(pool.imap_unordered(pz_worker,worker_args),total=len(args.chips)):
+    jobs = [executor.submit(pz_worker,[args,f,ch]) for ch in args.chips]
+    for job in tqdm.tqdm(as_completed(jobs),total=len(args.chips)):
         pass
     pool.close()
     pool.join()
