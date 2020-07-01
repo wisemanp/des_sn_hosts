@@ -42,7 +42,7 @@ def multi_pz(args,f):
                                 )
     worker_args = []
     for ch in args.chips:
-        worker_args.append([args,ch])
+        worker_args.append([args,f,ch])
     print('Running on: ',worker_args)
     for _ in tqdm.tqdm(pool.imap_unordered(pz_worker,worker_args),total=len(args.chips)):
         pass
