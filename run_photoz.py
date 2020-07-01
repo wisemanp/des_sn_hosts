@@ -44,17 +44,17 @@ def pz_worker(worker_args):
 
 def multi_pz(args,f):
     pool_size = 16
-    pool = ThreadPool(processes=pool_size,
-
-                                )
+    #pool = ThreadPool(processes=pool_size)
     #pool = MyPool(processes=pool_size)
-    executor = ThreadPoolExecutor()
+    pool = multiprocessing.Pool(processes=pool_size)
+    #executor = ThreadPoolExecutor()
     worker_args = []
     for ch in args.chips:
         worker_args.append([args,f,ch])
-    jobs = [executor.submit(pz_worker,[args,f,ch]) for ch in args.chips]
+    '''jobs = [executor.submit(pz_worker,[args,f,ch]) for ch in args.chips]
     for job in tqdm.tqdm(as_completed(jobs),total=len(args.chips)):
-        pass
+        pass'''
+    results = pool.imap_unordered(pz_worker,worker_args)
     pool.close()
     pool.join()
 def main():
