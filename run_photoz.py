@@ -4,9 +4,11 @@ import argparse
 import os
 import yaml
 import multiprocessing
+import multiprocessing.pool
+from multiprocessing.pool import ThreadPool
 import tqdm
 from des_sn_hosts.functions import photoz
-from des_sn_hosts.utils.utils import get_good_des_chips
+from des_sn_hosts.utils.utils import get_good_des_chips, MyPool
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f','--fields',help='Which DES fields to photo-z (comma-separated list): [X3]',default='X3',required=False)
@@ -23,6 +25,7 @@ def parser():
         args.chips =args.chips.split(',')
     return args
 
+
 def pz_worker(worker_args):
     args = worker_args[0]
     f = worker_args[1]
@@ -37,9 +40,10 @@ def pz_worker(worker_args):
 
 def multi_pz(args,f):
     pool_size = multiprocessing.cpu_count()*2
-    pool = multiprocessing.Pool(processes=pool_size,
+    pool = multiprocessing.ThreadPool(processes=pool_size,
                                 maxtasksperchild=2,
-                                )
+                                )'''
+    #pool = MyPool(processes=pool_size)
     worker_args = []
     for ch in args.chips:
         worker_args.append([args,f,ch])

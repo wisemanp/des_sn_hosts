@@ -2,6 +2,8 @@
 import numpy as np
 from astropy.cosmology import WMAP9 as cosmo
 import astropy.units as u
+import multiprocessing
+import multiprocessing.pool
 
 def compute_HC(DLR,SEP):
     dlr = np.sort(DLR) # first sort DLR array
@@ -109,3 +111,16 @@ def get_good_des_chips():
         if c not in [2,31,61]:
             good_des_chips.append(c)
     return good_des_chips
+
+class NoDaemonProcess(multiprocessing.Process):
+    # make 'daemon' attribute always return False
+    def _get_daemon(self):
+        return False
+    def _set_daemon(self, value):
+        pass
+    daemon = property(_get_daemon, _set_daemon)
+
+# We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool
+# because the latter is only a wrapper function, not a proper class.
+class MyPool(multiprocessing.pool.Pool):
+    Process = NoDaemonProcess
