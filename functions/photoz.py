@@ -247,6 +247,7 @@ def main(args):
     prep_eazy_data(df,args,out_fn)
     run_eazy(args,out_fn)
     t = float(time.time()) - start_time
+    return 
     print('Took %.1f seconds'%t)
 if __name__ == "__main__":
     args = parser()
