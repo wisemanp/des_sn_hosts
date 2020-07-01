@@ -26,8 +26,8 @@ def parser():
     parser.add_argument('-c','--config',help='Config file path',required=False,default='config/config_photoz.yaml')
     return parser.parse_args()
 
-def prep_eazy_data(allgals,args):
-    print('Working path: %s'%args.output)
+def prep_eazy_data(allgals,args,out_fn):
+    print('Working path: %s'%out_fn)
     allgals = allgals[['ID','SPECZ','Y_IMAGE',
                        'RA','DEC',
                        'MAG_AUTO_G','MAGERR_STATSYST_AUTO_G',
@@ -78,9 +78,9 @@ def prep_eazy_data(allgals,args):
     for_eazy.sort_index(inplace=True)
 
     if os.path.isdir(os.path.split(args.output)[0]):
-        input_fn = '%s.cat'%args.output
+        input_fn = '%s.cat'%out_fn
     else:
-        input_fn = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.cat'%args.output)
+        input_fn = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.cat'%out_fn)
     catfile = open(input_fn,'w')
 
     reshead_line0 = ''
@@ -108,15 +108,15 @@ def prep_eazy_data(allgals,args):
     catfile.close()
     return for_eazy
 
-def run_eazy(args):
+def run_eazy(args,out_fn):
     params = args.config['params']
 
-    if os.path.isdir(os.path.split(args.output)[0]):
-        params['MAIN_OUTPUT_FILE'] = '%s.eazypy'%args.output
-        params['CATALOG_FILE'] = '%s.cat'%args.output
+    if os.path.isdir(os.path.split(out_fn)[0]):
+        params['MAIN_OUTPUT_FILE'] = '%s.eazypy'%out_fn
+        params['CATALOG_FILE'] = '%s.cat'%out_fn
     else:
-        params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%args.output)
-        params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%args.output)
+        params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%out_fn)
+        params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%out_fn)
     translate_file = os.path.join(os.getenv('EAZYCODE'), 'inputs/zphot.translate')
     ez = eazy.photoz.PhotoZ(param_file=None, translate_file=translate_file, zeropoint_file=None,
                           params=params, load_prior=True, load_products=False)
@@ -145,6 +145,7 @@ def run_eazy(args):
 def main(args):
     start_time = float(time.time())
     print('photoz_main',args.input,args.output)
+    in_fn,out_fn = args.input,args.output
     df = pd.read_csv(args.input)
 
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
@@ -242,7 +243,7 @@ def main(args):
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
-    print('Working path: %s'%args.output)
+    print('Working path: %s'%out_fn)
     #prep_eazy_data(df,args)
     #run_eazy(args)
     t = float(time.time()) - start_time
