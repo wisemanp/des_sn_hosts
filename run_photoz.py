@@ -3,9 +3,8 @@ import pandas as pd
 import argparse
 import os
 import yaml
+import multiprocessing
 import tqdm
-from tqdm.contrib.concurrent import process_map
-
 from des_sn_hosts.functions import photoz
 from des_sn_hosts.utils.utils import get_good_des_chips
 def parser():
