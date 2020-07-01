@@ -40,10 +40,10 @@ def pz_worker(worker_args):
         '%s_SN-%s_%s_%s_%s_%s'%(args.my,f,ch,args.config['cat_version'],args.config['params']['Z_MAX'],args.config['params']['Z_STEP']))
     print('Initializing EAZY on CCD %s'%ch)
     photoz.main(args)
-    return 
+    return
 
 def multi_pz(args,f):
-    pool_size = multiprocessing.cpu_count()*2
+    pool_size = 16
     pool = ThreadPool(processes=pool_size,
 
                                 )
