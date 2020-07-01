@@ -124,16 +124,16 @@ def run_eazy(args,out_fn):
     NBIN = np.minimum(ez.NOBJ//100, 180)
 
     ez.param.params['VERBOSITY'] = 1.
-    #for iter in range(NITER):
-    #    print('Iteration: ', iter)
-    #    sn = ez.fnu/ez.efnu
-    #    clip = (sn > 10).sum(axis=1) > 3 # Generally make this higher to ensure reasonable fits
-    #    ez.iterate_zp_templates(idx=ez.idx[clip], update_templates=False,
-    #                              update_zeropoints=True, iter=iter, n_proc=8,
-    #                              save_templates=False, error_residuals=(iter > 0),
-    #                              NBIN=NBIN, get_spatial_offset=False)
+    for iter in range(NITER):
+        print('Iteration: ', iter)
+        sn = ez.fnu/ez.efnu
+        clip = (sn > 10).sum(axis=1) > 3 # Generally make this higher to ensure reasonable fits
+        ez.iterate_zp_templates(idx=ez.idx[clip], update_templates=False,
+                                  update_zeropoints=True, iter=iter, n_proc=8,
+                                  save_templates=False, error_residuals=(iter > 0),
+                                  NBIN=NBIN, get_spatial_offset=False)
     # Turn off error corrections derived above
-    ez.efnu = ez.efnu_orig*1
+    #ez.efnu = ez.efnu_orig*1
 
     # Full catalog
     sample = np.isfinite(ez.cat['z_spec'])
