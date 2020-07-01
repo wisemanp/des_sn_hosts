@@ -46,7 +46,7 @@ def multi_pz(args,f):
     pool_size = 16
     #pool = ThreadPool(processes=pool_size)
     #pool = MyPool(processes=pool_size)
-    pool = ThreadPool(processes=pool_size)
+    pool = MyPool(processes=pool_size)
     #executor = ThreadPoolExecutor()
     worker_args = []
     for ch in args.chips:
