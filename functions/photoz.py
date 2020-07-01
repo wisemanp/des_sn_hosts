@@ -141,7 +141,7 @@ def run_eazy(args,out_fn):
     ez.fit_parallel(ez.idx[sample], n_proc=16)
     zout, hdu = ez.standard_output(rf_pad_width=0.5, rf_max_err=2,
                                      prior=True, beta_prior=True)
-    print('Saved results to %s'%(params['MAIN_OUTPUT_FILE']+'.zout'))
+    print('Saved results to %s'%(params['MAIN_OUTPUT_FILE']+'.zout.fits'))
 def main(args):
     start_time = float(time.time())
 
@@ -247,7 +247,7 @@ def main(args):
     prep_eazy_data(df,args,out_fn)
     run_eazy(args,out_fn)
     t = float(time.time()) - start_time
-    return 
+    return
     print('Took %.1f seconds'%t)
 if __name__ == "__main__":
     args = parser()
