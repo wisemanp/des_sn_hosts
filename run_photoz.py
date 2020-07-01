@@ -38,7 +38,7 @@ def pz_worker(worker_args):
     args.output = os.path.join(args.config['des_root'],
         '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
         '%s_SN-%s_%s_%s_%s_%s'%(args.my,f,ch,args.config['cat_version'],args.config['params']['Z_MAX'],args.config['params']['Z_STEP']))
-    
+    print('Initializing EAZY on CCD %s'%ch)
     photoz.main(args)
 
 def multi_pz(args,f):
@@ -61,6 +61,7 @@ def main():
     config = yaml.load(open(args.config))
     args.config = config
     for f in args.fields:
+        print('Initializing EAZY in the SN-%s field'%f)
         multi_pz(args,f)
 
 if __name__=="__main__":
