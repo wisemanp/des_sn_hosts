@@ -241,6 +241,7 @@ def main(args):
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
+    print('Going to prep easy data in this path: ',args.output)
     prep_eazy_data(df,args)
     run_eazy(args)
     t = float(time.time()) - start_time

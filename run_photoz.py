@@ -39,7 +39,7 @@ def pz_worker(worker_args):
         '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
         '%s_SN-%s_%s_%s_%s_%s'%(args.my,f,ch,args.config['cat_version'],args.config['params']['Z_MAX'],args.config['params']['Z_STEP']))
     print(args.input,args.output)
-    return #photoz.main(args)
+    photoz.main(args)
 
 def multi_pz(args,f):
     pool_size = multiprocessing.cpu_count()*2
