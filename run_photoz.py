@@ -42,7 +42,7 @@ def multi_pz(args,f):
     pool_size = multiprocessing.cpu_count()*2
     pool = multiprocessing.ThreadPool(processes=pool_size,
                                 maxtasksperchild=2,
-                                )'''
+                                )
     #pool = MyPool(processes=pool_size)
     worker_args = []
     for ch in args.chips:
