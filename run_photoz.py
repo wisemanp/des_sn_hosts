@@ -43,7 +43,7 @@ def pz_worker(worker_args):
     return
 
 def multi_pz(args,f):
-    pool_size = 16
+    pool_size = 32
     #pool = ThreadPool(processes=pool_size)
     #pool = MyPool(processes=pool_size)
     pool = MyPool(processes=pool_size)
