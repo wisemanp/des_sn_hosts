@@ -27,7 +27,7 @@ def pz_worker(worker_args):
     args = worker_args[0]
     f = worker_args[1]
     ch = worker_args[2]
-    cat_fn = os.path.join(config['des_root'],
+    cat_fn = os.path.join(args.config['des_root'],
         '5yr_stacks/MY%s/SN-%s/CAP/%s/%s_SN-%s_%s_obj_deep_v%s.cat'%(args.my,f,ch,args.my,f,ch,args.config['cat_version']))
     args.input = cat_fn
     args.output = os.path.join(config['des_root'],
