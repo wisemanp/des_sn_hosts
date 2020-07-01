@@ -244,8 +244,8 @@ def main(args):
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
 
-    prep_eazy_data(df,args)
-    #run_eazy(args)
+    prep_eazy_data(df,args,out_fn)
+    #run_eazy(args,out_fn)
     t = float(time.time()) - start_time
     print('Took %.1f seconds'%t)
 if __name__ == "__main__":
