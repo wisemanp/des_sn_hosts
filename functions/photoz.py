@@ -144,7 +144,7 @@ def run_eazy(args,out_fn):
     print('Saved results to %s'%(params['MAIN_OUTPUT_FILE']+'.zout'))
 def main(args):
     start_time = float(time.time())
-    print('photoz_main',args.input,args.output)
+
     in_fn,out_fn = args.input,args.output
     df = pd.read_csv(args.input)
 
@@ -243,8 +243,8 @@ def main(args):
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
-    print('Working path: %s'%out_fn)
-    #prep_eazy_data(df,args)
+
+    prep_eazy_data(df,args)
     #run_eazy(args)
     t = float(time.time()) - start_time
     print('Took %.1f seconds'%t)
