@@ -36,20 +36,19 @@ class Rates():
     def _get_field(self,fn):
         return pd.read_csv(fn)
 
-    def generate_sn_samples(self,mass_col='log_m',err_col='logm_err',index_col = 'CIDint',n_iter=1E4,save_samples=True):
+    def generate_sn_samples(self,mass_col='HOST_LOGMASS',err_col='HOST_LOGMASS_ERR',index_col = 'CIDint',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
-
         sn_samples = sample_sn_masses(self.SN_hosts,mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
         if save_samples:
-            savename=self.config['rates_root']+self.SN_fn.replace('.csv','_mass_resampled.h5'))
+            savename=self.config['rates_root']+'data/'+self.SN_fn.replace('.csv','_mass_resampled.h5'))
             sn_samples.to_hdf(savename,key='Bootstrap_samples')
         self.sn_samples = sn_samples
 
-    def generate_sn_samples(self,mass_col='mass',err_col='mass_err',index_col = 'id',n_iter=1E4,save_samples=True):
+    def generate_gal_samples(self,mass_col='mass',err_col='mass_err',index_col = 'id',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
 
-        sn_samples = sample_sn_masses(self.field,mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
+        gal_samples = sample_gal_masses(self.field,mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
         if save_samples:
-            savename=self.config['rates_root']+self.SN_fn.replace('.csv','_mass_resampled.h5'))
-            sn_samples.to_hdf(savename,key='Bootstrap_samples')
-        self.sn_samples = sn_samples
+            savename=self.config['rates_root']+'data/'+self.field_fn.replace('.csv','_mass_resampled.h5'))
+            gal_samples.to_hdf(savename,key='Bootstrap_samples')
+        self.gal_samples = sn_samples
