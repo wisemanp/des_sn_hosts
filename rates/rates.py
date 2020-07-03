@@ -14,7 +14,7 @@ from shutil import copyfile
 from scipy import stats
 from scipy.optimize import curve_fit
 import pystan
-from utils import stan_utility
+from des_sn_hosts.utils import stan_utility
 import corner
 import itertools
 
