@@ -1,6 +1,6 @@
 import pystan
 import pandas as pd
-from utils import stan_utility
+from des_sn_hosts.utils import stan_utility
 
 def sample_sn_masses(df,mass_col='log_m',err_col='logm_err',index_col = 'CIDint',n_iter=1E4,seed=1234):
 
