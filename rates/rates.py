@@ -18,7 +18,7 @@ from des_sn_hosts.utils import stan_utility
 import corner
 import itertools
 
-from des_sn_hosts.rates.rates_utils import sample_masses
+from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_gal_masses
 sns.set_color_codes(palette='colorblind')
 
 class Rates():
