@@ -28,7 +28,7 @@ class Rates():
         self.field_fn = field_fn
         self.SN_Hosts = self._get_SN_hosts(SN_hosts_fn)
         self.field = self._get_SN_hosts(field_fn)
-
+        self.root_dir = self.config['rates_root']
 
     def _get_SN_hosts(self,fn):
         if fn.split('.')[-1]=='FITRES':
@@ -49,8 +49,144 @@ class Rates():
     def generate_field_samples(self,mass_col='mass',err_col='mass_err',index_col = 'id',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
 
-        gal_samples = sample_field_masses(self.field,mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
+        field_samples = sample_field_masses(self.field,mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
         if save_samples:
             savename=self.config['rates_root']+'data/'+self.field_fn.replace('.csv','_mass_resampled.h5')
-            gal_samples.to_hdf(savename,key='Bootstrap_samples')
-        self.gal_samples = sn_samples
+            field_samples.to_hdf(savename,key='Bootstrap_samples')
+        self.field_samples = field_samples
+
+    def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
+        self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
+                                                bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zHD']
+        self.snmassgroups =self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.HOST_LOGMASS,
+                                                bins=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)))[['HOST_LOGMASS','VVmax']]
+
+    def get_field_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
+        self.fieldzgroups =self.field.groupby(pd.cut(self.field.zphot,
+                                                bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zphot']
+        self.fieldmassgroups = self.field.groupby( pd.cut(self.field.mass,
+                                                bins=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)))['mass']
+
+    def SN_G(self, scale='log',):
+        '''Plots the SN/G rate for the data'''
+        fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
+        xs = []
+        xerr = []
+        ys = []
+        yerr = []
+        for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+            if g.size >0 and g2.size>0:
+                xs.append(n.mid)
+                xerr.append(np.mean([np.abs(n.mid-n.left),np.abs(n.right-n.mid)]))
+                ys.append(np.log10(g.size/g2.size)-1.38)
+                YerrY = (((g.size)**(-1/4) + (g2.size)**(-1/4))**0.5)
+                yerr.append(0.434*YerrY)
+        xs = np.array(xs)
+        ys = np.array(ys)
+        xerr=np.array(xerr)
+        yerr=np.array(yerr)
+        counter=0
+        for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+            if g.size >0 and g2.size>0:
+
+                axmbinlog.errorbar(n.mid,np.log10(g.size/g2.size)-1.38,
+                           xerr=xerr[counter],
+                           yerr=yerr[counter],
+                            color='g',marker='D',label='All',
+                                mew=0.3,mec='w',markersize=12)
+                counter+=1
+        axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
+        axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
+        axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
+        axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
+        axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
+
+    def SN_G_MC(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None):
+
+        iter_df = pd.DataFrame(columns = range(0,n_samples,1),index=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)+0.125)
+
+        for i in range(0,n_iter,10):
+            snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
+                                                 bins=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)))[i]
+            i_f = np.random.randint(0,100)
+            fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
+                                                        bins=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)))[i_f]
+            xs = []
+            ys = []
+
+            for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+
+                if g.size >0 and g2.size>0:
+                    xs.append(n.mid)
+
+                    ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+
+            xs = np.array(xs)
+            ys = np.array(ys)
+            entry = pd.Series(ys,index=xs)
+            iter_df.loc[entry.index,i] = entry
+        if not savename:
+            savename=self.config['rates_root']+'data/mcd_rates.h5'
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+        self.sampled_rates = iter_df
+
+    def load_sampled_rates(self,fn):
+        self.sampled_rates = pd.read_hdf(fn,key='bootstrap_samples')
+
+    def fit_SN_G(self,fn,seed=123456,n_iter=4E3):
+
+        model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
+        x_model = np.linspace(6.5,11,100)
+        x_obs = np.array(self.sampled_rates.index)[2:-6]
+        y_obs = self.sampled_rates.mean(axis=1).values[2:-6]
+        y_err = self.sampled_rates.std(axis=1).values[2:-6]
+
+        data = dict(N = len(x_obs),
+                    x_obs = x_obs,
+                    y_obs = y_obs,
+                    #sigma_x=np.array(xerr[:-2]),
+                    sigma=y_err,
+                    N_model=100,
+                   x_model=x_model)
+        fit = model.sampling(data=data, seed=seed, iter=n_iter)
+        return fit
+
+    def plot_fit(self,fit):
+        fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
+# Plot the points from above as a comparison
+
+    for counter,c in enumerate(self.sampled_rates.columns):
+        label=None
+        if counter == 0:
+            label='Observations'
+        axmbinlog.scatter(self.sampled_rates.index,self.sampled_rates[c],color='g',marker='o',
+                       alpha=0.05,s=10,label=label)
+        axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
+        axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
+        axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
+        axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
+        axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
+        for i in self.sampled_rates.index:
+            axmbinlog.errorbar(i,self.sampled_rates.loc[i].mean(),xerr=0.184,color='g',marker='D',
+                           alpha=0.5,markersize=2,mew=0.5,mec='w')
+
+        level = 95
+
+        axmbinlog.fill_between(x_model,
+                        np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                        np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                        color='c',alpha=0.2)
+
+        level = 68
+        axmbinlog.fill_between(x_model,
+                        np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                        np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                        color='c',alpha=0.3)
+
+        axmbinlog.plot(x_model,
+                        np.percentile(chain['line'], 50, axis=0 ),
+                        color='b',alpha=1,linestyle='-',linewidth=1,label='$dN/dG = %.2f$'%np.median(chain['slope']))
+        leg =axmbinlog.legend()
+        for lh in leg.legendHandles:
+            lh.set_alpha(1)
+        plt.savefig(self.root_dir +'figs/rate_vs_mass_slopes_stanfit.png')
