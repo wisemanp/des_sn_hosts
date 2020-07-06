@@ -31,7 +31,9 @@ class Rates():
 
 
     def _get_SN_hosts(self,fn):
-        return pd.read_csv(fn)
+        if fn.split('.')[-1]=='FITRES':
+
+            return pd.read_csv(fn,delimiter='\s+',comment='#').drop('VARNAMES:',axis=1)
 
     def _get_field(self,fn):
         return pd.read_csv(fn)
