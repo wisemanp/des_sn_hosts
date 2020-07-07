@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import argparse
+import yaml
 from des_stacks.utils.gen_tools import get_good_des_chips
 good_des_chips = get_good_des_chips()
 
@@ -34,15 +35,16 @@ def main(args):
     main_df = pd.DataFrame()
     if args.df !='none':
         main_df = pd.read_csv(args.df,index_col=0)
+    config = yaml.load(open(args.config,'r'))
     for my in mys:
 
         for f in fields:
 
             for ch in good_des_chips:
                 ch = int(ch)
-                fn = os.path.join(args.config['des_root'],
+                fn = os.path.join(config['des_root'],
                     '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
-                    '%s_SN-%s_%s_%s_%s_%s'%(args.my,f,ch,args.config['cat_version'],args.config['params']['Z_MAX'],args.config['params']['Z_STEP']))
+                    '%s_SN-%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP']))
                 try:
                     zphot_res = Table.read(fn+'.eazypy.zout.fits'%(f,ch,f,ch))
                     zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
@@ -51,8 +53,8 @@ def main(args):
                     main_df = main_df.append(cat_df)
                 except:
                     print('Missing %s'%fn)
-    main_df.to_csv(os.path.join(args.config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my)),index=True)
-    print ('Saved new file to ',os.path.join(args.config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my)))
+    main_df.to_csv(os.path.join(config['des_root'],'results','deep','%s_%s_photoz.csv'%(fields,args.my)),index=True)
+    print ('Saved new file to ',os.path.join(config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my)))
 if __name__=="__main__":
     args=parser()
     main(args)
