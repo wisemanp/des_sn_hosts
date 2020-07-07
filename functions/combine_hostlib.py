@@ -52,7 +52,7 @@ def main(args):
                 except:
                     print('Missing %s'%fn)
     main_df.to_csv(os.path.join(args.config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my),index=True)
-    print ('Saved new file to %s'%os.path.join(args.config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my)))
+    print ('Saved new file to ',os.path.join(args.config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my)))
 if __name__=="__main__":
     args=parser()
     main(args)
