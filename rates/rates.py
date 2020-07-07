@@ -49,7 +49,7 @@ class Rates():
         '''Wrapped around sample_sn_masses with option to save the output'''
         sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
         if save_samples:
-            savename=self.config['rates_root']+'data/'+self.SN_fn.replace('.csv','_mass_resampled.h5')
+            savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace('.csv','_mass_resampled.h5')
             sn_samples.to_hdf(savename,key='Bootstrap_samples')
         self.sn_samples = sn_samples
 
@@ -58,7 +58,7 @@ class Rates():
 
         field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
         if save_samples:
-            savename=self.config['rates_root']+'data/'+self.field_fn.replace('.csv','_mass_resampled.h5')
+            savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace('.csv','_mass_resampled.h5')
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples = field_samples
 
