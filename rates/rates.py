@@ -83,7 +83,7 @@ class Rates():
         xerr = []
         ys = []
         yerr = []
-        for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+        for (n,g),(n2,g2) in zip(self.snmassgroups,self.fieldmassgroups):
             if g.size >0 and g2.size>0:
                 xs.append(n.mid)
                 xerr.append(np.mean([np.abs(n.mid-n.left),np.abs(n.right-n.mid)]))
@@ -95,7 +95,7 @@ class Rates():
         xerr=np.array(xerr)
         yerr=np.array(yerr)
         counter=0
-        for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+        for (n,g),(n2,g2) in zip(self.snmassgroups,self.fieldmassgroups):
             if g.size >0 and g2.size>0:
 
                 axmbinlog.errorbar(n.mid,np.log10(g.size/g2.size)-1.38,
