@@ -27,10 +27,10 @@ def main(args):
     if args.my !='none':
         mys = args.my
 
-    if args.chip !='all':
-        chips = args.chip.split(',')
+    if args.chips !='all':
+        chips = args.chips.split(',')
     else:
-        args.chip good_des_chips
+        args.chips = good_des_chips
     main_df = pd.DataFrame()
     if args.df !='none':
         main_df = pd.read_csv(args.df,index_col=0)
