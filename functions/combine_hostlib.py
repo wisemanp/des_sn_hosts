@@ -51,8 +51,8 @@ def main(args):
                         zphot_res = Table.read(fn+'.eazypy.zout.fits')
                         zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
                         zphot_res = zphot_res.to_pandas()
-                        print ('Adding cat: %s.eazypy.zout.fits'%fn, ' of length ',len(cat_df))
-                        main_df = main_df.append(cat_df)
+                        print ('Adding cat: %s.eazypy.zout.fits'%fn, ' of length ',len(zphot_res))
+                        main_df = main_df.append(zphot_res)
                     else:
                         print('Missing %s'%fn)
     main_df.to_csv(os.path.join(config['des_root'],'results','deep','%s_%s_photoz.csv'%(fields,args.my)),index=True)
