@@ -114,7 +114,7 @@ class Rates():
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
         iter_df = pd.DataFrame(columns = range(0,n_samples,1),index=mbins+0.125)
 
-        for i in range(0,n_iter,10):
+        for i in range(0,n_samples):
             snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
                                                  bins=mbins))[i]
             i_f = np.random.randint(0,100)
