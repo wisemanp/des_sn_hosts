@@ -47,7 +47,7 @@ class Rates():
             return zphot_res
     def generate_sn_samples(self,mass_col='HOST_LOGMASS',err_col='HOST_LOGMASS_ERR',index_col = 'CIDint',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
-        sn_samples = sample_sn_masses(self.SN_hosts,mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
+        sn_samples = sample_sn_masses(self.SN_Hosts,mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
         if save_samples:
             savename=self.config['rates_root']+'data/'+self.SN_fn.replace('.csv','_mass_resampled.h5')
             sn_samples.to_hdf(savename,key='Bootstrap_samples')
