@@ -117,7 +117,7 @@ class Rates():
 
     def SN_G_MC(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None):
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
-        iter_df = pd.DataFrame(columns = range(0,n_samples,1),index=mbins+0.125)
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
         for i in range(0,n_samples):
             snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
