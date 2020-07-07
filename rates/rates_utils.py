@@ -9,7 +9,7 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',err_col='logm_err',index_col 
     nobs=len(detections)
     fit = model_gen.sampling(data=dict(n_obs=nobs,
                                   x_obs =detections[mass_col].values,
-                                  x_err =detections[mass_col].values+0.001),
+                                  x_err =detections[err_col].values+0.001),
                         seed=seed,algorithm='Fixed_param',iter=n_iter,chains=1)
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
@@ -26,7 +26,7 @@ def sample_field_masses(df,model_dir,mass_col='log_m',err_col='logm_err',index_c
     nobs=len(detections)
     fit = model_gen.sampling(data=dict(n_obs=nobs,
                                   x_obs =detections[mass_col].values,
-                                  x_err =detections[mass_col].values+0.001),
+                                  x_err =detections[err_col].values+0.001),
                         seed=seed,algorithm='Fixed_param',iter=n_iter,chains=1)
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)

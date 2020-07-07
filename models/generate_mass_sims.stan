@@ -1,7 +1,7 @@
 
 data {
 
-  // example parameters for the
+  // parameters for the
   // generated data
 
   int<lower=0> n_obs;
