@@ -14,7 +14,7 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',err_col='logm_err',index_col 
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
     df_bootstrapped.index = detections[index_col].astype(int)
-    truthcols = detections.set_index(index_col,drop=True)[['zHD','zHDERR','HOST_LOGMASS','HOST_LOGMASS_ERR','VVmax']]
+    truthcols = detections.set_index(index_col,drop=True)[['zHD','zHDERR','HOST_LOGMASS','HOST_LOGMASS_ERR']]
     truthcols.index = truthcols.index.astype(int)
     df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
     return df_bootstrapped
