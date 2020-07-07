@@ -46,10 +46,10 @@ def main(args):
                     '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
                     '%s_SN-%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP']))
                 try:
-                    zphot_res = Table.read(fn+'.eazypy.zout.fits'%(f,ch,f,ch))
+                    zphot_res = Table.read(fn+'.eazypy.zout.fits')
                     zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
                     zphot_res = zphot_res.to_pandas()
-                    print ('Adding cat: %s'%fn, ' of length ',len(cat_df))
+                    print ('Adding cat: %s.eazypy.zout.fits'%fn, ' of length ',len(cat_df))
                     main_df = main_df.append(cat_df)
                 except:
                     print('Missing %s'%fn)
