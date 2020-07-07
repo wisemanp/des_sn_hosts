@@ -3,6 +3,7 @@ import numpy as np
 import os
 import argparse
 import yaml
+from astropy.table import Table 
 from des_stacks.utils.gen_tools import get_good_des_chips
 good_des_chips = get_good_des_chips()
 
