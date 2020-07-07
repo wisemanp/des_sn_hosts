@@ -50,7 +50,7 @@ def main(args):
                     print ('Adding cat: %s'%fn, ' of length ',len(cat_df))
                     main_df = main_df.append(cat_df)
                 except:
-                    print('Missing %s'fn)
+                    print('Missing %s'%fn)
     main_df.to_csv(os.path.join(args.config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my),index=True)
     print ('Saved new file to %s'%os.path.join(args.config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my))
 if __name__=="__main__":
