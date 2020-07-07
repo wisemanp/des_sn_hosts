@@ -36,7 +36,7 @@ class Rates():
             df= pd.read_csv(fn,delimiter='\s+',comment='#').drop('VARNAMES:',axis=1)
             if fields:
                 df =df[df['FIELD'].isin(fields)
-            return df 
+            return df
     def _get_field(self,fn):
         if fn.split('.')[-1]=='csv':
             return pd.read_csv(fn)
@@ -160,19 +160,19 @@ class Rates():
 
     def plot_fit(self,fit):
         fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
-# Plot the points from above as a comparison
+    # Plot the points from above as a comparison
 
-    for counter,c in enumerate(self.sampled_rates.columns):
-        label=None
-        if counter == 0:
-            label='Observations'
-        axmbinlog.scatter(self.sampled_rates.index,self.sampled_rates[c],color='g',marker='o',
-                       alpha=0.05,s=10,label=label)
-        axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
-        axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
-        axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
-        axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
-        axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
+        for counter,c in enumerate(self.sampled_rates.columns):
+            label=None
+            if counter == 0:
+                label='Observations'
+            axmbinlog.scatter(self.sampled_rates.index,self.sampled_rates[c],color='g',marker='o',
+                           alpha=0.05,s=10,label=label)
+            axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
+            axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
+            axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
+            axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
+            axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
         for i in self.sampled_rates.index:
             axmbinlog.errorbar(i,self.sampled_rates.loc[i].mean(),xerr=0.184,color='g',marker='D',
                            alpha=0.5,markersize=2,mew=0.5,mec='w')
