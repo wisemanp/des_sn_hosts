@@ -168,7 +168,7 @@ class Rates():
     def plot_fit(self,fit):
         fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
     # Plot the points from above as a comparison
-
+        x_model = np.linspace(6.5,11,100)
         for counter,c in enumerate(self.sampled_rates.columns):
             label=None
             if counter == 0:
