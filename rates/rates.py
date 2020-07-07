@@ -66,7 +66,7 @@ class Rates():
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
                                                 bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zHD']
         self.snmassgroups =self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.HOST_LOGMASS,
-                                                bins=np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)))[['HOST_LOGMASS','VVmax']]
+                                                bins=np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)))['HOST_LOGMASS'] #,'VVmax'
 
     def get_field_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.fieldzgroups =self.field.groupby(pd.cut(self.field.zphot,
