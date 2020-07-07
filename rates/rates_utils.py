@@ -16,7 +16,10 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',err_col='logm_err',index_col 
     df_bootstrapped.index = detections[index_col].astype(int)
     truthcols = detections.set_index(index_col,drop=True)[['zHD','zHDERR','HOST_LOGMASS','HOST_LOGMASS_ERR']]
     truthcols.index = truthcols.index.astype(int)
-    df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
+    for col in truthcols.columns:
+        df_bootstrapped[col] = truthcols[col]
+
+    #df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
     return df_bootstrapped
 
 def sample_field_masses(df,model_dir,mass_col='log_m',err_col='logm_err',index_col = 'CIDint',n_iter=1E4,seed=1234):
@@ -34,5 +37,7 @@ def sample_field_masses(df,model_dir,mass_col='log_m',err_col='logm_err',index_c
     truthcols = detections.set_index(index_col,drop=True)[['z_spec','z_phot',#[['SPEC_Z','z_phot','MAG_AUTO_G','MAG_AUTO_R','MAG_AUTO_I','MAG_AUTO_Z',
                                                                 mass_col,err_col]]
     truthcols.index = truthcols.index.astype(int)
-    df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
+    for col in truthcols.columns:
+        df_bootstrapped[col] = truthcols[col]
+    #df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
     return df_bootstrapped
