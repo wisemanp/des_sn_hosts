@@ -22,19 +22,21 @@ from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_field_masses
 sns.set_color_codes(palette='colorblind')
 
 class Rates():
-    def __init__(self,SN_hosts_fn, field_fn,config):
+    def __init__(self,SN_hosts_fn, field_fn,config,fields=None):
         self.config =config
         self.SN_fn = SN_hosts_fn
         self.field_fn = field_fn
-        self.SN_Hosts = self._get_SN_hosts(SN_hosts_fn)
+        self.SN_Hosts = self._get_SN_hosts(SN_hosts_fn,fields)
         self.field = self._get_SN_hosts(field_fn)
         self.root_dir = self.config['rates_root']
 
-    def _get_SN_hosts(self,fn):
+    def _get_SN_hosts(self,fn,fields):
         if fn.split('.')[-1]=='FITRES':
 
-            return pd.read_csv(fn,delimiter='\s+',comment='#').drop('VARNAMES:',axis=1)
-
+            df= pd.read_csv(fn,delimiter='\s+',comment='#').drop('VARNAMES:',axis=1)
+            if fields:
+                df =df[df['FIELD'].isin(fields)
+            return df 
     def _get_field(self,fn):
         if fn.split('.')[-1]=='csv':
             return pd.read_csv(fn)
