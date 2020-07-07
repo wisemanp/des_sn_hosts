@@ -35,7 +35,7 @@ class Rates():
 
             df= pd.read_csv(fn,delimiter='\s+',comment='#').drop('VARNAMES:',axis=1)
             if fields:
-                df =df[df['FIELD'].isin(fields)
+                df =df[df['FIELD'].isin(fields)]
             return df
     def _get_field(self,fn):
         if fn.split('.')[-1]=='csv':
