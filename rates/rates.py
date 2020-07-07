@@ -27,7 +27,7 @@ class Rates():
         self.SN_fn = SN_hosts_fn
         self.field_fn = field_fn
         self.SN_Hosts = self._get_SN_hosts(SN_hosts_fn,fields)
-        self.field = self._get_SN_hosts(field_fn)
+        self.field = self._get_field(field_fn)
         self.root_dir = self.config['rates_root']
 
     def _get_SN_hosts(self,fn,fields):
