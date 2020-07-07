@@ -2,9 +2,9 @@ import pystan
 import pandas as pd
 from des_sn_hosts.utils import stan_utility
 
-def sample_sn_masses(df,mass_col='log_m',err_col='logm_err',index_col = 'CIDint',n_iter=1E4,seed=1234):
+def sample_sn_masses(df,model_dir,mass_col='log_m',err_col='logm_err',index_col = 'CIDint',n_iter=1E4,seed=1234,):
 
-    model_gen = stan_utility.compile_model(r.root_dir+'models/generate_mass_sims.stan')
+    model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
     nobs=len(detections)
     fit = model_gen.sampling(data=dict(n_obs=nobs,
@@ -19,9 +19,9 @@ def sample_sn_masses(df,mass_col='log_m',err_col='logm_err',index_col = 'CIDint'
     df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
     return df_bootstrapped
 
-def sample_field_masses(df,mass_col='log_m',err_col='logm_err',index_col = 'CIDint',n_iter=1E4,seed=1234):
+def sample_field_masses(df,model_dir,mass_col='log_m',err_col='logm_err',index_col = 'CIDint',n_iter=1E4,seed=1234):
 
-    model_gen = stan_utility.compile_model(r.root_dir+'models/generate_mass_sims.stan')
+    model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
     nobs=len(detections)
     fit = model_gen.sampling(data=dict(n_obs=nobs,
