@@ -66,13 +66,13 @@ class Rates():
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
                                                 bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zHD']
         self.snmassgroups =self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.HOST_LOGMASS,
-                                                bins=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)))[['HOST_LOGMASS','VVmax']]
+                                                bins=np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)))[['HOST_LOGMASS','VVmax']]
 
     def get_field_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.fieldzgroups =self.field.groupby(pd.cut(self.field.zphot,
                                                 bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zphot']
         self.fieldmassgroups = self.field.groupby( pd.cut(self.field.mass,
-                                                bins=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)))['mass']
+                                                bins=np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)))['mass']
 
     def SN_G(self, scale='log',):
         '''Plots the SN/G rate for the data'''
@@ -109,15 +109,15 @@ class Rates():
         axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
 
     def SN_G_MC(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None):
-
-        iter_df = pd.DataFrame(columns = range(0,n_samples,1),index=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)+0.125)
+        mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
+        iter_df = pd.DataFrame(columns = range(0,n_samples,1),index=mbins+0.125)
 
         for i in range(0,n_iter,10):
             snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
-                                                 bins=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)))[i]
+                                                 bins=mbins))[i]
             i_f = np.random.randint(0,100)
             fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
-                                                        bins=np.linspace(mmin,mmax,((mmin-mmax)/mstep)+1)))[i_f]
+                                                        bins=mbins))[i_f]
             xs = []
             ys = []
 
