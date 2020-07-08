@@ -238,7 +238,7 @@ class Rates():
 
         #highly starforming
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
-        sn_high = self.sn_samples[self.sn_samples['logssfr']>=-9.5)]
+        sn_high = self.sn_samples[self.sn_samples['logssfr']>=-9.5]
         field_high = self.field_samples[self.field_samples['ssfr']>=-9.5]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
