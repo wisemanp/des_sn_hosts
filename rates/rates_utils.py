@@ -2,7 +2,7 @@ import pystan
 import pandas as pd
 from des_sn_hosts.utils import stan_utility
 
-def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='log_ssfr', sfr_err_col='log_ssfr_err',index_col = 'CIDint',n_iter=1E4,seed=1234,):
+def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='logssfr', sfr_err_col='logssfr_err',index_col = 'CIDint',n_iter=1E4,seed=1234,):
 
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
