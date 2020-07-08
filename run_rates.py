@@ -20,16 +20,19 @@ def parser():
 def main():
     args=parser()
     r = Rates(args.sn_fn,args.field_fn,
-              config=yaml.load(open(args.config)),fields=['C1','C2','C3'])
+              config=yaml.load(open(args.config)),fields=args.fields)
     r.field['mass'] = np.log10(r.field['mass'])
     r.field['mass_err']=0.1
     r.get_SN_bins()
 
     r.get_field_bins()
+    print('Going to generate SN resamples')
     r.generate_sn_samples(n_iter=int(1E+3))
-
+    print('Going to generate field resamples')
     r.generate_field_samples(n_iter=int(1E+2))
-
-
+    print('Going to sample the rate from the resampled data!')
+    r.SN_G_MC(n_samples=100)
+    print('Going to fit the rates')
+    fit = r.fit_SN_G(n_iter=4000)
 if __name__=="__main__":
     main()
