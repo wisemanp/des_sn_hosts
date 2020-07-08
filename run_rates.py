@@ -12,7 +12,7 @@ import yaml
 
 def parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-sn','--sn_fn',help='SN Hosts filename',default='/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701.FITRES')
+    parser.add_argument('-sn','--sn_fn',help='SN Hosts filename',default='/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701_FITRES.csv')
     parser.add_argument('-fi','--field_fn',help='Field filename',default='/media/data3/wiseman/des/coadding/results/deep/all_fields_MY2_photoz.csv')
     parser.add_argument('-c','--config',help='Config filename',default='/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')
     parser.add_argument('-f','--fields',help='DES fields to use',default=None)
@@ -33,6 +33,8 @@ def main():
     r.field['SFR_err']=0.3
     r.field['ssfr'] = r.field['SFR'] - r.field['mass']
     r.field['ssfr_err'] = 0.4
+    r.SN_Hosts['logssfr'] = r.SN_Hosts['logsfr']-r.SN_Hosts['mass']
+    r.SN_Hosts['logssfr_err'] =(r.SN_Hosts['logsfr_err']**2 + r.SN_Hosts['mass_err']**2)**0.5
     r.get_SN_bins()
 
     r.get_field_bins()

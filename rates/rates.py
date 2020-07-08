@@ -49,7 +49,7 @@ class Rates():
             zphot_res = zphot_res.to_pandas()
             return zphot_res
     def generate_sn_samples(self,mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
-                                sfr_col = 'HOST_sSFR',sfr_err_col = 'HOST_sSFR_ERR',
+                                sfr_col = 'logssfr',sfr_err_col = 'logssfr_err',
                                 index_col = 'CIDint',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
         sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
