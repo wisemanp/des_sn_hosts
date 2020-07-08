@@ -16,9 +16,12 @@ def parser():
     parser.add_argument('-fi','--field_fn',help='Field filename',default='/media/data3/wiseman/des/coadding/results/deep/all_2_photoz.csv')
     parser.add_argument('-c','--config',help='Config filename',default='/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')
     parser.add_argument('-f','--fields',help='DES fields to use',default=None)
+    args = parser.parse_args()
+    return args
 
 def main():
     args=parser()
+    print('Parsed args, going to set up Rates instance')
     r = Rates(args.sn_fn,args.field_fn,
               config=yaml.load(open(args.config)),fields=args.fields)
     r.field['mass'] = np.log10(r.field['mass'])
