@@ -48,7 +48,9 @@ class Rates():
             zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
             zphot_res = zphot_res.to_pandas()
             return zphot_res
-    def generate_sn_samples(self,mass_col='HOST_LOGMASS',err_col='HOST_LOGMASS_ERR',index_col = 'CIDint',n_iter=1E5,save_samples=True):
+    def generate_sn_samples(self,mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
+                                sfr_col = 'HOST_sSFR',sfr_err_col = 'HOST_sSFR_ERR',
+                                index_col = 'CIDint',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
         sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
                     mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
@@ -60,7 +62,7 @@ class Rates():
             sn_samples.to_hdf(savename,key='Bootstrap_samples')
         self.sn_samples = sn_samples
 
-    def generate_field_samples(self,mass_col='mass',err_col='mass_err',index_col = 'id',n_iter=1E5,save_samples=True):
+    def generate_field_samples(self,mass_col='mass',mass_err_col='mass_err',sfr_col = 'ssfr',sfr_err_col='ssfr_err',index_col = 'id',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
 
         field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
