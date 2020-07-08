@@ -66,7 +66,7 @@ class Rates():
         '''Wrapped around sample_sn_masses with option to save the output'''
 
         field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',
-                    mass_col=mass_col,mass_err_col=mass_err_col,index_col=index_col,n_iter=n_iter)
+                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col = 'ssfr',sfr_err_col='ssfr_err',index_col=index_col,n_iter=n_iter)
         print('Sampling done')
         if save_samples:
             print('Saving to file')
