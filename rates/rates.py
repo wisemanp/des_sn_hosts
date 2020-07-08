@@ -172,6 +172,101 @@ class Rates():
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
         self.sampled_rates = iter_df
 
+    def SN_G_MC_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5,savename=None):
+        mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
+        # passive
+        sn_passive = self.sn_samples[self.sn_samples['logssfr']<-11]
+        field_passive = self.field_samples[self.field_samples['ssfr']<-11]
+        with progressbar.ProgressBar(max_value = n_samples) as bar:
+            for i in range(0,n_samples):
+                snmassgroups =sn_passive.groupby(pd.cut(sn_passive[i],
+                                                     bins=mbins))[i]
+                i_f = np.random.randint(0,100)
+                fieldmassgroups = field_passive.groupby( pd.cut(field_passive[i_f],
+                                                            bins=mbins))[i_f]
+                xs = []
+                ys = []
+
+                for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+
+                    if g.size >0 and g2.size>0:
+                        xs.append(n.mid)
+
+                        ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+
+                xs = np.array(xs)
+                ys = np.array(ys)
+                entry = pd.Series(ys,index=xs)
+                iter_df.loc[entry.index,i] = entry
+                bar.update(i)
+        if not savename:
+            savename=self.config['rates_root']+'data/mcd_rates_passive.h5'
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+        self.sampled_passive_rates = iter_df
+
+        #moderately starforming
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
+        sn_moderate = self.sn_samples[(self.sn_samples['logssfr']>=-11)&(self.sn_samples['logssfr']<-9.5)]
+        field_moderate = self.field_samples[(self.field_samples['ssfr']>=-11)&(self.field_samples['ssfr']<-9.5)]
+        with progressbar.ProgressBar(max_value = n_samples) as bar:
+            for i in range(0,n_samples):
+                snmassgroups =sn_moderate.groupby(pd.cut(sn_moderate[i],
+                                                     bins=mbins))[i]
+                i_f = np.random.randint(0,100)
+                fieldmassgroups = field_moderate.groupby( pd.cut(field_moderate[i_f],
+                                                            bins=mbins))[i_f]
+                xs = []
+                ys = []
+
+                for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+
+                    if g.size >0 and g2.size>0:
+                        xs.append(n.mid)
+
+                        ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+
+                xs = np.array(xs)
+                ys = np.array(ys)
+                entry = pd.Series(ys,index=xs)
+                iter_df.loc[entry.index,i] = entry
+                bar.update(i)
+        if not savename:
+            savename=self.config['rates_root']+'data/mcd_rates_moderate.h5'
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+        self.sampled_moderate_rates = iter_df
+
+        #highly starforming
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
+        sn_high = self.sn_samples[self.sn_samples['logssfr']>=-9.5)]
+        field_high = self.field_samples[self.field_samples['ssfr']>=-9.5]
+        with progressbar.ProgressBar(max_value = n_samples) as bar:
+            for i in range(0,n_samples):
+                snmassgroups =sn_high.groupby(pd.cut(sn_high[i],
+                                                     bins=mbins))[i]
+                i_f = np.random.randint(0,100)
+                fieldmassgroups = field_high.groupby( pd.cut(field_high[i_f],
+                                                            bins=mbins))[i_f]
+                xs = []
+                ys = []
+
+                for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+
+                    if g.size >0 and g2.size>0:
+                        xs.append(n.mid)
+
+                        ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+
+                xs = np.array(xs)
+                ys = np.array(ys)
+                entry = pd.Series(ys,index=xs)
+                iter_df.loc[entry.index,i] = entry
+                bar.update(i)
+        if not savename:
+            savename=self.config['rates_root']+'data/mcd_rates_high.h5'
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+        self.sampled_high_rates = iter_df
+
     def load_sampled_rates(self,fn):
         self.sampled_rates = pd.read_hdf(fn,key='bootstrap_samples')
 
