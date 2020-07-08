@@ -53,7 +53,7 @@ class Rates():
                                 index_col = 'CIDint',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
         sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
-                    mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
+                    mass_col=mass_col,mass_err_col=mass_err_col,index_col=index_col,n_iter=n_iter)
         print('Sampling done')
         if save_samples:
             print('Saving to file')
@@ -65,7 +65,8 @@ class Rates():
     def generate_field_samples(self,mass_col='mass',mass_err_col='mass_err',sfr_col = 'ssfr',sfr_err_col='ssfr_err',index_col = 'id',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
 
-        field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',mass_col=mass_col,err_col=err_col,index_col=index_col,n_iter=n_iter)
+        field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',
+                    mass_col=mass_col,mass_err_col=mass_err_col,index_col=index_col,n_iter=n_iter)
         print('Sampling done')
         if save_samples:
             print('Saving to file')
