@@ -22,7 +22,7 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_c
     #df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
     return df_bootstrapped
 
-def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',mass_col='log_ssfr',mass_err_col='logssfr_err',
+def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='log_ssfr',sfr_err_col='logssfr_err',
                     index_col = 'CIDint',n_iter=1E4,seed=1234):
 
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
