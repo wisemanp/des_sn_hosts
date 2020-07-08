@@ -16,6 +16,7 @@ def parser():
     parser.add_argument('-fi','--field_fn',help='Field filename',default='/media/data3/wiseman/des/coadding/results/deep/all_fields_MY2_photoz.csv')
     parser.add_argument('-c','--config',help='Config filename',default='/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')
     parser.add_argument('-f','--fields',help='DES fields to use',default=None)
+    parser.add_argument('-zc','--zmax',help='Maximum redshift',default=None)
     args = parser.parse_args()
     return args
 

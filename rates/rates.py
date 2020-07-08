@@ -85,6 +85,10 @@ class Rates():
         savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_mass_resampled.h5')
         self.field_samples = pd.read_hdf(savename,key='Bootstrap_samples')
 
+    def cut_z(self,z_min=0,z_max=1):
+        self.sn_samples = self.sn_samples[(self.sn_samples['zHD']<z_max)&(self.sn_samples['zHD']>z_min)]
+        self.field_samples = self.field_samples[(self.field_samples['z_phot']<z_max)&(self.field_samples['z_phot']>z_min)]
+
     def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
                                                 bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zHD']
