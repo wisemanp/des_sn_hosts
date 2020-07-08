@@ -13,6 +13,7 @@ import sys
 from shutil import copyfile
 from scipy import stats
 from scipy.optimize import curve_fit
+import progressbar
 import pystan
 from des_sn_hosts.utils import stan_utility
 import corner
@@ -139,26 +140,28 @@ class Rates():
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
-        for i in range(0,n_samples):
-            snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
-                                                 bins=mbins))[i]
-            i_f = np.random.randint(0,100)
-            fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
-                                                        bins=mbins))[i_f]
-            xs = []
-            ys = []
+        with progressbar.ProgressBar(max_value = n_samples) as bar:
+            for i in range(0,n_samples):
+                snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
+                                                     bins=mbins))[i]
+                i_f = np.random.randint(0,100)
+                fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
+                                                            bins=mbins))[i_f]
+                xs = []
+                ys = []
 
-            for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+                for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
 
-                if g.size >0 and g2.size>0:
-                    xs.append(n.mid)
+                    if g.size >0 and g2.size>0:
+                        xs.append(n.mid)
 
-                    ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+                        ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
 
-            xs = np.array(xs)
-            ys = np.array(ys)
-            entry = pd.Series(ys,index=xs)
-            iter_df.loc[entry.index,i] = entry
+                xs = np.array(xs)
+                ys = np.array(ys)
+                entry = pd.Series(ys,index=xs)
+                iter_df.loc[entry.index,i] = entry
+                bar.update(i)
         if not savename:
             savename=self.config['rates_root']+'data/mcd_rates.h5'
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
