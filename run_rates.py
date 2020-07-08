@@ -13,7 +13,7 @@ import yaml
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-sn','--sn_fn',help='SN Hosts filename',default='/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701.FITRES')
-    parser.add_argument('-fi','--field_fn',help='Field filename',default='/media/data3/wiseman/des/coadding/results/deep/all_2_photoz.csv')
+    parser.add_argument('-fi','--field_fn',help='Field filename',default='/media/data3/wiseman/des/coadding/results/deep/all_fields_MY2_photoz.csv')
     parser.add_argument('-c','--config',help='Config filename',default='/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')
     parser.add_argument('-f','--fields',help='DES fields to use',default=None)
     args = parser.parse_args()
