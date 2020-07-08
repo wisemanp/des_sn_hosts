@@ -29,9 +29,9 @@ def main():
                 fields=args.fields)
     r.field['mass'] = np.log10(r.field['mass'])
     r.field['mass_err']=0.3
-    r.field['sfr'] = np.log10(r.field['sfr'])
-    r.field['sfr_err']=0.3
-    r.field['ssfr'] = r.field['sfr'] - r.field['mass']
+    r.field['SFR'] = np.log10(r.field['SFR'])
+    r.field['SFR_err']=0.3
+    r.field['ssfr'] = r.field['SFR'] - r.field['mass']
     r.field['ssfr'] = 0.4
     r.get_SN_bins()
 
