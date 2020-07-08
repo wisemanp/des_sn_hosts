@@ -69,6 +69,20 @@ class Rates():
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples = field_samples
 
+    def load_sn_samples(self):
+
+
+        ext = '.'+self.SN_fn.split('.')[-1]
+        savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_mass_resampled.h5')
+
+        self.sn_samples = sn_samples = pd.read_hdf(savename,key='Bootstrap_samples')
+
+    def load_field_samples(self,mass_col='mass',err_col='mass_err',index_col = 'id',n_iter=1E5,save_samples=True):
+
+        ext = '.'+self.field_fn.split('.')[-1]
+        savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_mass_resampled.h5')
+        self.field_samples = pd.read_hdf(savename,key='Bootstrap_samples')
+
     def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
                                                 bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zHD']
@@ -147,7 +161,7 @@ class Rates():
     def load_sampled_rates(self,fn):
         self.sampled_rates = pd.read_hdf(fn,key='bootstrap_samples')
 
-    def fit_SN_G(self,fn,seed=123456,n_iter=4E3):
+    def fit_SN_G(self,seed=123456,n_iter=4E3):
 
         model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
         x_model = np.linspace(6.5,11,100)
