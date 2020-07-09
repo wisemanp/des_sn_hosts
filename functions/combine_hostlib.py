@@ -52,6 +52,9 @@ def main(args):
                         zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
                         zphot_res = zphot_res.to_pandas()
                         print ('Adding cat: %s.eazypy.zout.fits'%fn, ' of length ',len(zphot_res))
+                        in_fn = fn+'.cat'
+                        zphot_in = Table.read(in_fn,format='ascii').to_pandas()
+                        zphot_res = zphot_res.merge(zphot_in,on='id',how='inner')
                         main_df = main_df.append(zphot_res)
                     else:
                         print('Missing %s'%fn)
