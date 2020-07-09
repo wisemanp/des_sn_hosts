@@ -33,9 +33,11 @@ class Sim():
         self.pop_obj = pop_obj
         if pz_code =='eazy':
             self.small_hostlib = self._get_zphot_res_easy(cat_fn)
-        self.cat_deep = self._load_deep_cat(f_deep,ccd,y)
-        self.gal_pool = self.cat_deep.dropna(subset=['A_IMAGE'])
-        self.cat_shallow = self._load_shallow_cat(f_shallow,ccd,y)
+        if f_deep:
+            self.cat_deep = self._load_deep_cat(f_deep,ccd,y)
+            self.gal_pool = self.cat_deep.dropna(subset=['A_IMAGE'])
+        if f_shallow:
+            self.cat_shallow = self._load_shallow_cat(f_shallow,ccd,y)
         self.root_dir = '/media/data3/wiseman/des/mismatch/'
         self.pop_params = self._get_pop_params()
         self._set_filenames()
@@ -45,14 +47,17 @@ class Sim():
         self.pop_fn = self.root_dir+'populations/%s.h5'%self.pop_name
         self.fakes_fn = self.root_dir +'fakes/%s_fakes.h5'%self.pop_name
     def _get_zphot_res_easy(self,cat_fn):
-        zphot_res = Table.read(cat_fn)
-        zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
-        small_hostlib = zphot_res.to_pandas()
-        small_hostlib =small_hostlib[(small_hostlib['mass']>0)&(small_hostlib['SFR']>0)&(small_hostlib['mass']<1E16)]
-        in_fn = cat_fn.replace('outputs','inputs')
-        in_fn = in_fn.replace('eazypy.zout.fits','cat')
-        zphot_in = Table.read(in_fn,format='ascii').to_pandas()
-        small_hostlib = small_hostlib.merge(zphot_in,on='id',how='inner')
+        if cat_fn.split('.')[-1]=='fits':
+            zphot_res = Table.read(cat_fn)
+            zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
+            small_hostlib = zphot_res.to_pandas()
+            small_hostlib =small_hostlib[(small_hostlib['mass']>0)&(small_hostlib['SFR']>0)&(small_hostlib['mass']<1E16)]
+            in_fn = cat_fn.replace('outputs','inputs')
+            in_fn = in_fn.replace('eazypy.zout.fits','cat')
+            zphot_in = Table.read(in_fn,format='ascii').to_pandas()
+            small_hostlib = small_hostlib.merge(zphot_in,on='id',how='inner')
+        elif cat_fn.split('.')[-1]=='csv':
+            small_hostlib= pd.read_csv(fn)
         return small_hostlib
     def _get_zphot_res_zpeg(self,cat_fn):
         pass
