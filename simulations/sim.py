@@ -183,6 +183,7 @@ class Sim():
             os.mkdir(self.root_dir+'populations')
         self.pop_df.to_hdf(self.pop_fn,key='default_pop')
         print('Saved population DataFrame to %s'%self.pop_fn)
+        return pop
     def load_pop(self,fn=None,key='default_pop'):
         if fn==None:
             fn =self.root_dir+'populations/%s.h5'%self.pop_name
