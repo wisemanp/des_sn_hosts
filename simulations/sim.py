@@ -152,8 +152,8 @@ class Sim():
 
 
         cat_deep.drop([
-                'FLUX_RADIUS_G','FLUX_RADIUS_R','FLUX_RADIUS_I','FLUX_RADIUS_Z',
-               'FWHM_WORLD_G','FWHM_WORLD_R','FWHM_WORLD_I','FWHM_WORLD_Z'],axis=1,inplace=True)
+                'FLUX_RADIUS_g','FLUX_RADIUS_r','FLUX_RADIUS_i','FLUX_RADIUS_z',
+               'FWHM_WORLD_g','FWHM_WORLD_r','FWHM_WORLD_i','FWHM_WORLD_z'],axis=1,inplace=True)
         return cat_deep
 
     def _load_shallow_cat(self,f,ccd,y):
