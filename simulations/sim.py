@@ -66,7 +66,7 @@ class Sim():
         cat_deep = pd.read_csv(os.path.join('/media/data3/wiseman/des/coadding/5yr_stacks/MY%s'%y,f,'CAP',str(ccd),
             '%s_%s_%s_obj_deep_v7.cat'%(y,f,ccd)))
         cat_deep.rename(index=str,columns={
-                                    'Unnamed: 0':'ID',
+                                    'Unnamed: 0':'id',
                                     'X_WORLD':'RA','Y_WORLD':'DEC',
                                    'z':'SPECZ',
                                    'ez':'SPECZ_ERR',
