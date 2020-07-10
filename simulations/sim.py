@@ -154,6 +154,8 @@ class Sim():
         cat_deep.drop([
                 'FLUX_RADIUS_g','FLUX_RADIUS_r','FLUX_RADIUS_i','FLUX_RADIUS_z',
                'FWHM_WORLD_g','FWHM_WORLD_r','FWHM_WORLD_i','FWHM_WORLD_z'],axis=1,inplace=True)
+        cat_deep.index = cat_deep.index.astype(int)
+        cat_deep['ID'] = cat_deep.index.values
         return cat_deep
 
     def _load_shallow_cat(self,f,ccd,y):
