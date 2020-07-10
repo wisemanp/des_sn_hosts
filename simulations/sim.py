@@ -66,7 +66,7 @@ class Sim():
         cat_deep = pd.read_csv(os.path.join('/media/data3/wiseman/des/coadding/5yr_stacks/MY%s'%y,f,'CAP',str(ccd),
             '%s_%s_%s_obj_deep_v7.cat'%(y,f,ccd)))
         cat_deep.rename(index=str,columns={
-                                    'Unnamed: 0':'id',
+
                                     'X_WORLD':'RA','Y_WORLD':'DEC',
                                    'z':'SPECZ',
                                    'ez':'SPECZ_ERR',
@@ -145,7 +145,8 @@ class Sim():
         },inplace=True)
         cat_deep.replace(-9999.000000,np.NaN,inplace=True)
         cat_deep.dropna(subset=['MAGERR_AUTO_R'],inplace=True)
-
+        cat_deep.index = cat_deep.index.astype(int)
+        cat_deep['id'] = cat_deep.index.values
         cat_deep = cat_deep[(cat_deep['X_IMAGE']>200)&(cat_deep['X_IMAGE']<4200)&(cat_deep['Y_IMAGE']>80)&(cat_deep['Y_IMAGE']<2080)]
 
         cat_deep = cat_deep.merge(self.small_hostlib,on='id',how='outer')
@@ -154,8 +155,7 @@ class Sim():
         cat_deep.drop([
                 'FLUX_RADIUS_g','FLUX_RADIUS_r','FLUX_RADIUS_i','FLUX_RADIUS_z',
                'FWHM_WORLD_g','FWHM_WORLD_r','FWHM_WORLD_i','FWHM_WORLD_z'],axis=1,inplace=True)
-        cat_deep.index = cat_deep.index.astype(int)
-        cat_deep['ID'] = cat_deep.index.values
+
         return cat_deep
 
     def _load_shallow_cat(self,f,ccd,y):
