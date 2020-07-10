@@ -144,7 +144,7 @@ class Sim():
                                    'MAG_ZEROPOINT_ERR_z':'MAG_ZEROPOINT_ERR_Z'
         },inplace=True)
         cat_deep.replace(-9999.000000,np.NaN,inplace=True)
-        cat_deep.dropna(subset=['MAGERR_AUTO_r'],inplace=True)
+        cat_deep.dropna(subset=['MAGERR_AUTO_R'],inplace=True)
 
         cat_deep = cat_deep[(cat_deep['X_IMAGE']>200)&(cat_deep['X_IMAGE']<4200)&(cat_deep['Y_IMAGE']>80)&(cat_deep['Y_IMAGE']<2080)]
 
@@ -152,8 +152,8 @@ class Sim():
 
 
         cat_deep.drop([
-                'FLUX_RADIUS_g','FLUX_RADIUS_r','FLUX_RADIUS_i','FLUX_RADIUS_z',
-               'FWHM_WORLD_g','FWHM_WORLD_r','FWHM_WORLD_i','FWHM_WORLD_z'],axis=1,inplace=True)
+                'FLUX_RADIUS_G','FLUX_RADIUS_R','FLUX_RADIUS_I','FLUX_RADIUS_Z',
+               'FWHM_WORLD_G','FWHM_WORLD_R','FWHM_WORLD_I','FWHM_WORLD_Z'],axis=1,inplace=True)
         return cat_deep
 
     def _load_shallow_cat(self,f,ccd,y):
