@@ -64,14 +64,9 @@ class Sim():
 
     def _load_deep_cat(self,f,ccd,y):
         cat_deep = pd.read_csv(os.path.join('/media/data3/wiseman/des/coadding/5yr_stacks/MY%s'%y,f,'CAP',str(ccd),
-            '%s_%s_%s_obj_deep_v7.cat'%(y,f,ccd)),index_col=0)
-        cat_deep.replace(-9999.000000,np.NaN,inplace=True)
-        cat_deep.dropna(subset=['MAGERR_AUTO_r'],inplace=True)
-        cat_deep.reset_index(drop=False,inplace=True)
-        cat_deep = cat_deep[(cat_deep['X_IMAGE']>200)&(cat_deep['X_IMAGE']<4200)&(cat_deep['Y_IMAGE']>80)&(cat_deep['Y_IMAGE']<2080)]
-        cat_deep.rename(columns={'index':'id'},inplace=True)
-        cat_deep = cat_deep.merge(self.small_hostlib,on='id',how='outer')
+            '%s_%s_%s_obj_deep_v7.cat'%(y,f,ccd)))
         cat_deep.rename(index=str,columns={
+                                    'Unnamed: 0':'ID',
                                     'X_WORLD':'RA','Y_WORLD':'DEC',
                                    'z':'SPECZ',
                                    'ez':'SPECZ_ERR',
@@ -148,6 +143,13 @@ class Sim():
                                    'MAG_ZEROPOINT_ERR_i':'MAG_ZEROPOINT_ERR_I',
                                    'MAG_ZEROPOINT_ERR_z':'MAG_ZEROPOINT_ERR_Z'
         },inplace=True)
+        cat_deep.replace(-9999.000000,np.NaN,inplace=True)
+        cat_deep.dropna(subset=['MAGERR_AUTO_r'],inplace=True)
+
+        cat_deep = cat_deep[(cat_deep['X_IMAGE']>200)&(cat_deep['X_IMAGE']<4200)&(cat_deep['Y_IMAGE']>80)&(cat_deep['Y_IMAGE']<2080)]
+
+        cat_deep = cat_deep.merge(self.small_hostlib,on='id',how='outer')
+
 
         cat_deep.drop([
                 'FLUX_RADIUS_g','FLUX_RADIUS_r','FLUX_RADIUS_i','FLUX_RADIUS_z',
