@@ -26,7 +26,7 @@ def parser():
     parser.add_argument('-c','--config',help='Config file path',required=False,default='config/config_photoz.yaml')
     return parser.parse_args()
 
-def prep_eazy_data(allgals,args,out_fn):
+def prep_eazy_data(allgals,out_fn):
     print('Working path: %s'%out_fn)
     allgals = allgals[['ID','SPECZ','Y_IMAGE',
                        'RA','DEC',
@@ -46,10 +46,10 @@ def prep_eazy_data(allgals,args,out_fn):
 
     for b in bands:
         allgals['FLUX_AUTO_uJy_%s'%b] = ''
-        allgals['FLUX_AUTO_uJy_%s'%b] = ''
-        allgals['FLUX_AUTO_uJy_%s'%b] =(10**6)*10**(3.56-(allgals['MAG_ZEROPOINT_%s'%b.capitalize()]/2.5))*allgals['FLUX_AUTO_%s'%b.capitalize()]
-        allgals['FLUXERR_AUTO_uJy_%s'%b] = allgals['FLUX_AUTO_uJy_%s'%b].values*((2.303*allgals['MAG_ZEROPOINT_ERR_%s'%b.capitalize()]/2.5)**2 +\
-    (allgals['FLUXERR_AUTO_%s'%b.capitalize()]/allgals['FLUX_AUTO_%s'%b.capitalize()])**2)**0.5
+        allgals['FLUXERR_AUTO_uJy_%s'%b] = ''
+
+        allgals['FLUX_AUTO_uJy_%s'%b] =10**(0.4*(23.9 - allgals['MAG_AUTO_%s'%b.capitalize()]))
+        allgals['FLUXERR_AUTO_uJy_%s'%b] = 0.434 * allgals['MAGERR_STATSYST_AUTO_%s'%b.capitalize()]/allgals['FLUX_AUTO_uJy_%s'%b]
     for b in ['g','r','i','z']:
         allgals.loc[allgals[allgals['MAGERR_STATSYST_AUTO_%s'%b.capitalize()]<0].index,'FLUX_AUTO_uJy_%s'%b] =-1
     for_eazy = allgals.rename(columns={'ID':'id',
@@ -77,7 +77,7 @@ def prep_eazy_data(allgals,args,out_fn):
            'E296', 'E297']
     for_eazy.sort_index(inplace=True)
 
-    if os.path.isdir(os.path.split(args.output)[0]):
+    if os.path.isdir(os.path.split(out_fn)[0]):
         input_fn = '%s.cat'%out_fn
     else:
         input_fn = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.cat'%out_fn)
