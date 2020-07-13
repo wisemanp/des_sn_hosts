@@ -55,9 +55,10 @@ def main(args):
                         in_fn = fn+'.cat'
                         zphot_in = Table.read(in_fn,format='ascii').to_pandas()
                         zphot_res = zphot_res.merge(zphot_in,on='id',how='outer')
+                        snf = 'SN-'+f
 
-                        cat_deep = pd.read_csv(os.path.join('/media/data3/wiseman/des/coadding/5yr_stacks/MY%s'%args.my,f,'CAP',str(ch),
-                            '%s_%s_%s_obj_deep_v7.cat'%(args.my,f,ch)))
+                        cat_deep = pd.read_csv(os.path.join('/media/data3/wiseman/des/coadding/5yr_stacks/MY%s'%args.my,snf,'CAP',str(ch),
+                            '%s_%s_%s_obj_deep_v7.cat'%(args.my,snf,ch)))
                         cat_deep.rename(index=str,columns={
 
                                                     'X_WORLD':'RA','Y_WORLD':'DEC',
