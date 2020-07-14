@@ -117,7 +117,7 @@ def run_eazy(args,out_fn):
     else:
         params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%out_fn)
         params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%out_fn)
-    params['TEMPLATES_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'templates/pegase13.spectra.param')
+    #params['TEMPLATES_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'templates/pegase13.spectra.param')
     translate_file = os.path.join(os.getenv('EAZYCODE'), 'inputs/zphot.translate')
     ez = eazy.photoz.PhotoZ(param_file=None, translate_file=translate_file, zeropoint_file=None,
                           params=params, load_prior=True, load_products=False)
