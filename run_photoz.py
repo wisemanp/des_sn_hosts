@@ -29,6 +29,7 @@ def parser():
 
 
 def pz_worker(worker_args):
+    print('Made it to the pz worker ')
     args = worker_args[0]
     f = worker_args[1]
     ch = worker_args[2]
@@ -56,7 +57,7 @@ def multi_pz(args,f):
     for job in tqdm.tqdm(as_completed(jobs),total=len(args.chips)):
         pass'''
     print('Sending jobs to worker')
-    print(worker_args)
+    
     results = pool.imap_unordered(pz_worker,worker_args)
     pool.close()
     pool.join()
