@@ -55,6 +55,8 @@ def multi_pz(args,f):
     '''jobs = [executor.submit(pz_worker,[args,f,ch]) for ch in args.chips]
     for job in tqdm.tqdm(as_completed(jobs),total=len(args.chips)):
         pass'''
+    print('Sending jobs to worker')
+    print(worker_args)
     results = pool.imap_unordered(pz_worker,worker_args)
     pool.close()
     pool.join()
