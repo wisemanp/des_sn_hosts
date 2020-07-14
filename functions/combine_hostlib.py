@@ -161,8 +161,8 @@ def main(args):
                         print('Missing %s'%fn)
     if not args.savename:
         args.savename = '%s_%s_photoz.h5'%(fields,args.my)
-    main_df.to_hdf(os.path.join(config['des_root'],'results','deep',args.savename),index=True)
-    print ('Saved new file to ',os.path.join(config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my)))
+    main_df.to_hdf(os.path.join(config['des_root'],'results','deep',args.savename),key='photoz')
+    print ('Saved new file to ',os.path.join(config['des_root'],'results','deep',args.savename))
 if __name__=="__main__":
     args=parser()
     main(args)
