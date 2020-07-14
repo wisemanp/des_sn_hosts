@@ -46,7 +46,7 @@ def main(args):
                 ch = int(ch)
                 fn = os.path.join(config['des_root'],
                     '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
-                    '%s_SN-%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP']))
+                    '%s_SN-%s_%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP'],os.path.split(config['params']['TEMPLATES_FILE'])[-2]))
                 if 1==1:
                     if os.path.isfile(fn+'.eazypy.zout.fits'):
                         zphot_res = Table.read(fn+'.eazypy.zout.fits')
