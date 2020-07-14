@@ -14,6 +14,7 @@ def parser():
     parser.add_argument('-my','--my',help='Which minusyear to use [2]',default='2',required=False)
     parser.add_argument('-c','--config',help='Path to config file [des_sn_hosts/config/config_photoz.yaml]',
                                                                     default='config/config_photoz.yaml')
+    parser.add_argument('-sf','--savename',help='Name of saved file',default=None)
     parser.add_argument('-df','--df',default='none')
 
     return parser.parse_args()
@@ -158,7 +159,9 @@ def main(args):
 
                     else:
                         print('Missing %s'%fn)
-    main_df.to_csv(os.path.join(config['des_root'],'results','deep','%s_%s_photoz.csv'%(fields,args.my)),index=True)
+    if not args.savename:
+        args.savename = '%s_%s_photoz.csv'%(fields,args.my)
+    main_df.to_csv(os.path.join(config['des_root'],'results','deep',args.savename),index=True)
     print ('Saved new file to ',os.path.join(config['des_root'],'results','deep','%s_%s_photoz.csv'%(args.fields,args.my)))
 if __name__=="__main__":
     args=parser()
