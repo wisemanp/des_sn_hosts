@@ -2,12 +2,15 @@ des_root: /media/data3/wiseman/des/coadding/
 
 cat_version: 7
 params:
-  MW_EBV : 0.0192 # X fields
-  Z_STEP : 0.01
-  Z_MIN : 0.01
+  MW_EBV : 0.0198 # X fields
+  Z_STEP : 0.005
+  Z_MIN : 0.005
   Z_MAX : 8.
   PRIOR_ABZP : 23.9
   PRIOR_FILTER : 295 # r
   PRIOR_FILE : templates/prior_R_extend.dat
   TEMPLATES_FILE : templates/fsps_full/tweak_fsps_QSF_12_v3.param
   FIX_ZSPEC : False
+  DUMP_TEMPLATE_CACHE : y
+  USE_TEMPLATE_CACHE : y
+  POFZ_FILE : y
