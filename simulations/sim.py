@@ -58,6 +58,8 @@ class Sim():
             small_hostlib = small_hostlib.merge(zphot_in,on='id',how='inner')
         elif cat_fn.split('.')[-1]=='csv':
             small_hostlib= pd.read_csv(cat_fn)
+        elif cat_fn.split('.')[-1]=='h5':
+            small_hostlib = pd.read_csv(cat_fn)
         return small_hostlib
     def _get_zphot_res_zpeg(self,cat_fn):
         pass
