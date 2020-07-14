@@ -9,5 +9,5 @@ params:
   PRIOR_ABZP : 23.9
   PRIOR_FILTER : 295 # r
   PRIOR_FILE : templates/prior_R_extend.dat
-  TEMPLATES_FILE : templates/fsps_full/tweak_fsps_QSF_12_v3.param
   FIX_ZSPEC : False
+  FILTER_FORMAT: 0
