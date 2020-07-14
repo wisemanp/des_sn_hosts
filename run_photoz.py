@@ -38,7 +38,8 @@ def pz_worker(worker_args):
     args.input = cat_fn
     args.output = os.path.join(args.config['des_root'],
         '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
-        '%s_SN-%s_%s_%s_%s_%s_%s'%(args.my,f,ch,args.config['cat_version'],args.config['params']['Z_MAX'],args.config['params']['Z_STEP'],config['params']['TEMPLATES_FILE'].split('/')[-2]))
+        '%s_SN-%s_%s_%s_%s_%s_%s'%(args.my,f,ch,args.config['cat_version'],args.config['params']['Z_MAX'],
+        args.config['params']['Z_STEP'],config['params']['TEMPLATES_FILE'][-2]))
     print('Initializing EAZY on CCD %s'%ch)
     print('Output name root: %s'%args.output)
     photoz.main(args)
@@ -57,7 +58,7 @@ def multi_pz(args,f):
     for job in tqdm.tqdm(as_completed(jobs),total=len(args.chips)):
         pass'''
     print('Sending jobs to worker')
-    
+
     results = pool.imap_unordered(pz_worker,worker_args)
     pool.close()
     pool.join()
