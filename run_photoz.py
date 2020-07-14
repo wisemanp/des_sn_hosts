@@ -64,6 +64,8 @@ def main():
     args.config = config
     for f in args.fields:
         print('Initializing EAZY in the SN-%s field'%f)
+        print('With this config:')
+        print(args.config)
         multi_pz(args,f)
 
 if __name__=="__main__":
