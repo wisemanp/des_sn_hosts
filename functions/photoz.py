@@ -112,27 +112,14 @@ def prep_eazy_data_fixed_z(allgals,out_fn):
     print('Working path: %s'%out_fn)
     print(allgals.columns)
     allgals = allgals[['ID','z_phot',
-                       'FLUX_AUTO_uJy_G','FLUXERR_AUTO_uJy_G',
-                       'FLUX_AUTO_uJy_R','FLUXERR_AUTO_uJy_R',
-                       'FLUX_AUTO_uJy_I','FLUXERR_AUTO_uJy_I',
-                       'FLUX_AUTO_uJy_Z','FLUXERR_AUTO_uJy_Z']]
+                        'F294', 'F295', 'F296', 'F297', 'E294', 'E295',
+                              'E296', 'E297']]
 
     print ('Going to work on %s galaxies!'%len(allgals))
 
     for_eazy = allgals.rename(columns={'ID':'id',
-                                         'z_phot':'redshift',
-                                         'FLUX_AUTO_uJy_g':'decam_g',
-                                         'FLUX_AUTO_uJy_r':'decam_r',
-                                         'FLUX_AUTO_uJy_i':'decam_i',
-                                         'FLUX_AUTO_uJy_z':'decam_z',
-                                         'FLUXERR_AUTO_uJy_g':'decam_g_err',
-                                         'FLUXERR_AUTO_uJy_r':'decam_r_err',
-                                         'FLUXERR_AUTO_uJy_i':'decam_i_err',
-                                         'FLUXERR_AUTO_uJy_z':'decam_z_err'
-                                       })
+                                         'z_phot':'z_spec'})
 
-    for_eazy = for_eazy[['id','redshift','decam_g','decam_r','decam_i','decam_z',
-                             'decam_g_err','decam_r_err','decam_i_err','decam_z_err']]
 
     for_eazy.drop_duplicates('id',inplace=True)
     for_eazy.replace(-9.998,-1,inplace=True)
