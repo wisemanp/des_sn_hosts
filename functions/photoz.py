@@ -207,7 +207,7 @@ def main(args):
     elif args.input.split('.')[-1]=='h5':
         df = pd.read_hdf(args.input,key='photozs')
     print('Successfully read %s'%args.input)
-
+    print(df)
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
                                       'X_WORLD':'RA','Y_WORLD':'DEC',
                                         'MY':'SEASON',
@@ -286,7 +286,7 @@ def main(args):
                                        'MAG_ZEROPOINT_ERR_r':'MAG_ZEROPOINT_ERR_R',
                                        'MAG_ZEROPOINT_ERR_i':'MAG_ZEROPOINT_ERR_I',
                                        'MAG_ZEROPOINT_ERR_z':'MAG_ZEROPOINT_ERR_Z'})
-    print('Did renaming')                                   
+    print('Did renaming')
     df[pd.isna(df['MAGERR_STATSYST_AUTO_G'])]['MAGERR_AUTO_G'].unique()
 
     df['Z_RANK'] = df['Z_RANK'].fillna(-9.999)
