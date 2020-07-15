@@ -45,6 +45,9 @@ def pz_worker(worker_args):
             '5yr_stacks/MY%s/SN-%s/CAP/%s/%s_SN-%s_%s_obj_deep_v%s.cat'%(args.my,f,ch,args.my,f,ch,args.config['cat_version']))
     else:
         cat_fn = args.output+'.eazypy.zout.h5'
+        if not os.path.isfile(cat_fn):
+            print('Cant find photoz file for CCD%s'%ch)
+            return
         args.config['params']['TEMPLATES_FILE']='templates/fsps_full/tweak_fsps_QSF_12_v3.param'
         args.config['params']['FIX_ZSPEC'] = 'y'
         args.output = os.path.join(args.config['des_root'],
