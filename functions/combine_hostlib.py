@@ -16,6 +16,7 @@ def parser():
                                                                     default='config/config_photoz.yaml')
     parser.add_argument('-sf','--savename',help='Name of saved file',default=None)
     parser.add_argument('-df','--df',default='none')
+    parser.add_argument('-fz','--fixz',help='Were these run with fixed z?',action='store_true')
 
     return parser.parse_args()
 
@@ -47,6 +48,10 @@ def main(args):
                 fn = os.path.join(config['des_root'],
                     '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
                     '%s_SN-%s_%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP'],config['params']['TEMPLATES_FILE'].split('/')[-2]))
+                if args.fixz:
+                    n = os.path.join(config['des_root'],
+                        '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
+                        '%s_SN-%s_%s_%s_%s_%s_fsps_full_fixedz'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP']))
                 if 1==1:
                     if os.path.isfile(fn+'.eazypy.zout.fits'):
                         zphot_res = Table.read(fn+'.eazypy.zout.fits')
@@ -153,7 +158,7 @@ def main(args):
 
 
 
-                        cat_deep.to_hdf(fn+'.eazypy.zout.h5',key='photozs')     
+                        cat_deep.to_hdf(fn+'.eazypy.zout.h5',key='photozs')
                         main_df = main_df.append(cat_deep)
 
 
