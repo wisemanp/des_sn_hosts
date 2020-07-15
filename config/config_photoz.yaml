@@ -9,7 +9,7 @@ params:
   PRIOR_ABZP : 23.9
   PRIOR_FILTER : 295 # r
   PRIOR_FILE : templates/prior_R_extend.dat
-  TEMPLATES_FILE : templates/PEGASE2.0/pegase13.spectra.param
+  TEMPLATES_FILE : templates/fsps_full/tweak_fsps_QSF_12_v3.param #templates/PEGASE2.0/pegase13.spectra.param
   FIX_ZSPEC : False
   DUMP_TEMPLATE_CACHE : y
   USE_TEMPLATE_CACHE : y
