@@ -110,6 +110,7 @@ def prep_eazy_data(allgals,out_fn):
 
 def prep_eazy_data_fixed_z(allgals,out_fn):
     print('Working path: %s'%out_fn)
+    print(allgals.columns)
     allgals = allgals[['ID','z_phot',
                        'FLUX_AUTO_uJy_G','FLUXERR_AUTO_uJy_G',
                        'FLUX_AUTO_uJy_R','FLUXERR_AUTO_uJy_R',
@@ -218,7 +219,7 @@ def main(args):
         df = pd.read_csv(args.input)
     elif args.input.split('.')[-1]=='h5':
         df = pd.read_hdf(args.input,key='photozs')
-
+        print('Successfully read %s'%args.input)
 
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
                                       'X_WORLD':'RA','Y_WORLD':'DEC',
@@ -319,7 +320,9 @@ def main(args):
     if not args.fixz:
         prep_eazy_data(df,out_fn)
     else:
+        print('Sending to prep!')
         prep_eazy_data_fixed_z(df,out_fn)
+    print('Prepped; Sending to run_eazy()')
     run_eazy(args,out_fn)
 
     t = float(time.time()) - start_time
