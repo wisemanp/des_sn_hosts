@@ -214,7 +214,11 @@ def main(args):
 
     in_fn,out_fn = args.input,args.output
     print('Attempting to read %s'%args.input)
-    df = pd.read_csv(args.input)
+    if args.input.split('.')[-1]=='csv':
+        df = pd.read_csv(args.input)
+    elif args.input.split('.')[-1]=='h5':
+        df = pd.read_hdf(args.input)
+
 
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
                                       'X_WORLD':'RA','Y_WORLD':'DEC',
