@@ -108,6 +108,72 @@ def prep_eazy_data(allgals,out_fn):
     catfile.close()
     return for_eazy
 
+def prep_eazy_data_fixed_z(allgals,out_fn):
+    print('Working path: %s'%out_fn)
+    allgals = allgals[['ID','z_phot',
+                       'FLUX_AUTO_uJy_G','FLUXERR_AUTO_uJy_G',
+                       'FLUX_AUTO_uJy_R','FLUXERR_AUTO_uJy_R',
+                       'FLUX_AUTO_uJy_I','FLUXERR_AUTO_uJy_I',
+                       'FLUX_AUTO_uJy_Z','FLUXERR_AUTO_uJy_Z']]
+
+    print ('Going to work on %s galaxies!'%len(allgals))
+
+    for_eazy = allgals.rename(columns={'ID':'id',
+                                         'z_phot':'redshift',
+                                         'FLUX_AUTO_uJy_g':'decam_g',
+                                         'FLUX_AUTO_uJy_r':'decam_r',
+                                         'FLUX_AUTO_uJy_i':'decam_i',
+                                         'FLUX_AUTO_uJy_z':'decam_z',
+                                         'FLUXERR_AUTO_uJy_g':'decam_g_err',
+                                         'FLUXERR_AUTO_uJy_r':'decam_r_err',
+                                         'FLUXERR_AUTO_uJy_i':'decam_i_err',
+                                         'FLUXERR_AUTO_uJy_z':'decam_z_err'
+                                       })
+
+    for_eazy = for_eazy[['id','redshift','decam_g','decam_r','decam_i','decam_z',
+                             'decam_g_err','decam_r_err','decam_i_err','decam_z_err']]
+
+    for_eazy.drop_duplicates('id',inplace=True)
+    for_eazy.replace(-9.998,-1,inplace=True)
+    for_eazy.replace(np.NaN,-1,inplace=True)
+    for_eazy.rename(columns = {'id':'# id',
+                              },inplace=True)
+
+    for_eazy.loc[0] =['# id', 'z_spec', 'F294', 'F295', 'F296', 'F297', 'E294', 'E295',
+           'E296', 'E297']
+    for_eazy.sort_index(inplace=True)
+
+    if os.path.isdir(os.path.split(out_fn)[0]):
+        input_fn = '%s.cat'%out_fn
+    else:
+        input_fn = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.cat'%out_fn)
+    catfile = open(input_fn,'w')
+
+    reshead_line0 = ''
+    for i in for_eazy.columns:
+        reshead_line0 +='\t'+ i
+    reshead_line0 = reshead_line0[1:]
+
+    reshead_line1 = ''
+    for i in for_eazy.loc[0].values:
+        reshead_line1 +='\t'+ i
+    reshead_line1 = reshead_line1[1:]
+
+
+    for_eazy.drop(0,inplace=True)
+
+    for_eazy.to_csv(input_fn.replace('cat','tempcat'),sep='\t',index=False,header=False)
+    stringthing = open(input_fn.replace('cat','tempcat'),'r')
+    psfstring = stringthing.read()
+    stringthing.close()
+    #reshead = reshead_line0+'\n'
+    reshead = reshead_line1+'\n'
+
+    catfile.write(reshead)
+    catfile.write(psfstring)
+    catfile.close()
+    return for_eazy
+
 def run_eazy(args,out_fn):
     params = args.config['params']
 
@@ -117,7 +183,7 @@ def run_eazy(args,out_fn):
     else:
         params['MAIN_OUTPUT_FILE'] = os.path.join(os.getenv('EAZYCODE'),'outputs/%s.eazypy'%out_fn)
         params['CATALOG_FILE'] = os.path.join(os.getenv('EAZYCODE'), 'inputs/%s.cat'%out_fn)
-    
+
     translate_file = os.path.join(os.getenv('EAZYCODE'), 'inputs/zphot.translate')
     ez = eazy.photoz.PhotoZ(param_file=None, translate_file=translate_file, zeropoint_file=None,
                           params=params, load_prior=True, load_products=False)
@@ -245,11 +311,16 @@ def main(args):
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
 
-    prep_eazy_data(df,out_fn)
+    if not args.fixz:
+        prep_eazy_data(df,out_fn)
+    else:
+        prep_eazy_data_fixed_z(df,out_fn)
     run_eazy(args,out_fn)
+
     t = float(time.time()) - start_time
-    return
+
     print('Took %.1f seconds'%t)
+    return
 if __name__ == "__main__":
     args = parser()
     main(args)
