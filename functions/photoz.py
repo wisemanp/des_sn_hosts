@@ -217,7 +217,7 @@ def main(args):
     if args.input.split('.')[-1]=='csv':
         df = pd.read_csv(args.input)
     elif args.input.split('.')[-1]=='h5':
-        df = pd.read_hdf(args.input)
+        df = pd.read_hdf(args.input,key='photozs')
 
 
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
