@@ -206,7 +206,7 @@ def main(args):
         df = pd.read_csv(args.input)
     elif args.input.split('.')[-1]=='h5':
         df = pd.read_hdf(args.input,key='photozs')
-        print('Successfully read %s'%args.input)
+    print('Successfully read %s'%args.input)
 
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
                                       'X_WORLD':'RA','Y_WORLD':'DEC',
@@ -303,13 +303,13 @@ def main(args):
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
-
+    print('Sending to prep!')
     if not args.fixz:
         prep_eazy_data(df,out_fn)
     else:
-        #print('Sending to prep!')
+
         prep_eazy_data_fixed_z(df,out_fn)
-    #print('Prepped; Sending to run_eazy()')
+    print('Prepped; Sending to run_eazy()')
     run_eazy(args,out_fn)
 
     t = float(time.time()) - start_time
