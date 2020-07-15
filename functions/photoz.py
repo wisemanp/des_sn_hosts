@@ -292,14 +292,14 @@ def main(args):
     df['Z_RANK'] = df['Z_RANK'].fillna(-9.999)
 
     df['EDGE_FLAG'] = get_edge_flags(df.X_IMAGE.values,df.Y_IMAGE.values)
-
+    print('Did edge flags')
     df = df[(df['EDGE_FLAG']==0)& (df['Z_RANK']<2)]
     df = df[(df['CLASS_STAR_G']<0.5)&(df['CLASS_STAR_R']<0.5)&(df['CLASS_STAR_I']<0.5)&(df['CLASS_STAR_Z']<0.5)]
     for b in ['G','R','I','Z']:
         df.loc[df[df['MAGERR_AUTO_%s'%b]<0].index,'MAGERR_STATSYST_AUTO_%s'%b]=-1
         df['MAGERR_STATSYST_AUTO_%s'%b].replace(np.NaN,-1)
         df['MAGERR_STATSYST_AUTO_%s'%b] = df['MAGERR_STATSYST_AUTO_%s'%b].astype(float)
-
+    print('Now to reindex')
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
