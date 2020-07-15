@@ -30,7 +30,7 @@ def parser():
 
 
 def pz_worker(worker_args):
-    print('Made it to the pz worker ')
+    #print('Made it to the pz worker ')
     args = worker_args[0]
     f = worker_args[1]
     ch = worker_args[2]
@@ -56,9 +56,9 @@ def pz_worker(worker_args):
             args.config['params']['Z_STEP'],args.config['params']['TEMPLATES_FILE'].split('/')[-2]))
     args.input = cat_fn
     print('Initializing EAZY on CCD %s'%ch)
-    print('Output name root: %s'%args.output)
+    #print('Output name root: %s'%args.output)
     if not os.path.isfile(args.output +'.eazypy.zout.fits'):
-        print('Sending to photoz module!')
+        #print('Sending to photoz module!')
         photoz.main(args)
     else:
         print('Skipping CCD%s, already done!'%ch)
