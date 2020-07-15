@@ -286,7 +286,7 @@ def main(args):
                                        'MAG_ZEROPOINT_ERR_r':'MAG_ZEROPOINT_ERR_R',
                                        'MAG_ZEROPOINT_ERR_i':'MAG_ZEROPOINT_ERR_I',
                                        'MAG_ZEROPOINT_ERR_z':'MAG_ZEROPOINT_ERR_Z'})
-
+    print('Did renaming')                                   
     df[pd.isna(df['MAGERR_STATSYST_AUTO_G'])]['MAGERR_AUTO_G'].unique()
 
     df['Z_RANK'] = df['Z_RANK'].fillna(-9.999)
