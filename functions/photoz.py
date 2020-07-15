@@ -202,12 +202,11 @@ def main(args):
 
     in_fn,out_fn = args.input,args.output
     print('Attempting to read %s'%args.input)
-    if args.input.split('.')[-1]=='csv':
+    if args.input.split('.')[-1]=='cat':
         df = pd.read_csv(args.input)
     elif args.input.split('.')[-1]=='h5':
         df = pd.read_hdf(args.input,key='photozs')
-    print('Successfully read %s'%args.input)
-    print(df)
+
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
                                       'X_WORLD':'RA','Y_WORLD':'DEC',
                                         'MY':'SEASON',
@@ -286,20 +285,20 @@ def main(args):
                                        'MAG_ZEROPOINT_ERR_r':'MAG_ZEROPOINT_ERR_R',
                                        'MAG_ZEROPOINT_ERR_i':'MAG_ZEROPOINT_ERR_I',
                                        'MAG_ZEROPOINT_ERR_z':'MAG_ZEROPOINT_ERR_Z'})
-    print('Did renaming')
+
     df[pd.isna(df['MAGERR_STATSYST_AUTO_G'])]['MAGERR_AUTO_G'].unique()
 
     df['Z_RANK'] = df['Z_RANK'].fillna(-9.999)
 
     df['EDGE_FLAG'] = get_edge_flags(df.X_IMAGE.values,df.Y_IMAGE.values)
-    print('Did edge flags')
+
     df = df[(df['EDGE_FLAG']==0)& (df['Z_RANK']<2)]
     df = df[(df['CLASS_STAR_G']<0.5)&(df['CLASS_STAR_R']<0.5)&(df['CLASS_STAR_I']<0.5)&(df['CLASS_STAR_Z']<0.5)]
     for b in ['G','R','I','Z']:
         df.loc[df[df['MAGERR_AUTO_%s'%b]<0].index,'MAGERR_STATSYST_AUTO_%s'%b]=-1
         df['MAGERR_STATSYST_AUTO_%s'%b].replace(np.NaN,-1)
         df['MAGERR_STATSYST_AUTO_%s'%b] = df['MAGERR_STATSYST_AUTO_%s'%b].astype(float)
-    print('Now to reindex')
+    
     df.index = df.index.astype(int)
     df['ID'] = df.index.values
     #df =df[df['SPECZ']>0]
