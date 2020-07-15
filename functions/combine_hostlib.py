@@ -45,11 +45,11 @@ def main(args):
 
             for ch in good_des_chips:
                 ch = int(ch)
-                if config['params']['TEMPLATES_FILE']:
+                try: #config['params']['TEMPLATES_FILE']:
                     fn = os.path.join(config['des_root'],
                         '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
                         '%s_SN-%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP']))
-                else:
+                except:
                     fn = os.path.join(config['des_root'],
                     '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
                     '%s_SN-%s_%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP'],config['params']['TEMPLATES_FILE'].split('/')[-2]))
