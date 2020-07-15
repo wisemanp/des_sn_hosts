@@ -153,7 +153,7 @@ def main(args):
 
 
 
-
+                        cat_deep.to_hdf(fn+'.eazypy.zout.h5')     
                         main_df = main_df.append(cat_deep)
 
 

@@ -55,6 +55,7 @@ def pz_worker(worker_args):
     print('Initializing EAZY on CCD %s'%ch)
     print('Output name root: %s'%args.output)
     if not os.path.isfile(args.output +'.eazypy.zout.fits'):
+        print('Sending to photoz module!')
         photoz.main(args)
     else:
         print('Skipping CCD%s, already done!'%ch)

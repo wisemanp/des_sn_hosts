@@ -213,6 +213,7 @@ def main(args):
     start_time = float(time.time())
 
     in_fn,out_fn = args.input,args.output
+    print('Attempting to read %s'%args.input)
     df = pd.read_csv(args.input)
 
     df = df.rename(index=str,columns={'Unnamed: 0':'ID',
