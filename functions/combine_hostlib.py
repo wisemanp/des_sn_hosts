@@ -49,7 +49,7 @@ def main(args):
                     '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
                     '%s_SN-%s_%s_%s_%s_%s_%s'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP'],config['params']['TEMPLATES_FILE'].split('/')[-2]))
                 if args.fixz:
-                    n = os.path.join(config['des_root'],
+                    fn = os.path.join(config['des_root'],
                         '5yr_stacks/MY%s/SN-%s/CAP/%s/'%(args.my,f,ch),
                         '%s_SN-%s_%s_%s_%s_%s_fsps_full_fixedz'%(args.my,f,ch,config['cat_version'],config['params']['Z_MAX'],config['params']['Z_STEP']))
                 if 1==1:
