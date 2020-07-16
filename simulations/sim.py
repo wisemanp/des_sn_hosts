@@ -61,7 +61,7 @@ class Sim():
             small_hostlib=  pd.read_csv(cat_fn)
         elif cat_fn.split('.')[-1]=='h5':
             print("Reading photoz'd hostlib from %s"%cat_fn)
-            small_hostlib = pd.read_hdf(cat_fn,key='photoz')
+            small_hostlib = pd.read_hdf(cat_fn,key='photozs')
         return small_hostlib
     def _get_zphot_res_zpeg(self,cat_fn):
         pass
