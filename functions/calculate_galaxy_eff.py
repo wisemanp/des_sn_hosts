@@ -127,8 +127,8 @@ def main():
 
     hostlib = pd.read_hdf(fname,key='main')
 
-    C = Completeness(hostlib.sample(50000),dZ=0.1,dM=0.1)
-    mlim_stars = np.linspace(23,30,36)
+    C = Completeness(hostlib.sample(50000),dZ=0.05,dM=0.05)
+    mlim_stars = np.linspace(23,29,19)
     Tcs = estimate_Tc(C,mlim_stars)
     f,ax=plt.subplots()
     ax.scatter(mlim_stars,Tcs,label='$T_C$')
