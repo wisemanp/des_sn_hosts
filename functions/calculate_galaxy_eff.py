@@ -126,7 +126,8 @@ def main():
         fname = sys.argv[1]
 
     hostlib = pd.read_hdf(fname,key='main')
-    C = Completeness(hostlib,dZ=0.1,dM=0.1)
+
+    C = Completeness(hostlib.sample(50000),dZ=0.1,dM=0.1)
     mlim_stars = np.linspace(23,30,36)
     Tcs = estimate_Tc(C,mlim_stars)
     f,ax=plt.subplots()
@@ -138,6 +139,6 @@ def main():
     arr[:,0] = mlim_stars
     arr[:,1] = Tcs
 
-    np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_completeness.dat',arr)
+    np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_50k_completeness.dat',arr)
 if __name__=="__main__":
     main()
