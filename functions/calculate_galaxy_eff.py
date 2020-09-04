@@ -116,7 +116,7 @@ def main():
     if not sys.argv[2]:
         n_sample = 50000
     else:
-        n_sample = float(sys.argv[2])
+        n_sample = int(sys.argv[2])
 
     if not sys.argv[3]:
         dmdz = 0.05
