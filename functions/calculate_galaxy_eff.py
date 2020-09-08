@@ -35,7 +35,7 @@ class Completeness():
         Z = row['mu']
         M = row['M_%s'%self.b]
         Mlim_B = self.mlim_B - (Z-self.dZ)
-        sel = self.test_df[(self.df['mu']<Z)&(self.test_df['M_%s'%self.b]>(M-self.dM))&(self.test_df['M_%s'%self.b]<M)]
+        sel = self.test_df[(self.test_df['mu']<Z)&(self.test_df['M_%s'%self.b]>(M-self.dM))&(self.test_df['M_%s'%self.b]<M)]
         return len(sel)
 
     def t_i(self,row,mlim_star):
@@ -43,7 +43,7 @@ class Completeness():
         M = row['M_%s'%self.b]
         Mlim_B = self.mlim_B - Z
         Zmax = mlim_star - M
-        sel = self.test_df[(self.df['mu']<Zmax)&(self.test_df['M_%s'%self.b]>(M-self.dM))&(self.test_df['M_%s'%self.b]<M)]
+        sel = self.test_df[(self.test_df['mu']<Zmax)&(self.test_df['M_%s'%self.b]>(M-self.dM))&(self.test_df['M_%s'%self.b]<M)]
         return len(sel)
 
     def var_zeta_i(self,ni):
@@ -59,8 +59,9 @@ class Completeness():
         return row
 
     def tau_i(self,row,mlim_star):
+        q_i = self.q_i(row)
         t_i = self.t_i(row,mlim_star)
-        tau = self.q_i(row)/(t_i+1)
+        tau = q_i/(t_i+1)
         var = self.var_tau_i(t_i)
         row['t_i'] = tau
         row['var_t_i'] = var
@@ -126,15 +127,19 @@ def main():
     mlim_stars = np.linspace(23,29,19)
     Tcs = estimate_Tc(C,mlim_stars)
     Tvs = estimate_Tv(C,mlim_stars)
-    f,ax=plt.subplots()
+    '''f,ax=plt.subplots()
     ax.scatter(mlim_stars,Tcs,label='$T_C$')
     ax.scatter(mlim_stars,Tvs,label='$T_V$')
     ax.legend()
-    plt.savefig('/media/data3/wiseman/des/desdtd/figs/completeness_%s_%s'%(n_sample,dmdz))
+    plt.savefig('/media/data3/wiseman/des/desdtd/figs/completeness_%s_%s'%(n_sample,dmdz))'''
     arr = np.zeros((len(mlim_stars),2))
     arr[:,0] = mlim_stars
     arr[:,1] = Tcs
+    np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_completeness_Tc_%s_%s.dat'%(n_sample,dmdz),arr)
 
-    np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_completeness_%s_%s.dat'%(n_sample,dmdz),arr)
+    arr = np.zeros((len(mlim_stars),2))
+    arr[:,0] = mlim_stars
+    arr[:,1] = Tvs
+    np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_completeness_Tv_%s_%s.dat'%(n_sample,dmdz),arr)
 if __name__=="__main__":
     main()
