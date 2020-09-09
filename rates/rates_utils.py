@@ -2,7 +2,7 @@ import pystan
 import pandas as pd
 from des_sn_hosts.utils import stan_utility
 
-def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='logssfr', sfr_err_col='logssfr_err',index_col = 'CIDint',n_iter=1E4,seed=1234,):
+def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='logssfr', sfr_err_col='logssfr_err',weight_col='weight',index_col = 'CIDint',n_iter=1E4,seed=1234,):
 
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
@@ -14,7 +14,7 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_c
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
     df_bootstrapped.index = detections[index_col].astype(int)
-    truthcols = detections.set_index(index_col,drop=True)[['zHD','zHDERR',mass_col,mass_err_col,sfr_col,sfr_err_col]]
+    truthcols = detections.set_index(index_col,drop=True)[['zHD','zHDERR',mass_col,mass_err_col,sfr_col,sfr_err_col,weight_col]]
     truthcols.index = truthcols.index.astype(int)
     for col in truthcols.columns:
         df_bootstrapped[col] = truthcols[col]
@@ -22,7 +22,7 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_c
     #df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
     return df_bootstrapped
 
-def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='log_ssfr',sfr_err_col='logssfr_err',
+def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='log_ssfr',sfr_err_col='logssfr_err',weight_col='weight',
                     index_col = 'CIDint',n_iter=1E4,seed=1234):
 
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
@@ -36,7 +36,7 @@ def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sf
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
     df_bootstrapped.index = detections[index_col].astype(int)
     truthcols = detections.set_index(index_col,drop=True)[['z_spec','z_phot',#[['SPEC_Z','z_phot','MAG_AUTO_G','MAG_AUTO_R','MAG_AUTO_I','MAG_AUTO_Z',
-                                                                mass_col,mass_err_col,sfr_col,sfr_err_col]]
+                                                                mass_col,mass_err_col,sfr_col,sfr_err_col,weight_col]]
     truthcols.index = truthcols.index.astype(int)
     for col in truthcols.columns:
         df_bootstrapped[col] = truthcols[col]
