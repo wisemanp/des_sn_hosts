@@ -26,7 +26,7 @@ def main():
     r = Rates(config=yaml.load(open(args.config)),
                 SN_hosts_fn = args.sn_fn,
                 field_fn = args.field_fn,
-                fields=args.fields)
+                fields=args.fields,origin='hostlib')
     r.field['mass'] = np.log10(r.field['mass'])
     r.field['mass_err']=0.3
     r.field['SFR'] = np.log10(r.field['SFR'])

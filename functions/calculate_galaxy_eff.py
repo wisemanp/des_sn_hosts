@@ -123,23 +123,29 @@ def main():
         dmdz = 0.05
     else:
         dmdz = float(sys.argv[3])
-    C = Completeness(hostlib.sample(n_sample),dZ=dmdz,dM=dmdz)
-    mlim_stars = np.linspace(23,29,19)
-    Tcs = estimate_Tc(C,mlim_stars)
-    Tvs = estimate_Tv(C,mlim_stars)
-    '''f,ax=plt.subplots()
-    ax.scatter(mlim_stars,Tcs,label='$T_C$')
-    ax.scatter(mlim_stars,Tvs,label='$T_V$')
-    ax.legend()
-    plt.savefig('/media/data3/wiseman/des/desdtd/figs/completeness_%s_%s'%(n_sample,dmdz))'''
-    arr = np.zeros((len(mlim_stars),2))
-    arr[:,0] = mlim_stars
-    arr[:,1] = Tcs
-    np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_completeness_Tc_%s_%s.dat'%(n_sample,dmdz),arr)
+    if not sys.argv[4]:
+        bands = ['r']
+    else:
+        bands =sys.argv[4].split(',')
+    for b in bands:
 
-    arr = np.zeros((len(mlim_stars),2))
-    arr[:,0] = mlim_stars
-    arr[:,1] = Tvs
-    np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_completeness_Tv_%s_%s.dat'%(n_sample,dmdz),arr)
+        C = Completeness(hostlib.sample(n_sample),dZ=dmdz,dM=dmdz,band=b)
+        mlim_stars = np.linspace(23,29,19)
+        Tcs = estimate_Tc(C,mlim_stars)
+        Tvs = estimate_Tv(C,mlim_stars)
+        '''f,ax=plt.subplots()
+        ax.scatter(mlim_stars,Tcs,label='$T_C$')
+        ax.scatter(mlim_stars,Tvs,label='$T_V$')
+        ax.legend()
+        plt.savefig('/media/data3/wiseman/des/desdtd/figs/completeness_%s_%s'%(n_sample,dmdz))'''
+        arr = np.zeros((len(mlim_stars),2))
+        arr[:,0] = mlim_stars
+        arr[:,1] = Tcs
+        np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_completeness_Tc_%s_band_%s_%s.dat'%(b,n_sample,dmdz),arr)
+
+        arr = np.zeros((len(mlim_stars),2))
+        arr[:,0] = mlim_stars
+        arr[:,1] = Tvs
+        np.savetxt('/media/data3/wiseman/des/desdtd/completeness/SN-X3_completeness_Tv_%s_band_%s_%s.dat'%(b,n_sample,dmdz),arr)
 if __name__=="__main__":
     main()

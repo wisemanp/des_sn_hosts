@@ -23,17 +23,17 @@ from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_field_masses
 sns.set_color_codes(palette='colorblind')
 
 class Rates():
-    def __init__(self,config,fields=None,SN_hosts_fn=None, field_fn=None):
+    def __init__(self,config,fields=None,SN_hosts_fn=None, field_fn=None,origin='hostlib'):
         self.config =config
         self.SN_fn = SN_hosts_fn
         self.field_fn = field_fn
         if self.SN_fn:
             self.SN_Hosts = self._get_SN_hosts(SN_hosts_fn,fields)
         if self.field_fn:
-            self.field = self._get_field(field_fn)
+            self.field = self._get_field(field_fn,origin)
         self.root_dir = self.config['rates_root']
 
-    def _get_SN_hosts(self,fn,fields):
+    def _get_SN_hosts(self,fn,fields,):
         if fn.split('.')[-1]=='FITRES':
 
             df= pd.read_csv(fn,delimiter='\s+',comment='#').drop('VARNAMES:',axis=1)
@@ -41,15 +41,24 @@ class Rates():
                 df =df[df['FIELD'].isin(fields)]
         elif fn.split('.')[-1]=='csv':
             df = pd.read_csv(fn,index_col=0)
+
         return df
-    def _get_field(self,fn):
-        if fn.split('.')[-1]=='csv':
-            return pd.read_csv(fn)
-        elif fn.split('.')[-1]=='fits':
-            zphot_res = Table.read(fn)
-            zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
-            zphot_res = zphot_res.to_pandas()
+    def _get_field(self,fn,origin):
+        if origin == 'eazy':
+            if fn.split('.')[-1]=='csv':
+                return pd.read_csv(fn)
+            elif fn.split('.')[-1]=='fits':
+                zphot_res = Table.read(fn)
+                zphot_res.remove_columns(['Avp','massp','SFRp','sSFRp','LIRp'])
+                zphot_res = zphot_res.to_pandas()
             return zphot_res
+        elif origin == 'hostlib':
+            if fn.split('.')[-1]=='h5':
+                return pd.read_hdf(fn,key='main')
+            elif fn.split('.')[-1]=='fits':
+                return Table.read(fn)
+            elif fn.split('.')[-1]=='csv':
+                return pd.read_csv(fn)
     def generate_sn_samples(self,mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
                                 sfr_col = 'logssfr',sfr_err_col = 'logssfr_err',
                                 index_col = 'CIDint',n_iter=1E5,save_samples=True):
