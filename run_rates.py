@@ -32,7 +32,7 @@ def main():
     #r.field['SFR'] = np.log10(r.field['SFR'])
     #r.field['SFR_err']=0.3
     #r.field['ssfr'] = r.field['SFR'] - r.field['mass']
-    r#.field['ssfr_err'] = 0.4
+    #r.field['ssfr_err'] = 0.4
     r.SN_Hosts['logssfr'] = r.SN_Hosts['logsfr']-r.SN_Hosts['HOST_LOGMASS']
     r.SN_Hosts['logssfr_err'] =(r.SN_Hosts['logsfr_err']**2 + r.SN_Hosts['HOST_LOGMASS_ERR']**2)**0.5
     r.get_SN_bins()
