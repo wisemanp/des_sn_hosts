@@ -158,11 +158,11 @@ class Rates():
 
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
-                snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
-                                                     bins=mbins))[i]
+                snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[[i,'weight']],
+                                                     bins=mbins))[[i,'weight']]
                 i_f = np.random.randint(0,100)
-                fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
-                                                            bins=mbins))[i_f]
+                fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[[i_f,'weight']],
+                                                            bins=mbins))[[i_f,'weight']]
                 xs = []
                 ys = []
 
