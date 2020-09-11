@@ -46,5 +46,6 @@ def main():
     r.SN_G_MC(n_samples=100)
     print('Going to fit the rates')
     fit = r.fit_SN_G(n_iter=4000)
+    r.plot_fit(fit)
 if __name__=="__main__":
     main()
