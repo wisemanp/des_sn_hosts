@@ -35,7 +35,7 @@ def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sf
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
     df_bootstrapped.index = detections[index_col].astype(int)
-    truthcols = detections.set_index(index_col,drop=True)[['z_spec','z_phot',#[['SPEC_Z','z_phot','MAG_AUTO_G','MAG_AUTO_R','MAG_AUTO_I','MAG_AUTO_Z',
+    truthcols = detections.set_index(index_col,drop=True)[['z_spec','z_m2','redshift',#[['SPEC_Z','z_phot','MAG_AUTO_G','MAG_AUTO_R','MAG_AUTO_I','MAG_AUTO_Z',
                                                                 mass_col,mass_err_col,sfr_col,sfr_err_col,weight_col]]
     truthcols.index = truthcols.index.astype(int)
     for col in truthcols.columns:

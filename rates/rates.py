@@ -75,11 +75,11 @@ class Rates():
             sn_samples.to_hdf(savename,key='Bootstrap_samples')
         self.sn_samples = sn_samples
 
-    def generate_field_samples(self,mass_col='mass',mass_err_col='mass_err',sfr_col = 'ssfr',sfr_err_col='ssfr_err',weight_col='weight',index_col = 'id',n_iter=1E5,save_samples=True):
+    def generate_field_samples(self,mass_col='mass',mass_err_col='mass_err',sfr_col = 'log_ssfr',sfr_err_col='log_ssfr_err',weight_col='weight',index_col = 'id',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
 
         field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',
-                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col = 'ssfr',sfr_err_col='ssfr_err',weight_col=weight_col,index_col=index_col,n_iter=n_iter)
+                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col = sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter)
         print('Sampling done')
         if save_samples:
             print('Saving to file')
