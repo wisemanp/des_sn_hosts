@@ -63,7 +63,7 @@ class Rates():
                                 sfr_col = 'logssfr',sfr_err_col = 'logssfr_err',
                                 index_col = 'CIDint',weight_col='weight',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
-        if weight_col not in self.SN_Hosts.columns():
+        if weight_col not in self.SN_Hosts.columns:
             self.SN_Hosts[weight_col] = 1
         sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
                     mass_col=mass_col,mass_err_col=mass_err_col,sfr_col=sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter)
