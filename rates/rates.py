@@ -63,6 +63,8 @@ class Rates():
                                 sfr_col = 'logssfr',sfr_err_col = 'logssfr_err',
                                 index_col = 'CIDint',weight_col='weight',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
+        if weight_col not in self.SN_hosts.columns():
+            self.SN_hosts[weight_col] = 1
         sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
                     mass_col=mass_col,mass_err_col=mass_err_col,sfr_col=sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter)
         print('Sampling done')
@@ -169,7 +171,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())-0.38) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
