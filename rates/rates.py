@@ -188,7 +188,7 @@ class Rates():
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
         # passive
         sn_passive = self.sn_samples[self.sn_samples['logssfr']<-11]
-        field_passive = self.field_samples[self.field_samples['ssfr']<-11]
+        field_passive = self.field_samples[self.field_samples['log_ssfr']<-11]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_passive.groupby(pd.cut(sn_passive[i],
@@ -219,7 +219,7 @@ class Rates():
         #moderately starforming
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
         sn_moderate = self.sn_samples[(self.sn_samples['logssfr']>=-11)&(self.sn_samples['logssfr']<-9.5)]
-        field_moderate = self.field_samples[(self.field_samples['ssfr']>=-11)&(self.field_samples['ssfr']<-9.5)]
+        field_moderate = self.field_samples[(self.field_samples['log_ssfr']>=-11)&(self.field_samples['log_ssfr']<-9.5)]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_moderate.groupby(pd.cut(sn_moderate[i],
@@ -250,7 +250,7 @@ class Rates():
         #highly starforming
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
         sn_high = self.sn_samples[self.sn_samples['logssfr']>=-9.5]
-        field_high = self.field_samples[self.field_samples['ssfr']>=-9.5]
+        field_high = self.field_samples[self.field_samples['log_ssfr']>=-9.5]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_high.groupby(pd.cut(sn_high[i],
@@ -338,4 +338,4 @@ class Rates():
         leg =axmbinlog.legend()
         for lh in leg.legendHandles:
             lh.set_alpha(1)
-        plt.savefig(self.root_dir +'figs/rate_vs_mass_slopes_stanfit.png')
+        plt.savefig(self.root_dir +'figs/rate_vs_mass_slopes_stanfit_test.png')
