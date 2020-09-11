@@ -27,21 +27,21 @@ def main():
                 SN_hosts_fn = args.sn_fn,
                 field_fn = args.field_fn,
                 fields=args.fields,origin='hostlib')
-    r.field['mass'] = np.log10(r.field['mass'])
-    r.field['mass_err']=0.3
-    r.field['SFR'] = np.log10(r.field['SFR'])
-    r.field['SFR_err']=0.3
-    r.field['ssfr'] = r.field['SFR'] - r.field['mass']
-    r.field['ssfr_err'] = 0.4
+    #r.field['mass'] = np.log10(r.field['mass'])
+    #r.field['mass_err']=0.3
+    #r.field['SFR'] = np.log10(r.field['SFR'])
+    #r.field['SFR_err']=0.3
+    #r.field['ssfr'] = r.field['SFR'] - r.field['mass']
+    r#.field['ssfr_err'] = 0.4
     r.SN_Hosts['logssfr'] = r.SN_Hosts['logsfr']-r.SN_Hosts['HOST_LOGMASS']
     r.SN_Hosts['logssfr_err'] =(r.SN_Hosts['logsfr_err']**2 + r.SN_Hosts['HOST_LOGMASS_ERR']**2)**0.5
     r.get_SN_bins()
 
     r.get_field_bins()
     print('Going to generate SN resamples')
-    r.generate_sn_samples(n_iter=int(1E+3))
+    r.generate_sn_samples(n_iter=int(1E4),sfr_col='logsfr',sfr_err_col='logsfr_err')
     print('Going to generate field resamples')
-    r.generate_field_samples(n_iter=int(1E+2))
+    r.generate_field_samples(n_iter=int(1E2),mass_col = 'log_mass', mass_err_col = 'log_mass_err',sfr_col='log_sfr',sfr_err_col='log_sfr_err')
     print('Going to sample the rate from the resampled data!')
     r.SN_G_MC(n_samples=100)
     print('Going to fit the rates')
