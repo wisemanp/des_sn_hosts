@@ -23,7 +23,7 @@ from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_field_masses
 sns.set_color_codes(palette='colorblind')
 
 class Rates():
-    def __init__(self,config,fields=None,SN_hosts_fn=None, field_fn=None,origin='hostlib'):
+    def __init__(self,config,fields=None,SN_hosts_fn=None, field_fn=None,origin='hostlib',N_SN_fields=10,N_field_fields=1):
         self.config =config
         self.SN_fn = SN_hosts_fn
         self.field_fn = field_fn
@@ -33,6 +33,7 @@ class Rates():
             self.field = self._get_field(field_fn,origin)
         self.root_dir = self.config['rates_root']
 
+        self.rate_corr = selg._get_rate_corr(N_SN_fields,N_field_fields)
     def _get_SN_hosts(self,fn,fields,):
         if fn.split('.')[-1]=='FITRES':
 
@@ -59,6 +60,9 @@ class Rates():
                 return Table.read(fn)
             elif fn.split('.')[-1]=='csv':
                 return pd.read_csv(fn)
+
+    def _get_rate_corr(self,N_SN_fields,N_field_fields):
+        self.rate_corr = -0.38 +np.log10(N_SN_fields/N_field_fields)
     def generate_sn_samples(self,mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
                                 sfr_col = 'logssfr',sfr_err_col = 'logssfr_err',
                                 index_col = 'CIDint',weight_col='weight',n_iter=1E5,save_samples=True):
@@ -129,7 +133,7 @@ class Rates():
             if g.size >0 and g2.size>0:
                 xs.append(n.mid)
                 xerr.append(np.mean([np.abs(n.mid-n.left),np.abs(n.right-n.mid)]))
-                ys.append(np.log10(g.size/g2.size)-1.38)
+                ys.append(np.log10(g.size/g2.size)+self.rate_corr)
                 YerrY = (((g.size)**(-1/4) + (g2.size)**(-1/4))**0.5)
                 yerr.append(0.434*YerrY)
         xs = np.array(xs)
@@ -140,7 +144,7 @@ class Rates():
         for (n,g),(n2,g2) in zip(self.snmassgroups,self.fieldmassgroups):
             if g.size >0 and g2.size>0:
 
-                axmbinlog.errorbar(n.mid,np.log10(g.size/g2.size)-1.38,
+                axmbinlog.errorbar(n.mid,np.log10(g.size/g2.size)+self.rate_corr,
                            xerr=xerr[counter],
                            yerr=yerr[counter],
                             color='g',marker='D',label='All',
@@ -171,7 +175,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())-0.38) # We want a per-year rate.
+                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())+self.rate_corr) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
@@ -204,7 +208,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())+self.rate_corr) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
@@ -235,7 +239,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())+self.rate_corr) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
@@ -266,7 +270,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.size/g2.size)-0.38) # We want a per-year rate.
+                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())+self.rate_corr) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
