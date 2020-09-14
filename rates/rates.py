@@ -192,10 +192,10 @@ class Rates():
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_passive.groupby(pd.cut(sn_passive[i],
-                                                     bins=mbins))[i]
+                                                     bins=mbins))[[i,'weight']]
                 i_f = np.random.randint(0,100)
                 fieldmassgroups = field_passive.groupby( pd.cut(field_passive[i_f],
-                                                            bins=mbins))[i_f]
+                                                            bins=mbins))[[i_f,'weight']]
                 xs = []
                 ys = []
 
@@ -223,10 +223,10 @@ class Rates():
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_moderate.groupby(pd.cut(sn_moderate[i],
-                                                     bins=mbins))[i]
+                                                     bins=mbins))[[i,'weight']]
                 i_f = np.random.randint(0,100)
                 fieldmassgroups = field_moderate.groupby( pd.cut(field_moderate[i_f],
-                                                            bins=mbins))[i_f]
+                                                            bins=mbins))[[i_f,'weight']]
                 xs = []
                 ys = []
 
@@ -254,10 +254,10 @@ class Rates():
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_high.groupby(pd.cut(sn_high[i],
-                                                     bins=mbins))[i]
+                                                     bins=mbins))[[i,'weight']]
                 i_f = np.random.randint(0,100)
                 fieldmassgroups = field_high.groupby( pd.cut(field_high[i_f],
-                                                            bins=mbins))[i_f]
+                                                            bins=mbins))[[i_f,'weight']]
                 xs = []
                 ys = []
 
