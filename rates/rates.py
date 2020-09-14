@@ -33,7 +33,7 @@ class Rates():
             self.field = self._get_field(field_fn,origin)
         self.root_dir = self.config['rates_root']
 
-        self.rate_corr = self._get_rate_corr(N_SN_fields,N_field_fields)
+        self._get_rate_corr(N_SN_fields,N_field_fields)
     def _get_SN_hosts(self,fn,fields,):
         if fn.split('.')[-1]=='FITRES':
 
