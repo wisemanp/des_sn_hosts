@@ -62,7 +62,7 @@ class Rates():
                 return pd.read_csv(fn)
 
     def _get_rate_corr(self,N_SN_fields,N_field_fields):
-        self.rate_corr = -0.38 +np.log10(N_SN_fields/N_field_fields)
+        self.rate_corr = -0.38 -np.log10(N_SN_fields/N_field_fields)
     def generate_sn_samples(self,mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
                                 sfr_col = 'logssfr',sfr_err_col = 'logssfr_err',
                                 index_col = 'CIDint',weight_col='weight',n_iter=1E5,save_samples=True):
@@ -285,13 +285,13 @@ class Rates():
     def load_sampled_rates(self,fn):
         self.sampled_rates = pd.read_hdf(fn,key='bootstrap_samples')
 
-    def fit_SN_G(self,seed=123456,n_iter=4E3):
+    def fit_SN_G(self,df,seed=123456,n_iter=4E3):
 
         model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
         x_model = np.linspace(6.5,11,100)
-        x_obs = np.array(self.sampled_rates.index)[2:-6]
-        y_obs = self.sampled_rates.mean(axis=1).values[2:-6]
-        y_err = self.sampled_rates.std(axis=1).values[2:-6]
+        x_obs = np.array(df.loc[8.875:11.125].index)
+        y_obs = df.mean(axis=1).loc[8.875:11.125].values
+        y_err = df.std(axis=1).loc[8.875:11.125].values
 
         data = dict(N = len(x_obs),
                     x_obs = x_obs,
@@ -300,7 +300,7 @@ class Rates():
                     sigma=y_err,
                     N_model=100,
                    x_model=x_model)
-        fit = model.sampling(data=data, seed=seed, iter=n_iter)
+        fit = model.sampling(data=data, seed=seed, iter=int(n_iter))
         return fit
 
     def plot_fit(self,fit):
@@ -343,3 +343,51 @@ class Rates():
         for lh in leg.legendHandles:
             lh.set_alpha(1)
         plt.savefig(self.root_dir +'figs/rate_vs_mass_slopes_stanfit_test.png')
+
+    def plot_fit_split_SFR(self,fits,rates,f=None,ax=None):
+        if not f:
+            f,ax = plt.subplots(figsize=(12,7))
+        palette =itertools.cycle(sns.color_palette(palette='husl',n_colors=8))
+    # Plot the points from above as a comparison
+        names=['Passive','Moderate','High']
+        for j in range(len(fits)):
+            colour=next(palette)
+            chain = fits[j].extract()
+            x_model = np.linspace(6.5,11,100)
+            #x_model = np.linspace(8.125,11,100)
+            for counter,c in enumerate(rates[j].columns):
+                label=None
+                if counter == 0:
+                    label=names[j]
+                ax.scatter(rates[j].index,rates[j][c],color=colour,marker='o',
+                               alpha=0.05,s=10,label=label)
+                ax.xaxis.set_minor_locator(MultipleLocator(0.25))
+                ax.yaxis.set_minor_locator(MultipleLocator(0.125))
+                ax.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
+                ax.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
+                ax.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
+            for i in rates[j].index:
+                ax.errorbar(i,rates[j].loc[i].mean(),xerr=0.125,color=colour,marker='D',
+                               alpha=0.5,markersize=2,mew=0.5,mec='w')
+
+            level = 95
+
+            ax.fill_between(x_model,
+                            np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                            np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                            color=colour,alpha=0.2)
+
+            level = 68
+            ax.fill_between(x_model,
+                            np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                            np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                            color=colour,alpha=0.3)
+
+            ax.plot(x_model,
+                            np.percentile(chain['line'], 50, axis=0 ),
+                            color=colour,alpha=1,linestyle='-',linewidth=1,label='$dN/dG = %.2f$'%np.median(chain['slope']))
+            leg =ax.legend()
+            for lh in leg.legendHandles:
+                lh.set_alpha(1)
+        #plt.savefig(r.root_dir +'figs/rate_vs_mass_slopes_stanfit.png')
+        return f,ax
