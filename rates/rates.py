@@ -43,6 +43,9 @@ class Rates():
         elif fn.split('.')[-1]=='csv':
             df = pd.read_csv(fn,index_col=0)
 
+        elif fn.split('.')[-1]=='h5':
+            df = pd.read_hdf(fn,key='main')
+
         return df
     def _get_field(self,fn,origin):
         if origin == 'eazy':
