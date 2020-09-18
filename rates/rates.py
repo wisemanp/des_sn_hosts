@@ -159,17 +159,17 @@ class Rates():
         axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
         axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
 
-    def SN_G_MC(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None):
+    def SN_G_MC(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
-                                                     bins=mbins))[[i,'weight']]
+                                                     bins=mbins))[[i,weight_col_SN]]
                 i_f = np.random.randint(0,100)
                 fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
-                                                            bins=mbins))[[i_f,'weight']]
+                                                            bins=mbins))[[i_f,weight_col_field]]
                 xs = []
                 ys = []
 
@@ -190,7 +190,7 @@ class Rates():
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
         self.sampled_rates = iter_df
 
-    def SN_G_MC_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5,savename=None):
+    def SN_G_MC_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5,savename=None,weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
         # passive
@@ -199,10 +199,10 @@ class Rates():
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_passive.groupby(pd.cut(sn_passive[i],
-                                                     bins=mbins))[[i,'weight']]
+                                                     bins=mbins))[[i,weight_col_SN]]
                 i_f = np.random.randint(0,100)
                 fieldmassgroups = field_passive.groupby( pd.cut(field_passive[i_f],
-                                                            bins=mbins))[[i_f,'weight']]
+                                                            bins=mbins))[[i_f,weight_col_field]]
                 xs = []
                 ys = []
 
@@ -230,10 +230,10 @@ class Rates():
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_moderate.groupby(pd.cut(sn_moderate[i],
-                                                     bins=mbins))[[i,'weight']]
+                                                     bins=mbins))[[i,weight_col_SN]]
                 i_f = np.random.randint(0,100)
                 fieldmassgroups = field_moderate.groupby( pd.cut(field_moderate[i_f],
-                                                            bins=mbins))[[i_f,'weight']]
+                                                            bins=mbins))[[i_f,weight_col_field]]
                 xs = []
                 ys = []
 
@@ -261,10 +261,10 @@ class Rates():
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_high.groupby(pd.cut(sn_high[i],
-                                                     bins=mbins))[[i,'weight']]
+                                                     bins=mbins))[[i,weight_col_SN]]
                 i_f = np.random.randint(0,100)
                 fieldmassgroups = field_high.groupby( pd.cut(field_high[i_f],
-                                                            bins=mbins))[[i_f,'weight']]
+                                                            bins=mbins))[[i_f,weight_col_field]]
                 xs = []
                 ys = []
 
