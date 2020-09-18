@@ -178,7 +178,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())+self.rate_corr) # We want a per-year rate.
+                        ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+self.rate_corr) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
@@ -211,7 +211,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())+self.rate_corr) # We want a per-year rate.
+                        ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+self.rate_corr) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
@@ -242,7 +242,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())+self.rate_corr) # We want a per-year rate.
+                        ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+self.rate_corr) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
@@ -273,7 +273,7 @@ class Rates():
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
 
-                        ys.append(np.log10(g.weight.sum()/g2.weight.sum())+self.rate_corr) # We want a per-year rate.
+                        ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+self.rate_corr) # We want a per-year rate.
 
                 xs = np.array(xs)
                 ys = np.array(ys)
