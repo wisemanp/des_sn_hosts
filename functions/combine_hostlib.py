@@ -17,7 +17,7 @@ def parser():
     parser.add_argument('-sf','--savename',help='Name of saved file',default=None)
     parser.add_argument('-df','--df',default='none')
     parser.add_argument('-fz','--fixz',help='Were these run with fixed z?',action='store_true')
-
+    parser.add_argument('-noz','--noz',help='Just combine photometry and not photozs')
     return parser.parse_args()
 
 def main(args):

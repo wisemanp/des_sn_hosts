@@ -1,2 +1,10 @@
 des_root: /media/data3/wiseman/des/coadding/
 rates_root: /media/data3/wiseman/des/desdtd/
+
+Spatial:
+  r_max: 1.2
+  n_years: 2.3
+  photz_chipfracs:
+    X3: 45/59
+    C3: 48/59
+    E2: 45/59
