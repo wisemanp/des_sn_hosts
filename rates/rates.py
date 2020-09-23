@@ -288,13 +288,13 @@ class Rates():
     def load_sampled_rates(self,fn):
         self.sampled_rates = pd.read_hdf(fn,key='bootstrap_samples')
 
-    def fit_SN_G(self,df,seed=123456,n_iter=4E3):
+    def fit_SN_G(self,df,mmin=8,mmax=11,seed=123456,n_iter=4E3):
 
         model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
-        x_model = np.linspace(6.5,11,100)
-        x_obs = np.array(df.loc[8.875:11.125].index)
-        y_obs = df.mean(axis=1).loc[8.875:11.125].values
-        y_err = df.std(axis=1).loc[8.875:11.125].values
+        x_model = np.linspace(mmin,mmax,100)
+        x_obs = np.array(df.loc[mmin:mmax].index)
+        y_obs = df.mean(axis=1).loc[mmin:mmax].values
+        y_err = df.std(axis=1).loc[mmin:mmax].values
 
         data = dict(N = len(x_obs),
                     x_obs = x_obs,
@@ -306,11 +306,11 @@ class Rates():
         fit = model.sampling(data=data, seed=seed, iter=int(n_iter))
         return fit
 
-    def plot_fit(self,fit):
+    def plot_fit(self,fit,mmin=8,mmax=11):
         fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
         chain = fit.extract()
     # Plot the points from above as a comparison
-        x_model = np.linspace(6.5,11,100)
+        x_model = np.linspace(mmin,mmax,100)
         for counter,c in enumerate(self.sampled_rates.columns):
             label=None
             if counter == 0:
