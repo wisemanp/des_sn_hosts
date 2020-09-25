@@ -2,14 +2,21 @@ import pystan
 import pandas as pd
 from des_sn_hosts.utils import stan_utility
 
-def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='logssfr', sfr_err_col='logssfr_err',weight_col='weight',index_col = 'CIDint',n_iter=1E4,seed=1234,):
+def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='logssfr', sfr_err_col='logssfr_err',
+    weight_col='weight',index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
 
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
     nobs=len(detections)
+    if variable=='mass':
+        var_col=mass_col
+        err_col = mass_err_col
+    elif variable=='sfr':
+        var_col=sfr_col
+        err_col = sfr_err_col
     fit = model_gen.sampling(data=dict(n_obs=nobs,
-                                  x_obs =detections[mass_col].values,
-                                  x_err =detections[mass_err_col].values+0.001),
+                                  x_obs =detections[var_col].values,
+                                  x_err =detections[err_col].values+0.001),
                         seed=seed,algorithm='Fixed_param',iter=n_iter,chains=1,verbose=True)
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
@@ -23,14 +30,20 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_c
     return df_bootstrapped
 
 def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='log_ssfr',sfr_err_col='logssfr_err',weight_col='weight',
-                    index_col = 'CIDint',n_iter=1E4,seed=1234):
+                    index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
 
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
     nobs=len(detections)
+    if variable=='mass':
+        var_col=mass_col
+        err_col = mass_err_col
+    elif variable=='sfr':
+        var_col=sfr_col
+        err_col = sfr_err_col
     fit = model_gen.sampling(data=dict(n_obs=nobs,
-                                  x_obs =detections[mass_col].values,
-                                  x_err =detections[mass_err_col].values+0.001),
+                                  x_obs =detections[var_col].values,
+                                  x_err =detections[err_col].values+0.001),
                         seed=seed,algorithm='Fixed_param',iter=n_iter,chains=1,verbose=True)
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
