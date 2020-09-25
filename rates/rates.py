@@ -225,8 +225,8 @@ class Rates():
 
         #moderately starforming
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
-        sn_moderate = self.sn_samples[(self.sn_samples[sn_ssfr_col]>=sfr_cut_1)&(self.sn_samples['logssfr']<sfr_cut_2)]
-        field_moderate = self.field_samples[(self.field_samples[field_ssfr_col]>=sfr_cut_1)&(self.field_samples['log_ssfr']<sfr_cut_2)]
+        sn_moderate = self.sn_samples[(self.sn_samples[sn_ssfr_col]>=sfr_cut_1)&(self.sn_samples[sn_ssfr_col]<sfr_cut_2)]
+        field_moderate = self.field_samples[(self.field_samples[field_ssfr_col]>=sfr_cut_1)&(self.field_samples[field_ssfr_col]<sfr_cut_2)]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_moderate.groupby(pd.cut(sn_moderate[i],
