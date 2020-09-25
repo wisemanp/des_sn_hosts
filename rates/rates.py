@@ -324,7 +324,7 @@ class Rates():
             axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
             axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
         for i in self.sampled_rates.index:
-            axmbinlog.errorbar(i,self.sampled_rates.loc[i].mean(),xerr=self.sampled_rates.index[1]-self.sampled_rates.index[0],
+            axmbinlog.errorbar(i,self.sampled_rates.loc[i].mean(),xerr=(self.sampled_rates.index[1]-self.sampled_rates.index[0])/2,
                             color='g',marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
 
         level = 95
