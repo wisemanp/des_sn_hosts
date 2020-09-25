@@ -225,15 +225,15 @@ class Rates():
 
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
-                snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
+                snsfrgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
                                                      bins=mbins))[[i,weight_col_SN]]
                 i_f = np.random.randint(0,100)
-                fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
+                fieldsfrgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
                                                             bins=mbins))[[i_f,weight_col_field]]
                 xs = []
                 ys = []
 
-                for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+                for (n,g),(n2,g2) in zip(snsfrgroups,fieldsfrgroups):
 
                     if g.size >0 and g2.size>0:
                         xs.append(n.mid)
@@ -246,9 +246,9 @@ class Rates():
                 iter_df.loc[entry.index,i] = entry
                 bar.update(i)
         if not savename:
-            savename=self.config['rates_root']+'data/mcd_rates.h5'
+            savename=self.config['rates_root']+'data/mcd_sfr_rates.h5'
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
-        self.sampled_rates = iter_df
+        self.sampled_sfr_rates = iter_df
 
     def SN_G_MC_MASS_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5, sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
