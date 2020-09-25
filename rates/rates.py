@@ -190,8 +190,7 @@ class Rates():
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
         self.sampled_rates = iter_df
 
-    def SN_G_MC_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5,
-    sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
+    def SN_G_MC_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5, sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
         # passive
@@ -325,8 +324,8 @@ class Rates():
             axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
             axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
         for i in self.sampled_rates.index:
-            axmbinlog.errorbar(i,self.sampled_rates.loc[i].mean(),xerr=0.184,color='g',marker='D',
-                           alpha=0.5,markersize=2,mew=0.5,mec='w')
+            axmbinlog.errorbar(i,self.sampled_rates.loc[i].mean(),xerr=self.sampled_rates.index[1]-self.sampled_rates.index[0],
+                            color='g',marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
 
         level = 95
 
