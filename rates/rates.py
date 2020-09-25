@@ -95,6 +95,35 @@ class Rates():
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples = field_samples
 
+    def generate_sn_samples_sfr(self,mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
+                                sfr_col = 'logsfr',sfr_err_col = 'logsfr_err',
+                                index_col = 'CIDint',weight_col='weight',n_iter=1E5,save_samples=True):
+        '''Wrapped around sample_sn_masses with option to save the output'''
+        if weight_col not in self.SN_Hosts.columns:
+            self.SN_Hosts[weight_col] = 1
+        sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
+                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col=sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable='sfr')
+        print('Sampling done')
+        if save_samples:
+            print('Saving to file')
+            ext = '.'+self.SN_fn.split('.')[-1]
+            savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_sfr_resampled.h5')
+            sn_samples.to_hdf(savename,key='Bootstrap_samples')
+        self.sn_samples = sn_samples
+
+    def generate_field_samples(self,mass_col='mass',mass_err_col='mass_err',sfr_col = 'log_sfr',sfr_err_col='log_sfr_err',weight_col='weight',index_col = 'id',n_iter=1E5,save_samples=True):
+        '''Wrapped around sample_sn_masses with option to save the output'''
+
+        field_samples = sample_field_masses_sfr(self.field,self.config['rates_root']+'models/',
+                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col = sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable='sfr')
+        print('Sampling done')
+        if save_samples:
+            print('Saving to file')
+            ext = '.'+self.field_fn.split('.')[-1]
+            savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_sfr_resampled.h5')
+            field_samples.to_hdf(savename,key='Bootstrap_samples')
+        self.field_samples = field_samples
+
     def load_sn_samples(self):
 
 
