@@ -248,7 +248,7 @@ class Rates():
         if not savename:
             savename=self.config['rates_root']+'data/mcd_sfr_rates.h5'
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
-        self.sampled_sfr_rates = iter_df
+        self.sampled_rates_sfr = iter_df
 
     def SN_G_MC_MASS_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5, sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
