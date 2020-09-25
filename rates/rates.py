@@ -190,12 +190,13 @@ class Rates():
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
         self.sampled_rates = iter_df
 
-    def SN_G_MC_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5,savename=None,weight_col_SN='weight',weight_col_field='weight'):
+    def SN_G_MC_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5,
+    sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
         # passive
-        sn_passive = self.sn_samples[self.sn_samples['logssfr']<sfr_cut_1]
-        field_passive = self.field_samples[self.field_samples['log_ssfr']<sfr_cut_1]
+        sn_passive = self.sn_samples[self.sn_samples[sn_ssfr_col]<sfr_cut_1]
+        field_passive = self.field_samples[self.field_samples[field_ssfr_col]<sfr_cut_1]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_passive.groupby(pd.cut(sn_passive[i],
@@ -225,8 +226,8 @@ class Rates():
 
         #moderately starforming
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
-        sn_moderate = self.sn_samples[(self.sn_samples['logssfr']>=sfr_cut_1)&(self.sn_samples['logssfr']<sfr_cut_2)]
-        field_moderate = self.field_samples[(self.field_samples['log_ssfr']>=sfr_cut_1)&(self.field_samples['log_ssfr']<sfr_cut_2)]
+        sn_moderate = self.sn_samples[(self.sn_samples[sn_ssfr_col]>=sfr_cut_1)&(self.sn_samples['logssfr']<sfr_cut_2)]
+        field_moderate = self.field_samples[(self.field_samples[field_ssfr_col]>=sfr_cut_1)&(self.field_samples['log_ssfr']<sfr_cut_2)]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_moderate.groupby(pd.cut(sn_moderate[i],
@@ -256,8 +257,8 @@ class Rates():
 
         #highly starforming
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
-        sn_high = self.sn_samples[self.sn_samples['logssfr']>=sfr_cut_2]
-        field_high = self.field_samples[self.field_samples['log_ssfr']>=sfr_cut_2]
+        sn_high = self.sn_samples[self.sn_samples[sn_ssfr_col]>=sfr_cut_2]
+        field_high = self.field_samples[self.field_samples[field_ssfr_col]>=sfr_cut_2]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_high.groupby(pd.cut(sn_high[i],
@@ -339,7 +340,7 @@ class Rates():
                         np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
                         np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
                         color='c',alpha=0.3)
-        
+
         axmbinlog.plot(x_model,
                         np.percentile(chain['line'], 50, axis=0 ),
                         color='b',alpha=1,linestyle='-',linewidth=1,label='$dN/dG = %.2f$'%np.median(chain['slope']))
