@@ -348,13 +348,13 @@ class Rates():
     def load_sampled_rates(self,fn):
         self.sampled_rates = pd.read_hdf(fn,key='bootstrap_samples')
 
-    def fit_SN_G(self,df,mmin=8,mmax=11,seed=123456,n_iter=4E3):
+    def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3):
 
         model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
-        x_model = np.linspace(mmin,mmax,100)
-        x_obs = np.array(df.loc[mmin:mmax].index)
-        y_obs = df.mean(axis=1).loc[mmin:mmax].values
-        y_err = df.std(axis=1).loc[mmin:mmax].values
+        x_model = np.linspace(xmin,xmax,100)
+        x_obs = np.array(df.loc[xmin:xmax].index)
+        y_obs = df.mean(axis=1).loc[xmin:xmax].values
+        y_err = df.std(axis=1).loc[xmin:xmax].values
 
         data = dict(N = len(x_obs),
                     x_obs = x_obs,
@@ -366,7 +366,9 @@ class Rates():
         fit = model.sampling(data=data, seed=seed, iter=int(n_iter))
         return fit
 
-    def plot_fit(self,fit,mmin=8,mmax=11):
+
+
+    def plot_fit_mass(self,fit,mmin=8,mmax=11):
         fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
         chain = fit.extract()
 
@@ -408,6 +410,49 @@ class Rates():
         for lh in leg.legendHandles:
             lh.set_alpha(1)
         plt.savefig(self.root_dir +'figs/rate_vs_mass_slopes_stanfit_test.png')
+
+    def plot_fit_sfr(self,fit,sfrmin=-3,sfrmax=2):
+        fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
+        chain = fit.extract()
+
+    # Plot the points from above as a comparison
+        x_model = np.linspace(sfrmin,sfrmax,100)
+        for counter,c in enumerate(self.sampled_rates_sfr.columns):
+            label=None
+            if counter == 0:
+                label='Observations'
+            axmbinlog.scatter(self.sampled_rates_sfr.index,self.sampled_rates_sfr[c],color='g',marker='o',
+                           alpha=0.05,s=10,label=label)
+            axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
+            axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
+            axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
+            axmbinlog.set_xlabel('SFR $\log (M_*/M_{\odot}$ yr$^{-1})$',size=20)
+            axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
+        for i in self.sampled_rates_sfr.index:
+            axmbinlog.errorbar(i,self.sampled_rates_sfr.loc[i].mean(),xerr=(self.sampled_rates_sfr.index[1]-self.sampled_rates_sfr.index[0])/2,
+                            color='g',marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
+
+        level = 95
+
+        axmbinlog.fill_between(x_model,
+                        np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                        np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                        color='c',alpha=0.2)
+
+        level = 68
+        axmbinlog.fill_between(x_model,
+                        np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                        np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                        color='c',alpha=0.3)
+
+        axmbinlog.plot(x_model,
+                        np.percentile(chain['line'], 50, axis=0 ),
+                        color='b',alpha=1,linestyle='-',linewidth=1,label='$dN/dG = %.2f$'%np.median(chain['slope']))
+
+        leg =axmbinlog.legend()
+        for lh in leg.legendHandles:
+            lh.set_alpha(1)
+        plt.savefig(self.root_dir +'figs/rate_vs_sfr_slopes_stanfit_test.png')
 
     def plot_fit_split_SFR(self,fits,rates,f=None,ax=None):
         if not f:
