@@ -219,8 +219,8 @@ class Rates():
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
         self.sampled_rates = iter_df
 
-    def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-        mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
+    def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
+        mbins = np.linspace(sfrmin,sfrmax,((sfrmax-sfrmin)/sfrstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
         with progressbar.ProgressBar(max_value = n_samples) as bar:
