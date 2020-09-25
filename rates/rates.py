@@ -114,7 +114,7 @@ class Rates():
     def generate_field_samples_sfr(self,mass_col='mass',mass_err_col='mass_err',sfr_col = 'log_sfr',sfr_err_col='log_sfr_err',weight_col='weight',index_col = 'id',n_iter=1E5,save_samples=True):
         '''Wrapped around sample_sn_masses with option to save the output'''
 
-        field_samples = sample_field_masses_sfr(self.field,self.config['rates_root']+'models/',
+        field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',
                     mass_col=mass_col,mass_err_col=mass_err_col,sfr_col = sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable='sfr')
         print('Sampling done')
         if save_samples:
@@ -219,36 +219,36 @@ class Rates():
         iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
         self.sampled_rates = iter_df
 
-        def SN_G_MC_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-            mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
-            iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
+    def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
+        mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
-            with progressbar.ProgressBar(max_value = n_samples) as bar:
-                for i in range(0,n_samples):
-                    snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
-                                                         bins=mbins))[[i,weight_col_SN]]
-                    i_f = np.random.randint(0,100)
-                    fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
-                                                                bins=mbins))[[i_f,weight_col_field]]
-                    xs = []
-                    ys = []
+        with progressbar.ProgressBar(max_value = n_samples) as bar:
+            for i in range(0,n_samples):
+                snmassgroups =self.sn_samples.groupby(pd.cut(self.sn_samples[i],
+                                                     bins=mbins))[[i,weight_col_SN]]
+                i_f = np.random.randint(0,100)
+                fieldmassgroups = self.field_samples.groupby( pd.cut(self.field_samples[i_f],
+                                                            bins=mbins))[[i_f,weight_col_field]]
+                xs = []
+                ys = []
 
-                    for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+                for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
 
-                        if g.size >0 and g2.size>0:
-                            xs.append(n.mid)
+                    if g.size >0 and g2.size>0:
+                        xs.append(n.mid)
 
-                            ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+self.rate_corr) # We want a per-year rate.
+                        ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+self.rate_corr) # We want a per-year rate.
 
-                    xs = np.array(xs)
-                    ys = np.array(ys)
-                    entry = pd.Series(ys,index=xs)
-                    iter_df.loc[entry.index,i] = entry
-                    bar.update(i)
-            if not savename:
-                savename=self.config['rates_root']+'data/mcd_rates.h5'
-            iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
-            self.sampled_rates = iter_df
+                xs = np.array(xs)
+                ys = np.array(ys)
+                entry = pd.Series(ys,index=xs)
+                iter_df.loc[entry.index,i] = entry
+                bar.update(i)
+        if not savename:
+            savename=self.config['rates_root']+'data/mcd_rates.h5'
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+        self.sampled_rates = iter_df
 
     def SN_G_MC_MASS_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5, sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
