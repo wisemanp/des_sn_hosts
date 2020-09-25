@@ -124,18 +124,18 @@ class Rates():
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples = field_samples
 
-    def load_sn_samples(self):
+    def load_sn_samples(self,variable = 'mass'):
 
 
         ext = '.'+self.SN_fn.split('.')[-1]
-        savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_mass_resampled.h5')
+        savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
 
         self.sn_samples = sn_samples = pd.read_hdf(savename,key='Bootstrap_samples')
 
-    def load_field_samples(self,mass_col='mass',err_col='mass_err',index_col = 'id',n_iter=1E5,save_samples=True):
+    def load_field_samples(self,variable='mass'):
 
         ext = '.'+self.field_fn.split('.')[-1]
-        savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_mass_resampled.h5')
+        savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
         self.field_samples = pd.read_hdf(savename,key='Bootstrap_samples')
 
     def cut_z(self,z_min=0,z_max=1):
