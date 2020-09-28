@@ -5,6 +5,13 @@ functions {
     else
       return 0;
       }
+
+  int norm_sign(real norm_out) {
+    if (norm_out > 0)
+      return norm_out;
+    else
+      return -1*norm_out;
+      }
 }
 
 data {
@@ -30,9 +37,10 @@ generated quantities {
     x_loc[n] = uniform_rng(0,1);
     x_sign[n] = sign(x_loc[n]);
     // randomly pull x from a normal distribution
+
     if (x_sign[n] > 0)
-      x_sim[n] = fabs(normal_rng(x_obs[n], x_err_plus[n]));
+      x_sim[n] = x_obs[n] + norm_sign(fabs(normal_rng(0, x_err_plus[n])));
     else
-      x_sim[n] = -1*fabs(normal_rng(x_obs[n], x_err_minus[n]));
+      x_sim[n] = x_obs[n] - norm_sign(fabs(normal_rng(0, x_err_minus[n])));
   }
 }
