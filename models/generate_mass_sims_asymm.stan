@@ -28,7 +28,7 @@ generated quantities {
 
     // first pull from the uniform distribution to determine sign of the sim
     x_loc[n] = uniform_rng(0,1);
-    x_sign[n] = sign(x_loc);
+    x_sign[n] = sign(x_loc[n]);
     // randomly pull x from a normal distribution
     if x_sign[n] > 0
       x_sim[n] = fabs(normal_rng(x_obs[n], x_err_plus[n]));
