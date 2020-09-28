@@ -30,7 +30,7 @@ generated quantities {
     x_loc[n] = uniform_rng(0,1);
     x_sign[n] = sign(x_loc[n]);
     // randomly pull x from a normal distribution
-    if x_sign[n] > 0
+    if (x_sign[n] > 0)
       x_sim[n] = fabs(normal_rng(x_obs[n], x_err_plus[n]));
     else
       x_sim[n] = -1*fabs(normal_rng(x_obs[n], x_err_minus[n]));
