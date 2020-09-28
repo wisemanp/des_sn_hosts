@@ -1,6 +1,6 @@
 functions {
   real sign(real x_loc) {
-    if x_loc > 0:
+    if (x_loc > 0):
       return 1;
     else:
       return 0;
