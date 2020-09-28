@@ -1,6 +1,6 @@
 functions {
-  real sign(real x_loc) {
-    if (x_loc > 0)
+  int sign(real x_loc) {
+    if (x_loc > 0.5)
       return 1;
     else
       return 0;
