@@ -19,7 +19,7 @@ from des_sn_hosts.utils import stan_utility
 import corner
 import itertools
 
-from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_field_masses
+from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_field_masses, sample_field_masses_asymm
 sns.set_color_codes(palette='colorblind')
 
 class Rates():

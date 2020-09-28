@@ -73,8 +73,8 @@ def sample_field_masses_asymm(df,model_dir,mass_col='MASS',mass_err_plus='MASSMA
         err_col_minus = sfr_err_minus
     fit = model_gen.sampling(data=dict(n_obs=nobs,
                                   x_obs =detections[var_col].values,
-                                  x_err_plus =detections[err_col_plus].values+0.001,
-                                  x_err_minus = detections[err_col_minus].values+0.001),
+                                  x_err_plus =detections[err_col_plus].values - detections[var_col].values+0.001,
+                                  x_err_minus = detections[var_col].values - detections[err_col_minus].values+0.001),
                         seed=seed,algorithm='Fixed_param',iter=n_iter,chains=1,verbose=True)
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
