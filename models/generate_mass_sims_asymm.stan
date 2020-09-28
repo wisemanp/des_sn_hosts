@@ -1,3 +1,11 @@
+functions {
+  real sign(real x_loc) {
+    if x_loc > 0:
+      return 1;
+    else:
+      return 0;
+      }
+}
 
 data {
 
@@ -10,14 +18,6 @@ data {
   vector<lower=0>[n_obs] x_err_minus;
 }
 
-functions {
-  real sign(real x_loc) {
-    if x_loc > 0:
-      return 1;
-    else:
-      return 0;
-      }
-}
 generated quantities {
 
   // storage for the generated data
