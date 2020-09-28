@@ -13,10 +13,10 @@ data {
 functions {
   real sign (real x_loc) {
     if x_loc > 0:
-      return 1
+      return 1;
     else:
-      return 0
-      };
+      return 0;
+      }
 }
 generated quantities {
 
