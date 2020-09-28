@@ -1,7 +1,7 @@
 functions {
   real sign(real x_loc) {
     if (x_loc > 0)
-      return 1;  
+      return 1;
     else
       return 0;
       }
@@ -22,7 +22,8 @@ generated quantities {
 
   // storage for the generated data
   vector[n_obs] x_sim;
-
+  vector[n_obs] x_loc;
+  vector[n_obs] x_sign;
   for (n in 1:n_obs) {
 
     // first pull from the uniform distribution to determine sign of the sim
