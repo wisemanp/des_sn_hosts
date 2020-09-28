@@ -6,7 +6,7 @@ functions {
       return 0;
       }
 
-  int norm_sign(real norm_out) {
+  real norm_sign(real norm_out) {
     if (norm_out > 0)
       return norm_out;
     else
