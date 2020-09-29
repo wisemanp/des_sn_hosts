@@ -140,7 +140,7 @@ class Rates():
             ext = '.'+self.field_fn.split('.')[-1]
             savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_sfr_resampled.h5')
             field_samples.to_hdf(savename,key='Bootstrap_samples')
-        self.field_samples = field_samples
+        self.field_samples_sfr = field_samples
 
     def load_sn_samples(self,variable = 'mass'):
 
