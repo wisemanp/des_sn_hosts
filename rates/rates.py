@@ -150,7 +150,7 @@ class Rates():
 
         if variable =='mass':
             self.sn_samples_mass = sn_samples = pd.read_hdf(savename,key='Bootstrap_samples')
-        elif variable =='sfr'
+        elif variable =='sfr':
             self.sn_samples_sfr = sn_samples = pd.read_hdf(savename,key='Bootstrap_samples')
     def load_field_samples(self,variable='mass'):
 
