@@ -473,7 +473,7 @@ class Rates():
 
         axmbinlog.plot(x_model,
                         np.percentile(chain['line'], 50, axis=0 ),
-                        color='b',alpha=1,linestyle='-',linewidth=1,label='$dR/dM_* = %.2f$'%np.median(chain['slope']))
+                        color='b',alpha=1,linestyle='-',linewidth=1,label='$dR/dSFR = %.2f$'%np.median(chain['slope']))
 
         leg =axmbinlog.legend()
         for lh in leg.legendHandles:
