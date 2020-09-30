@@ -452,7 +452,7 @@ class Rates():
             axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
             axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
             axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
-            axmbinlog.set_xlabel('log (SFR / M_{\odot}$ yr$^{-1})$',size=20)
+            axmbinlog.set_xlabel('$\log (SFR / M_{\odot}$ yr$^{-1})$',size=20)
             axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
         for i in self.sampled_rates_sfr.index:
             axmbinlog.errorbar(i,self.sampled_rates_sfr.loc[i].mean(),xerr=(self.sampled_rates_sfr.index[1]-self.sampled_rates_sfr.index[0])/2,
