@@ -240,7 +240,7 @@ class Rates():
                 bar.update(i)
         if not savename:
             savename=self.config['rates_root']+'data/mcd_rates.h5'
-        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_mass')
         self.sampled_rates_mass = iter_df
 
     def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
@@ -270,8 +270,8 @@ class Rates():
                 iter_df.loc[entry.index,i] = entry
                 bar.update(i)
         if not savename:
-            savename=self.config['rates_root']+'data/mcd_sfr_rates.h5'
-        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+            savename=self.config['rates_root']+'data/mcd_rates.h5'
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_sfr')
         self.sampled_rates_sfr = iter_df
 
     def SN_G_MC_MASS_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5, sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
@@ -303,8 +303,8 @@ class Rates():
                 iter_df.loc[entry.index,i] = entry
                 bar.update(i)
         if not savename:
-            savename=self.config['rates_root']+'data/mcd_rates_passive.h5'
-        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+            savename=self.config['rates_root']+'data/mcd_rates.h5'
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_passive')
         self.sampled_passive_rates = iter_df
 
         #moderately starforming
@@ -333,9 +333,8 @@ class Rates():
                 entry = pd.Series(ys,index=xs)
                 iter_df.loc[entry.index,i] = entry
                 bar.update(i)
-        if not savename:
-            savename=self.config['rates_root']+'data/mcd_rates_moderate.h5'
-        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_moderate')
         self.sampled_moderate_rates = iter_df
 
         #highly starforming
@@ -364,16 +363,14 @@ class Rates():
                 entry = pd.Series(ys,index=xs)
                 iter_df.loc[entry.index,i] = entry
                 bar.update(i)
-        if not savename:
-            savename=self.config['rates_root']+'data/mcd_rates_high.h5'
-        iter_df.to_hdf(savename,index=True,key='bootstrap_samples')
+
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_high')
         self.sampled_high_rates = iter_df
 
-    def load_sampled_rates_mass(self,fn):
-        self.sampled_rates_mass = pd.read_hdf(fn,key='bootstrap_samples')
-
-    def load_sampled_rates_sfr(self,fn):
-        self.sampled_rates_sfr = pd.read_hdf(fn,key='bootstrap_samples')
+    def load_sampled_rates(self,fn,ext='mass'):
+        df = pd.read_hdf(fn,key='bootstrap_samples_%s'%ext)
+        setattr(self,'sampled_rates_%s'%ext,df)
+        return df
     def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3):
 
         model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
