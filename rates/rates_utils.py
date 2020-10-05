@@ -117,3 +117,5 @@ def VVmax(df,z_survey=1,method='ZPEG'):
 
         df['VVmax'] = Vsurvey/cosmo.comoving_volume(df['ZMAX_completeness'])
         df['VVmax'].clip(1,inplace=True)
+
+    return df
