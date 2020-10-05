@@ -119,3 +119,41 @@ def VVmax(df,z_survey=1,method='ZPEG'):
         df['VVmax'].clip(1,inplace=True)
 
     return df
+
+def split_by_z(df,fn,zcol='zHD',zmin=0.2,zmax=1.2,zstep=0.2,VVmax=False):
+    groups = df.groupby(pd.cut(df[zcol],bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))
+    for n,g in groups:
+        if VVmax:
+            g = VVmax(g,z_survey=n.right)
+        g.to_hdf(fn,key='z_%.2f_%.2f'%(zmin,zmax))
+
+
+def SN_G_MC(sn_samples_mass,field_samples_mass,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight',rate_corr=-0.38):
+    mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
+    iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
+
+    with progressbar.ProgressBar(max_value = n_samples) as bar:
+        for i in range(0,n_samples):
+            snmassgroups =sn_samples_mass.groupby(pd.cut(sn_samples_mass[i],
+                                                 bins=mbins))[[i,weight_col_SN]]
+            i_f = np.random.randint(0,100)
+            fieldmassgroups = field_samples_mass.groupby( pd.cut(field_samples_mass[i_f],
+                                                        bins=mbins))[[i_f,weight_col_field]]
+            xs = []
+            ys = []
+
+            for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
+
+                if g.size >0 and g2.size>0:
+                    xs.append(n.mid)
+
+                    ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+rate_corr) # We want a per-year rate.
+
+            xs = np.array(xs)
+            ys = np.array(ys)
+            entry = pd.Series(ys,index=xs)
+            iter_df.loc[entry.index,i] = entry
+            bar.update(i)
+    
+    iter_df.to_hdf(savename,index=True,key='bootstrap_samples_mass')
+    return iter_df

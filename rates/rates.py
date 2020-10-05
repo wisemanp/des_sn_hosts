@@ -19,7 +19,7 @@ from des_sn_hosts.utils import stan_utility
 import corner
 import itertools
 
-from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_field_masses, sample_field_masses_asymm
+from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_field_masses, sample_field_masses_asymm, split_by_z
 sns.set_color_codes(palette='colorblind')
 
 class Rates():
@@ -166,6 +166,10 @@ class Rates():
             sn_samples = sn_samples[(sn_samples['zHD']<z_max)&(sn_samples['zHD']>z_min)]
             field_samples = field_samples[(field_samples['redshift']<z_max)&(field_samples['redshift']>z_min)]
 
+    def split_by_z(self,zmin=0.2,zmax=1.2,zstep=0.2):
+        split_by_z(self.SN_hosts,self.SN_fn,zmin,zmax,zstep)
+        split_by_z(self.field,self.field_fn,zmin,zmax,zstep,VVmax=True)
+
     def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
                                                 bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zHD']
@@ -213,35 +217,20 @@ class Rates():
         axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
 
     def SN_G_MC(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-        mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
-        with progressbar.ProgressBar(max_value = n_samples) as bar:
-            for i in range(0,n_samples):
-                snmassgroups =self.sn_samples_mass.groupby(pd.cut(self.sn_samples_mass[i],
-                                                     bins=mbins))[[i,weight_col_SN]]
-                i_f = np.random.randint(0,100)
-                fieldmassgroups = self.field_samples_mass.groupby( pd.cut(self.field_samples_mass[i_f],
-                                                            bins=mbins))[[i_f,weight_col_field]]
-                xs = []
-                ys = []
-
-                for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
-
-                    if g.size >0 and g2.size>0:
-                        xs.append(n.mid)
-
-                        ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+self.rate_corr) # We want a per-year rate.
-
-                xs = np.array(xs)
-                ys = np.array(ys)
-                entry = pd.Series(ys,index=xs)
-                iter_df.loc[entry.index,i] = entry
-                bar.update(i)
         if not savename:
             savename=self.config['rates_root']+'data/mcd_rates.h5'
-        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_mass')
+        iter_df = SN_G_MC(self.sn_samples_mass,self.field_samples_mass,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename, weight_col_SN=weight_col_SN,weight_col_field=weight_col_field)
         self.sampled_rates_mass = iter_df
+
+    def SN_G_MC_z(self,zmin=0.2,zmax=0.8,zstep=0.2,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight',zmin=0.2,zmax=0.8,zstep=0.2):
+        for counter,zlo in enumerate(np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)):
+
+            key = 'z_%.2f_%.2f'%(zmin,zmax)
+            sn_df = pd.read_hdf(self.SN_fn,key=key)
+            field_df = pd.read_hdf(self.field_fn,key=key)
+            savename=self.config['rates_root']+'data/mcd_rates.h5'
+            iter_df = SN_G_MC(sn_df,field_df,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename,key='bootstrap_samples_mass'+key, weight_col_SN=weight_col_SN,weight_col_field=weight_col_field)
 
     def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(sfrmin,sfrmax,((sfrmax-sfrmin)/sfrstep)+1)
