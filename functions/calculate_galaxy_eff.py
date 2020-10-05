@@ -20,7 +20,7 @@ class Completeness():
         Z = row['mu']
         M = row['ABSMAGS_%s'%self.b.capitalize()]
         Mlim_B = self.mlim_B - (Z-self.dZ)
-        sel = self.test_df[(self.test_df['mu']<Z)&(self.test_df['mu']>Z-self.dZ)&(self.test_df['ABSMAGS_%s'self.b.capitalize()]<M)&(self.test_df['ABSMAGS_%s'self.b.capitalize()]>Mlim_B)]
+        sel = self.test_df[(self.test_df['mu']<Z)&(self.test_df['mu']>Z-self.dZ)&(self.test_df['ABSMAGS_%s'%self.b.capitalize()]<M)&(self.test_df['ABSMAGS_%s'%self.b.capitalize()]>Mlim_B)]
         return len(sel)
 
     def n_i(self,row,mlim_star):
@@ -28,14 +28,14 @@ class Completeness():
         Mlim_star = mlim_star - Z
         Mlim_B = self.mlim_B - (Z-self.dZ)
         M = row['ABSMAGS_%s'%self.b.capitalize()]
-        sel = self.test_df[(self.test_df['mu']<Z)&(self.test_df['mu']>(Z-self.dZ))&(self.test_df['ABSMAGS_%s'self.b.capitalize()]<Mlim_star)&(self.test_df['ABSMAGS_%s'self.b.capitalize()]>Mlim_B)]
+        sel = self.test_df[(self.test_df['mu']<Z)&(self.test_df['mu']>(Z-self.dZ))&(self.test_df['ABSMAGS_%s'%self.b.capitalize()]<Mlim_star)&(self.test_df['ABSMAGS_%s'%self.b.capitalize()]>Mlim_B)]
         return len(sel)
 
     def q_i(self,row):
         Z = row['mu']
         M = row['ABSMAGS_%s'%self.b.capitalize()]
         Mlim_B = self.mlim_B - (Z-self.dZ)
-        sel = self.test_df[(self.test_df['mu']<Z)&(self.test_df['ABSMAGS_%s'self.b.capitalize()]>(M-self.dM))&(self.test_df['ABSMAGS_%s'self.b.capitalize()]<M)]
+        sel = self.test_df[(self.test_df['mu']<Z)&(self.test_df['ABSMAGS_%s'%self.b.capitalize()]>(M-self.dM))&(self.test_df['ABSMAGS_%s'%self.b.capitalize()]<M)]
         return len(sel)
 
     def t_i(self,row,mlim_star):
@@ -43,7 +43,7 @@ class Completeness():
         M = row['ABSMAGS_%s'%self.b.capitalize()]
         Mlim_B = self.mlim_B - Z
         Zmax = mlim_star - M
-        sel = self.test_df[(self.test_df['mu']<Zmax)&(self.test_df['ABSMAGS_%s'self.b.capitalize()]>(M-self.dM))&(self.test_df['ABSMAGS_%s'self.b.capitalize()]<M)]
+        sel = self.test_df[(self.test_df['mu']<Zmax)&(self.test_df['ABSMAGS_%s'%self.b.capitalize()]>(M-self.dM))&(self.test_df['ABSMAGS_%s'%self.b.capitalize()]<M)]
         return len(sel)
 
     def var_zeta_i(self,ni):
