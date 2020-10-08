@@ -127,7 +127,7 @@ def split_by_z(df,fn,zcol='zHD',zmin=0.2,zmax=1.2,zstep=0.2,do_VVmax=False):
     for n,g in groups:
         if do_VVmax:
             g = VVmax(g,z_survey=n.right)
-        g.to_hdf(fn,key='z_%.2f_%.2f'%(zmin,zmax))
+        g.to_hdf(fn,key='z_%.2f_%.2f'%(n.left,n.right))
 
 
 def SN_G_MC(sn_samples_mass,field_samples_mass,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight',rate_corr=-0.38):
