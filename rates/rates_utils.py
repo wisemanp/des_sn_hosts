@@ -1,5 +1,7 @@
 import pystan
 import pandas as pd
+import numpy as np
+import progressbar
 from des_sn_hosts.utils import stan_utility
 
 def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='logssfr', sfr_err_col='logssfr_err',weight_col='weight',index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
@@ -154,6 +156,6 @@ def SN_G_MC(sn_samples_mass,field_samples_mass,n_samples=1E4,mmin=7.25,mmax=13,m
             entry = pd.Series(ys,index=xs)
             iter_df.loc[entry.index,i] = entry
             bar.update(i)
-    
+
     iter_df.to_hdf(savename,index=True,key='bootstrap_samples_mass')
     return iter_df
