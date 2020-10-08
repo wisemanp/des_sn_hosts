@@ -167,7 +167,7 @@ class Rates():
             field_samples = field_samples[(field_samples['redshift']<z_max)&(field_samples['redshift']>z_min)]
 
     def split_by_z(self,zmin=0.2,zmax=1.2,zstep=0.2):
-        split_by_z(self.SN_hosts,self.SN_fn,zmin,zmax,zstep)
+        split_by_z(self.SN_Hosts,self.SN_fn,zmin,zmax,zstep)
         split_by_z(self.field,self.field_fn,zmin,zmax,zstep,VVmax=True)
 
     def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
