@@ -223,7 +223,7 @@ class Rates():
         iter_df = SN_G_MC(self.sn_samples_mass,self.field_samples_mass,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename, weight_col_SN=weight_col_SN,weight_col_field=weight_col_field)
         self.sampled_rates_mass = iter_df
 
-    def SN_G_MC_z(self,zmin=0.2,zmax=0.8,zstep=0.2,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight',zmin=0.2,zmax=0.8,zstep=0.2):
+    def SN_G_MC_z(self,zmin=0.2,zmax=0.8,zstep=0.2,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
         for counter,zlo in enumerate(np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)):
 
             key = 'z_%.2f_%.2f'%(zmin,zmax)
