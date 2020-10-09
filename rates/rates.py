@@ -145,7 +145,7 @@ class Rates():
     def generate_samples_split_z(self,zmin,zmax,zstep,variable='mass'):
         sn_samples_z = {}
         field_samples_z = {}
-        for zlo in np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1):
+        for zlo in np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False):
             zhi=zlo+0.2
             # SN Hosts
             sn_df = pd.read_hdf(self.SN_fn,key='z_%.2f_%.2f'%(zlo,zhi))
@@ -194,15 +194,15 @@ class Rates():
 
     def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
-                                                bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zHD']
+                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))['zHD']
         self.snmassgroups =self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.HOST_LOGMASS,
-                                                bins=np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)))['HOST_LOGMASS'] #,'VVmax'
+                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))['HOST_LOGMASS'] #,'VVmax'
 
     def get_field_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25,mass_col='log_mass'):
         self.fieldzgroups =self.field.groupby(pd.cut(self.field.redshift,
-                                                bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['redshift']
+                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))['redshift']
         self.fieldmassgroups = self.field.groupby( pd.cut(self.field[mass_col],
-                                                bins=np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)))[mass_col]
+                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))[mass_col]
 
     def SN_G(self, scale='log',):
         '''Plots the SN/G rate for the data'''
@@ -248,7 +248,7 @@ class Rates():
 
 
     def SN_G_MC_z(self,zmin=0.2,zmax=0.8,zstep=0.2,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-        for counter,zlo in enumerate(np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)):
+        for counter,zlo in enumerate(np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False)):
             zhi = zlo+zstep
             print(zlo,'-',zhi)
             key = 'z_%.2f_%.2f'%(zlo,zhi)
