@@ -160,7 +160,7 @@ class Rates():
             field_sample = sample_field_asymm(field_df,self.config['rates_root']+'models/',sfr_col='SFR',sfr_err_plus='SFRMAX',sfr_err_minus='SFRMIN',weight_col='VVmax',index_col = 'id',n_iter=int(1E4),variable=variable)
             ext = '.'+self.field_fn.split('.')[-1]
             field_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
-            field_samples_z['%.2f-%.2f'%(zlo,zhi)] =field_sample)
+            field_samples_z['%.2f-%.2f'%(zlo,zhi)] = field_sample
         setattr(self,'sn_samples_%s_z'%variable,sn_samples_z)
         setattr(self,'field_samples_%s_z'%variable,field_samples_z)
         return sn_samples_z, field_samples_z
