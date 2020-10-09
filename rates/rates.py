@@ -252,8 +252,8 @@ class Rates():
             zhi = zlo+zstep
             print(zlo,'-',zhi)
             key = 'z_%.2f_%.2f'%(zlo,zhi)
-            sn_df = self.load_sn_samples(key_ext=key)
-            field_df = self.load_field_samples(key_ext=key)
+            sn_df = getattr(self,'sn_samples_mass_%s'%key)
+            field_df = getattr(self,'field_samples_mass_%s'%key)
             savename=self.config['rates_root']+'data/mcd_rates.h5'
             iter_df = SN_G_MC(sn_df,field_df,n_samples=int(1E+2),mmin=8.75,mmax=11,mstep=0.25,savename=savename, variable='mass',key_ext=key,weight_col_SN='weight',weight_col_field='VVmax')
             setattr(self,'sampled_rates_mass_%s'%key,iter_df)
