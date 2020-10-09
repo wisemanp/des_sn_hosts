@@ -142,24 +142,46 @@ class Rates():
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples_sfr = field_samples
 
-    def load_sn_samples(self,variable = 'mass'):
+    def generate_samples_split_z(self,zmin,zmax,zstep,variable='mass'):
+        sn_samples_z = {}
+        field_samples_z = {}
+        for zlo in np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1):
+            zhi=zlo+0.2
+            # SN Hosts
+            sn_df = pd.read_hdf(self.SN_fn,key='z_%.2f_%.2f'%(zlo,zhi))
+            sn_sample = sample_sn_masses(sn_df,self.config['rates_root']+'models/',
+                                                mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
+                                                        sfr_col = 'logsfr',sfr_err_col = 'logsfr_err',
+                                                        index_col = 'CIDint',weight_col='weight',n_iter=int(1E4),variable=variable)
+            ext = '.'+self.SN_fn.split('.')[-1]
+            sn_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
+            sn_samples_z['%.2f-%.2f'%(zlo,zhi)] = sn_sample
+            field_df = pd.read_hdf(r.field_fn,key='z_%.2f_%.2f'%(zlo,zhi))
+            field_sample = sample_field_asymm(field_df,self.config['rates_root']+'models/',sfr_col='SFR',sfr_err_plus='SFRMAX',sfr_err_minus='SFRMIN',weight_col='VVmax',index_col = 'id',n_iter=int(1E4),variable=variable)
+            ext = '.'+self.field_fn.split('.')[-1]
+            field_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
+            field_samples_z['%.2f-%.2f'%(zlo,zhi)] =field_sample)
+        setattr(self,'sn_samples_%s_z'%variable,sn_samples_z)
+        setattr(self,'field_samples_%s_z'%variable,field_samples_z)
+        return sn_samples_z, field_samples_z
 
-
+    def load_sn_samples(self,variable = 'mass',key_ext=None):
         ext = '.'+self.SN_fn.split('.')[-1]
         savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
+        if not key_ext:
+            setattr(self,'sn_samples_%s'%variable,pd.read_hdf(savename,key='Bootstrap_samples'))
+        else:
+            setattr(self,'sn_samples_%s_%s'%(variable,key_ext),pd.read_hdf(savename,key='Bootstrap_samples_%s'%key_ext))
 
-        if variable =='mass':
-            self.sn_samples_mass = sn_samples = pd.read_hdf(savename,key='Bootstrap_samples')
-        elif variable =='sfr':
-            self.sn_samples_sfr = sn_samples = pd.read_hdf(savename,key='Bootstrap_samples')
-    def load_field_samples(self,variable='mass'):
+    def load_field_samples(self,variable='mass',key_ext=None):
 
         ext = '.'+self.field_fn.split('.')[-1]
         savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
-        if variable =='mass':
-            self.field_samples_mass = pd.read_hdf(savename,key='Bootstrap_samples')
-        elif variable =='sfr':
-            self.field_samples_sfr = pd.read_hdf(savename,key='Bootstrap_samples')
+        if not key_ext:
+            setattr(self,'field_samples_%s'%variable,pd.read_hdf(savename,key='Bootstrap_samples'))
+        else:
+            setattr(self,'field_samples_%s_%s'%(variable,key_ext),pd.read_hdf(savename,key='Bootstrap_samples_%s'%key_ext))
+
     def cut_z(self,z_min=0,z_max=1):
         for sn_samples,field_samples in zip([self.sn_samples_mass,self.sn_samples_sfr],[self.field_samples_mass,self.field_samples_sfr]):
 
@@ -223,15 +245,18 @@ class Rates():
         iter_df = SN_G_MC(self.sn_samples_mass,self.field_samples_mass,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename, weight_col_SN=weight_col_SN,weight_col_field=weight_col_field)
         self.sampled_rates_mass = iter_df
 
+
+
     def SN_G_MC_z(self,zmin=0.2,zmax=0.8,zstep=0.2,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
         for counter,zlo in enumerate(np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)):
-
-            key = 'z_%.2f_%.2f'%(zmin,zmax)
-            sn_df = pd.read_hdf(self.SN_fn,key=key)
-            field_df = pd.read_hdf(self.field_fn,key=key)
+            zhi = zlo+zstep
+            print(zlo,'-',zhi)
+            key = 'z_%.2f_%.2f'%(zlo,zhi)
+            sn_df = self.load_sn_samples(key_ext=key)
+            field_df = self.load_field_samples(key_ext=key)
             savename=self.config['rates_root']+'data/mcd_rates.h5'
-            iter_df = SN_G_MC(sn_df,field_df,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename,key='bootstrap_samples_mass'+key, weight_col_SN=weight_col_SN,weight_col_field=weight_col_field)
-
+            iter_df = SN_G_MC(sn_df,field_df,n_samples=int(1E+2),mmin=8.75,mmax=11,mstep=0.25,savename=savename, variable='mass',key_ext=key,weight_col_SN='weight',weight_col_field='VVmax')
+            setattr(self,'sampled_rates_mass_%s'%key,iter_df)
     def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(sfrmin,sfrmax,((sfrmax-sfrmin)/sfrstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)

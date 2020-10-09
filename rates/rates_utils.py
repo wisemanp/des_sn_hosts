@@ -29,8 +29,7 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_c
     #df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
     return df_bootstrapped
 
-def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='log_ssfr',sfr_err_col='logssfr_err',weight_col='weight',
-                    index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
+def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='log_ssfr',sfr_err_col='logssfr_err',weight_col='weight',index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
 
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
@@ -130,7 +129,7 @@ def split_by_z(df,fn,zcol='zHD',zmin=0.2,zmax=1.2,zstep=0.2,do_VVmax=False):
         g.to_hdf(fn,key='z_%.2f_%.2f'%(n.left,n.right))
 
 
-def SN_G_MC(sn_samples_mass,field_samples_mass,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight',rate_corr=-0.38):
+def SN_G_MC(sn_samples_mass,field_samples_mass,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None,variable='mass',key_ext=None, weight_col_SN='weight',weight_col_field='weight',rate_corr=-0.38):
     mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
     iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
@@ -156,6 +155,8 @@ def SN_G_MC(sn_samples_mass,field_samples_mass,n_samples=1E4,mmin=7.25,mmax=13,m
             entry = pd.Series(ys,index=xs)
             iter_df.loc[entry.index,i] = entry
             bar.update(i)
-
-    iter_df.to_hdf(savename,index=True,key='bootstrap_samples_mass')
+    if key_ext:
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_%s_%s'%(variable,key_ext))
+    else:
+        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_%s'%variable)
     return iter_df
