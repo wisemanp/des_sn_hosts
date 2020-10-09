@@ -248,7 +248,8 @@ class Rates():
 
 
     def SN_G_MC_z(self,zmin=0.2,zmax=0.8,zstep=0.2,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-        for counter,zlo in enumerate(np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False)):
+        print('Calculating rates for redshift bins: ',np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))
+        for zlo in np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False):
             zhi = zlo+zstep
             print(zlo,'-',zhi)
             key = 'z_%.2f_%.2f'%(zlo,zhi)
