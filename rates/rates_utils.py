@@ -122,7 +122,7 @@ def VVmax(df,z_survey=1,method='ZPEG'):
     return df
 
 def split_by_z(df,fn,zcol='zHD',zmin=0.2,zmax=1.2,zstep=0.2,do_VVmax=False):
-    groups = df.groupby(pd.cut(df[zcol],bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False)))
+    groups = df.groupby(pd.cut(df[zcol],bins=np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)))
     for n,g in groups:
         if do_VVmax:
             g = VVmax(g,z_survey=n.right)
