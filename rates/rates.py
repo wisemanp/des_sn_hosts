@@ -194,15 +194,15 @@ class Rates():
 
     def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
-                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))['zHD']
+                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False)))['zHD']
         self.snmassgroups =self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.HOST_LOGMASS,
-                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))['HOST_LOGMASS'] #,'VVmax'
+                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False)))['HOST_LOGMASS'] #,'VVmax'
 
     def get_field_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25,mass_col='log_mass'):
         self.fieldzgroups =self.field.groupby(pd.cut(self.field.redshift,
-                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))['redshift']
+                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False)))['redshift']
         self.fieldmassgroups = self.field.groupby( pd.cut(self.field[mass_col],
-                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False))[mass_col]
+                                                bins=np.linspace(zmin,zmax,int(zmax-zmin)/zstep,endpoint=False)))[mass_col]
 
     def SN_G(self, scale='log',):
         '''Plots the SN/G rate for the data'''
