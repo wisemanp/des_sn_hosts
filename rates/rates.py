@@ -257,6 +257,7 @@ class Rates():
             savename=self.config['rates_root']+'data/mcd_rates.h5'
             iter_df = SN_G_MC(sn_df,field_df,n_samples=int(1E+2),mmin=8.75,mmax=11,mstep=0.25,savename=savename, variable='mass',key_ext=key,weight_col_SN='weight',weight_col_field='VVmax')
             setattr(self,'sampled_rates_mass_%s'%key,iter_df)
+            return iter_df
     def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
         mbins = np.linspace(sfrmin,sfrmax,((sfrmax-sfrmin)/sfrstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
@@ -384,6 +385,7 @@ class Rates():
     def load_sampled_rates(self,fn,ext='mass'):
         df = pd.read_hdf(fn,key='bootstrap_samples_%s'%ext)
         setattr(self,'sampled_rates_%s'%ext,df)
+        return df
     def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3):
 
         model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
