@@ -384,8 +384,13 @@ class Rates():
         self.sampled_high_rates = iter_df
 
     def load_sampled_rates(self,fn,ext='mass'):
-        df = pd.read_hdf(fn,key='bootstrap_samples_%s'%ext)
-        setattr(self,'sampled_rates_%s'%ext,df)
+        if ext:
+
+            df = pd.read_hdf(fn,key='bootstrap_samples_%s'%ext)
+            setattr(self,'sampled_rates_%s'%ext,df)
+        else:
+            df = pd.read_hdf(fn,key='bootstrap_samples')
+            setattr(self,'sampled_rates',df)
         return df
     def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3):
 
