@@ -44,6 +44,7 @@ generated quantities {
   vector[N] ppc;
   vector[N_model] line;
   vector[N] log_lik;
+  real log_lik_sum;
   // generate the posterior of the
   // fitted line
   line = slope * x_model + intercept;
@@ -56,6 +57,7 @@ generated quantities {
   // generate the log-likelihood for the model
     for (i in 1:N)
          log_lik[i] = normal_lpdf(y_obs[i] | y_latent, sigma);
+    log_lik_sum = sum(log_lik);
   }
 
 
