@@ -43,7 +43,7 @@ generated quantities {
 
   vector[N] ppc;
   vector[N_model] line;
-
+  vector[N] log_lik;
   // generate the posterior of the
   // fitted line
   line = slope * x_model + intercept;
@@ -53,6 +53,9 @@ generated quantities {
 
     ppc[n] = normal_rng(slope * x_obs[N] + intercept, sigma[N]);
 
+  // generate the log-likelihood for the model
+    for (i in 1:N)
+         log_lik[i] = normal_lpdf(y_obs[i] | y_latent, sigma);
   }
 
 
