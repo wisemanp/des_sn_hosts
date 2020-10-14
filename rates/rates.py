@@ -394,7 +394,7 @@ class Rates():
         return df
     def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3):
 
-        model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
+        model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero_scatter.stan')
         x_model = np.linspace(xmin,xmax,100)
         x_obs = np.array(df.loc[xmin:xmax].index)
         y_obs = df.mean(axis=1).loc[xmin:xmax].values
