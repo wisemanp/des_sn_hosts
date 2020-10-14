@@ -412,8 +412,10 @@ class Rates():
 
 
 
-    def plot_fit_mass(self,fit,mmin=8,mmax=11):
-        fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
+    def plot_fit_mass(self,fit,mmin=8,mmax=11,f=None,ax=None):
+        if not f:
+            f,ax = plt.subplots(figsize=(12,7))
+        f,ax = plt.subplots(figsize=(12,7))
         chain = fit.extract()
 
     # Plot the points from above as a comparison
@@ -422,39 +424,39 @@ class Rates():
             label=None
             if counter == 0:
                 label='Observations'
-            axmbinlog.scatter(self.sampled_rates_mass.index,self.sampled_rates_mass[c],color='g',marker='o',
+            ax.scatter(self.sampled_rates_mass.index,self.sampled_rates_mass[c],color='g',marker='o',
                            alpha=0.05,s=10,label=label)
-            axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
-            axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
-            axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
-            axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
-            axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
+            ax.xaxis.set_minor_locator(MultipleLocator(0.25))
+            ax.yaxis.set_minor_locator(MultipleLocator(0.125))
+            ax.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
+            ax.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
+            ax.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
         for i in self.sampled_rates_mass.index:
-            axmbinlog.errorbar(i,self.sampled_rates_mass.loc[i].mean(),xerr=(self.sampled_rates_mass.index[1]-self.sampled_rates_mass.index[0])/2,
+            ax.errorbar(i,self.sampled_rates_mass.loc[i].mean(),xerr=(self.sampled_rates_mass.index[1]-self.sampled_rates_mass.index[0])/2,
                             color='g',marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
 
         level = 95
 
-        axmbinlog.fill_between(x_model,
+        ax.fill_between(x_model,
                         np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
                         np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
                         color='c',alpha=0.2)
 
         level = 68
-        axmbinlog.fill_between(x_model,
+        ax.fill_between(x_model,
                         np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
                         np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
                         color='c',alpha=0.3)
 
-        axmbinlog.plot(x_model,
+        ax.plot(x_model,
                         np.percentile(chain['line'], 50, axis=0 ),
                         color='b',alpha=1,linestyle='-',linewidth=1,label='$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope'])))
 
-        leg =axmbinlog.legend()
+        leg =ax.legend()
         for lh in leg.legendHandles:
             lh.set_alpha(1)
         plt.savefig(self.root_dir +'figs/rate_vs_mass_slopes_stanfit_test.png')
-
+        return f,ax
     def plot_fit_sfr(self,fit,sfrmin=-3,sfrmax=2):
         fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
         chain = fit.extract()
