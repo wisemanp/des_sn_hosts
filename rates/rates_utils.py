@@ -130,7 +130,7 @@ def split_by_z(df,fn,zcol='zHD',zmin=0.2,zmax=1.2,zstep=0.2,do_VVmax=False):
 
 
 def SN_G_MC(sn_samples_mass,field_samples_mass,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None,variable='mass',key_ext=None, weight_col_SN='weight',weight_col_field='weight',rate_corr=-0.38):
-    mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
+    mbins = np.linspace(mmin,mmax,int((mmax-mmin)/mstep)+1)
     iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
     with progressbar.ProgressBar(max_value = n_samples) as bar:
