@@ -146,7 +146,7 @@ class Rates():
         sn_samples_z = {}
         field_samples_z = {}
         for zlo in np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False):
-            zhi=zlo+0.2
+            zhi=zlo+zstep
             # SN Hosts
             sn_df = pd.read_hdf(self.SN_fn,key='z_%.2f_%.2f'%(zlo,zhi))
             sn_sample = sample_sn_masses(sn_df,self.config['rates_root']+'models/',
