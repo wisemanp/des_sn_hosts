@@ -29,7 +29,7 @@ model {
 
   slope ~ normal(0,5);
   intercept ~ normal(0,5);
-  dispersion ~ cauchy(0,5)
+  dispersion ~ cauchy(0,5);
 
   // likelihood
 
