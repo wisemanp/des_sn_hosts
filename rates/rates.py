@@ -392,7 +392,7 @@ class Rates():
             df = pd.read_hdf(fn,key='bootstrap_samples')
             setattr(self,'sampled_rates',df)
         return df
-    def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3,dispersion=False):
+    def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3,dispersion=False,**kwargs):
         if dispersion:
 
             model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero_scatter.stan')
