@@ -27,8 +27,6 @@ transformed parameters {
 
 }
 
-}
-
 model {
 
   // weakly informative priors
