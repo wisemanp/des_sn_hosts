@@ -20,7 +20,11 @@ transformed parameters {
 
   // latent y values not obscured by measurement error
   vector[N] y_latent = slope * x_obs + intercept;
-  vector[N] sigma_tot = sqrt(pow(sigma,2) + pow(dispersion,2));
+  vector[N] sigma_tot;
+  for (i in 1:N){
+    sigma_tot[i] = sqrt(pow(sigma[i],2) + pow(dispersion,2));
+  }
+
 }
 
 }
