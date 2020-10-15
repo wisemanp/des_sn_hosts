@@ -436,7 +436,7 @@ class Rates():
                 ax.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
             for i in rate.index:
                 ax.errorbar(i,rate.loc[i].mean(),xerr=(rate.index[1]-rate.index[0])/2,
-                                ,marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
+                                marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
 
         level = 95
 
