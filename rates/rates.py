@@ -415,7 +415,7 @@ class Rates():
 
 
 
-    def plot_fit_mass(self,fit,mmin=8,mmax=11,f=None,ax=None):
+    def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text):
         if not f:
             f,ax = plt.subplots(figsize=(12,7))
         f,ax = plt.subplots(figsize=(12,7))
@@ -423,19 +423,18 @@ class Rates():
 
     # Plot the points from above as a comparison
         x_model = np.linspace(mmin,mmax,100)
-        for counter,c in enumerate(self.sampled_rates_mass.columns):
+        for counter,c in enumerate(rate.columns):
             label=None
-            if counter == 0:
-                label='Observations'
-            ax.scatter(self.sampled_rates_mass.index,self.sampled_rates_mass[c],color='g',marker='o',
-                           alpha=0.05,s=10,label=label)
+
+            ax.scatter(rate.index,rate[c],color='g',marker='o',
+                           alpha=0.05,s=10,label=None)
             ax.xaxis.set_minor_locator(MultipleLocator(0.25))
             ax.yaxis.set_minor_locator(MultipleLocator(0.125))
             ax.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
             ax.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
             ax.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
-        for i in self.sampled_rates_mass.index:
-            ax.errorbar(i,self.sampled_rates_mass.loc[i].mean(),xerr=(self.sampled_rates_mass.index[1]-self.sampled_rates_mass.index[0])/2,
+        for i in rate.index:
+            ax.errorbar(i,rate.loc[i].mean(),xerr=(rate.index[1]-rate.index[0])/2,
                             color='g',marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
 
         level = 95
@@ -450,10 +449,13 @@ class Rates():
                         np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
                         np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
                         color='c',alpha=0.3)
-
+        if label_text:
+            label= label_text+': $dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
+        else:
+            label= '$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))             
         ax.plot(x_model,
                         np.percentile(chain['line'], 50, axis=0 ),
-                        color='b',alpha=1,linestyle='-',linewidth=1,label='$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope'])))
+                        color='b',alpha=1,linestyle='-',linewidth=1,label=label)
 
         leg =ax.legend()
         for lh in leg.legendHandles:
