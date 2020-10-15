@@ -20,6 +20,8 @@ transformed parameters {
 
   // latent y values not obscured by measurement error
   vector[N] y_latent = slope * x_obs + intercept;
+  vector[N] sigma_tot = sqrt(pow(sigma,2) + pow(dispersion,2));
+}
 
 }
 
@@ -33,7 +35,7 @@ model {
 
   // likelihood
 
-  y_obs ~ normal(y_latent, sigma+dispersion);
+  y_obs ~ normal(y_latent, sigma_tot);
 
 
 
