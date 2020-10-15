@@ -242,7 +242,7 @@ class Rates():
 
         if not savename:
             savename=self.config['rates_root']+'data/mcd_rates.h5'
-        iter_df = SN_G_MC(self.sn_samples_mass,self.field_samples_mass,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename, weight_col_SN=weight_col_SN,weight_col_field=weight_col_field)
+        iter_df = SN_G_MC(self.sn_samples_mass,self.field_samples_mass,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename, weight_col_SN=weight_col_SN,weight_col_field=weight_col_field,key_ext=variable+'_%.2f'%mstep)
         self.sampled_rates_mass = iter_df
 
 
@@ -252,7 +252,7 @@ class Rates():
         for zlo in np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False):
             zhi = zlo+zstep
             print(zlo,'-',zhi)
-            key = 'z_%.2f_%.2f'%(zlo,zhi)
+            key = 'z_%.2f_%.2f_%.2f'%(zlo,zhi,mstep)
             sn_df = getattr(self,'sn_samples_mass_%s'%key)
             field_df = getattr(self,'field_samples_mass_%s'%key)
             savename=self.config['rates_root']+'data/mcd_rates.h5'
