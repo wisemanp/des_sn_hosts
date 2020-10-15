@@ -418,7 +418,7 @@ class Rates():
     def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text=None):
         if not f:
             f,ax = plt.subplots(figsize=(12,7))
-        f,ax = plt.subplots(figsize=(12,7))
+        
         chain = fit.extract()
 
     # Plot the points from above as a comparison
