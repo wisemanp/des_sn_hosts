@@ -32,8 +32,8 @@ model {
   // weakly informative priors
 
   slope ~ normal(0,5);
-  intercept ~ normal(0,5);
-  dispersion ~ cauchy(0,5);
+  intercept ~ normal(-8,5);
+  dispersion ~ cauchy(0,1);
 
   // likelihood
 
