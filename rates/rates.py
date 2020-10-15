@@ -415,7 +415,7 @@ class Rates():
 
 
 
-    def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text):
+    def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text=None):
         if not f:
             f,ax = plt.subplots(figsize=(12,7))
         f,ax = plt.subplots(figsize=(12,7))
@@ -452,7 +452,7 @@ class Rates():
         if label_text:
             label= label_text+': $dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
         else:
-            label= '$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))             
+            label= '$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
         ax.plot(x_model,
                         np.percentile(chain['line'], 50, axis=0 ),
                         color='b',alpha=1,linestyle='-',linewidth=1,label=label)
