@@ -428,7 +428,7 @@ class Rates():
                 label=None
 
                 ax.scatter(rate.index,rate[c],marker='o',
-                               alpha=0.05,s=10,label=None)
+                               alpha=0.05,s=10,label=None,**kwargs)
                 ax.xaxis.set_minor_locator(MultipleLocator(0.25))
                 ax.yaxis.set_minor_locator(MultipleLocator(0.125))
                 ax.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
@@ -436,27 +436,27 @@ class Rates():
                 ax.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
             for i in rate.index:
                 ax.errorbar(i,rate.loc[i].mean(),xerr=(rate.index[1]-rate.index[0])/2,
-                                marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
+                                marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w',**kwargs)
 
         level = 95
 
         ax.fill_between(x_model,
                         np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
                         np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
-                        alpha=0.2)
+                        alpha=0.2,**kwargs)
 
         level = 68
         ax.fill_between(x_model,
                         np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
                         np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
-                        alpha=0.3)
+                        alpha=0.3,**kwargs)
         if label_text:
             label= label_text+': $dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
         else:
             label= '$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
         ax.plot(x_model,
                         np.percentile(chain['line'], 50, axis=0 ),
-                        alpha=1,linestyle='-',linewidth=1,label=label)
+                        alpha=1,linestyle='-',linewidth=1,label=label,**kwargs)
 
         leg =ax.legend()
         for lh in leg.legendHandles:
