@@ -252,10 +252,11 @@ class Rates():
         for zlo in np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False):
             zhi = zlo+zstep
             print(zlo,'-',zhi)
-            key = 'z_%.2f_%.2f_%.2f'%(zlo,zhi,mstep)
+            key = 'z_%.2f_%.2f'%(zlo,zhi)
             sn_df = getattr(self,'sn_samples_mass_%s'%key)
             field_df = getattr(self,'field_samples_mass_%s'%key)
             savename=self.config['rates_root']+'data/mcd_rates.h5'
+            key = key+'_%.2f'%mstep
             iter_df = SN_G_MC(sn_df,field_df,n_samples=int(1E+2),mmin=mmin,mmax=mmax,mstep=mstep,savename=savename, variable='mass',key_ext=key,weight_col_SN='weight',weight_col_field='VVmax',rate_corr = self.rate_corr)
             setattr(self,'sampled_rates_mass_%s'%key,iter_df)
         return iter_df
