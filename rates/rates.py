@@ -415,7 +415,7 @@ class Rates():
 
 
 
-    def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text=None,line_only=False,**kwargs):
+    def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text=None,data_only = False,line_only=False,**kwargs):
         if not f:
             f,ax = plt.subplots(figsize=(12,7))
 
@@ -437,26 +437,26 @@ class Rates():
             for i in rate.index:
                 ax.errorbar(i,rate.loc[i].mean(),xerr=(rate.index[1]-rate.index[0])/2,
                                 marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w',**kwargs)
+        if not data_only:
+            level = 95
 
-        level = 95
+            ax.fill_between(x_model,
+                            np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                            np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                            alpha=0.2,**kwargs)
 
-        ax.fill_between(x_model,
-                        np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
-                        np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
-                        alpha=0.2,**kwargs)
-
-        level = 68
-        ax.fill_between(x_model,
-                        np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
-                        np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
-                        alpha=0.3,**kwargs)
-        if label_text:
-            label= label_text+': $dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
-        else:
-            label= '$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
-        ax.plot(x_model,
-                        np.percentile(chain['line'], 50, axis=0 ),
-                        alpha=1,linestyle='-',linewidth=1,label=label,**kwargs)
+            level = 68
+            ax.fill_between(x_model,
+                            np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                            np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                            alpha=0.3,**kwargs)
+            if label_text:
+                label= label_text+': $dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
+            else:
+                label= '$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
+            ax.plot(x_model,
+                            np.percentile(chain['line'], 50, axis=0 ),
+                            alpha=1,linestyle='-',linewidth=1,label=label,**kwargs)
 
         leg =ax.legend()
         for lh in leg.legendHandles:
