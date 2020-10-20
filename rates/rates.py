@@ -195,9 +195,9 @@ class Rates():
             sn_samples = sn_samples[(sn_samples['zHD']<z_max)&(sn_samples['zHD']>z_min)]
             field_samples = field_samples[(field_samples['redshift']<z_max)&(field_samples['redshift']>z_min)]
 
-    def split_by_z(self,zmin=0.2,zmax=1.2,zstep=0.2):
-        split_by_z(self.SN_Hosts,self.SN_fn,zmin=zmin,zmax=zmax,zstep=zstep)
-        split_by_z(self.field,self.field_fn,zcol='redshift',zmin=zmin,zmax=zmax,zstep=zstep,do_VVmax=True)
+    def split_by_z(self,zmin=0.2,zmax=1.2,zstep=0.2,zbins=None):
+        split_by_z(self.SN_Hosts,self.SN_fn,zmin=zmin,zmax=zmax,zstep=zstep,zbins=zbins)
+        split_by_z(self.field,self.field_fn,zcol='redshift',zmin=zmin,zmax=zmax,zstep=zstep,zbins=zbins,do_VVmax=True)
 
     def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
