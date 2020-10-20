@@ -125,7 +125,7 @@ def split_by_z(df,fn,zcol='zHD',zmin=0.2,zmax=1.2,zstep=0.2,zbins=None,do_VVmax=
     if not zbins:
         zbins = np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)
 
-    groups = df.groupby(pd.cut(df[zcol],bins=bins))
+    groups = df.groupby(pd.cut(df[zcol],bins=zbins))
     for n,g in groups:
         if do_VVmax:
             g = VVmax(g,z_survey=n.right)
