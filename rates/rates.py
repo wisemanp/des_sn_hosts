@@ -142,11 +142,18 @@ class Rates():
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples_sfr = field_samples
 
-    def generate_samples_split_z(self,zmin,zmax,zstep,variable='mass'):
+    def generate_samples_split_z(self,zmin=None,zmax=None,zstep=None,zbins=None,variable='mass'):
         sn_samples_z = {}
         field_samples_z = {}
-        for zlo in np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False):
-            zhi=zlo+zstep
+        if not zbins:
+            zbin_los = np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)
+        else:
+            zbin_los = zbins[:-1]
+        for counter,zlo in enumerate(zbin_los):
+            if zstep:
+                zhi=zlo+zstep
+            else:
+                zhi = zbins[counter+1]
             # SN Hosts
             sn_df = pd.read_hdf(self.SN_fn,key='z_%.2f_%.2f'%(zlo,zhi))
             sn_sample = sample_sn_masses(sn_df,self.config['rates_root']+'models/',
@@ -247,10 +254,17 @@ class Rates():
 
 
 
-    def SN_G_MC_z(self,zmin=0.2,zmax=0.8,zstep=0.2,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-        print('Calculating rates for redshift bins: ',np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False))
-        for zlo in np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False):
-            zhi = zlo+zstep
+    def SN_G_MC_z(self,zmin=None,zmax=None,zstep=None,zbins=None,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
+        #print('Calculating rates for redshift bins: ',np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False))
+        if not zbins:
+            zbin_los = np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)
+        else:
+            zbin_los = zbins[:-1]
+        for counter,zlo in enumerate(zbin_los):
+            if zstep:
+                zhi=zlo+zstep
+            else:
+                zhi = zbins[counter+1]
             print(zlo,'-',zhi)
             key = 'z_%.2f_%.2f'%(zlo,zhi)
             sn_df = getattr(self,'sn_samples_mass_%s'%key)
