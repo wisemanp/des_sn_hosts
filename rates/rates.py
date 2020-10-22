@@ -441,6 +441,8 @@ class Rates():
         if not line_only:
             for counter,c in enumerate(rate.columns):
                 label=None
+                if data_only:
+                    label= label_text
 
                 ax.scatter(rate.index,rate[c],marker='o',
                                alpha=0.05,s=10,label=None,**kwargs)
