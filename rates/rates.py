@@ -451,7 +451,9 @@ class Rates():
                 ax.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
                 ax.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
             for i in rate.index:
-                if data_only:
+                label=None
+
+                if data_only and counter==0:
                     label= label_text
                 ax.errorbar(i,rate.loc[i].mean(),xerr=(rate.index[1]-rate.index[0])/2,
                                 marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w',label=label,**kwargs)
