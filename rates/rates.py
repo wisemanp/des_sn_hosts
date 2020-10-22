@@ -450,7 +450,7 @@ class Rates():
                 ax.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
                 ax.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
                 ax.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
-            for i in rate.index:
+            for counter,i in enumerate(rate.index):
                 label=None
 
                 if data_only and counter==0:
