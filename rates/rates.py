@@ -309,8 +309,8 @@ class Rates():
         mbins = np.linspace(mmin,mmax,int((mmax-mmin)/mstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+(mstep/2))
         # passive
-        sn_passive = self.sn_samples[self.sn_samples[sn_ssfr_col]<sfr_cut_1]
-        field_passive = self.field_samples[self.field_samples[field_ssfr_col]<sfr_cut_1]
+        sn_passive = self.sn_samples_mass[self.sn_samples_mass[sn_ssfr_col]<sfr_cut_1]
+        field_passive = self.field_samples_mass[self.field_samples_mass[field_ssfr_col]<sfr_cut_1]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_passive.groupby(pd.cut(sn_passive[i],
@@ -339,9 +339,9 @@ class Rates():
         self.sampled_passive_rates = iter_df
 
         #moderately starforming
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
-        sn_moderate = self.sn_samples[(self.sn_samples[sn_ssfr_col]>=sfr_cut_1)&(self.sn_samples[sn_ssfr_col]<sfr_cut_2)]
-        field_moderate = self.field_samples[(self.field_samples[field_ssfr_col]>=sfr_cut_1)&(self.field_samples[field_ssfr_col]<sfr_cut_2)]
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+(mstep/2))
+        sn_moderate = self.sn_samples_mass[(self.sn_samples_mass[sn_ssfr_col]>=sfr_cut_1)&(self.sn_samples_mass[sn_ssfr_col]<sfr_cut_2)]
+        field_moderate = self.field_samples_mass[(self.field_samples_mass[field_ssfr_col]>=sfr_cut_1)&(self.field_samples_mass[field_ssfr_col]<sfr_cut_2)]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_moderate.groupby(pd.cut(sn_moderate[i],
@@ -369,9 +369,9 @@ class Rates():
         self.sampled_moderate_rates = iter_df
 
         #highly starforming
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
-        sn_high = self.sn_samples[self.sn_samples[sn_ssfr_col]>=sfr_cut_2]
-        field_high = self.field_samples[self.field_samples[field_ssfr_col]>=sfr_cut_2]
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+(mstep/2))
+        sn_high = self.sn_samples_mass[self.sn_samples_mass[sn_ssfr_col]>=sfr_cut_2]
+        field_high = self.field_samples_mass[self.field_samples_mass[field_ssfr_col]>=sfr_cut_2]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_high.groupby(pd.cut(sn_high[i],
