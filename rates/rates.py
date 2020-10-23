@@ -306,8 +306,8 @@ class Rates():
         self.sampled_rates_sfr = iter_df
 
     def SN_G_MC_MASS_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5, sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
-        mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
+        mbins = np.linspace(mmin,mmax,int((mmax-mmin)/mstep)+1)
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+(mstep/2))
         # passive
         sn_passive = self.sn_samples[self.sn_samples[sn_ssfr_col]<sfr_cut_1]
         field_passive = self.field_samples[self.field_samples[field_ssfr_col]<sfr_cut_1]
