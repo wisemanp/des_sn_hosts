@@ -430,7 +430,7 @@ class Rates():
 
 
 
-    def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text=None,data_only = False,line_only=False,**kwargs):
+    def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text=None,data_only = False,line_only=False,scatter_mmin=None,scatter_mmax=None,**kwargs):
         if not f:
             f,ax = plt.subplots(figsize=(12,7))
 
@@ -439,6 +439,11 @@ class Rates():
     # Plot the points from above as a comparison
         x_model = np.linspace(mmin,mmax,100)
         if not line_only:
+            if not scatter_mmin:
+                scatter_mmin=rate.index.min()
+            if not scatter_mmax:
+                scatter_mmax=rate.index.max()
+            rate = rate.loc[scatter_mmin,scatter_mmax]
             for counter,c in enumerate(rate.columns):
                 label=None
 
