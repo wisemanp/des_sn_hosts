@@ -443,7 +443,7 @@ class Rates():
                 scatter_mmin=rate.index.min()
             if not scatter_mmax:
                 scatter_mmax=rate.index.max()
-            rate = rate.loc[scatter_mmin,scatter_mmax]
+            rate = rate.loc[scatter_mmin:scatter_mmax]
             for counter,c in enumerate(rate.columns):
                 label=None
 
