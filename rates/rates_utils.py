@@ -134,7 +134,7 @@ def split_by_z(df,fn,zcol='zHD',zmin=0.2,zmax=1.2,zstep=0.2,zbins=None,do_VVmax=
     groups = df.groupby(pd.cut(df[zcol],bins=zbins))
     for n,g in groups:
         if do_VVmax:
-            g = VVmax(g,z_survey=n.right)
+            g = VVmax(g,zmin_survey = n.left,zmax_survey=n.right)
         g.to_hdf(fn,key='z_%.2f_%.2f'%(n.left,n.right))
 
 
