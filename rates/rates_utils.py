@@ -88,10 +88,13 @@ def sample_field_asymm(df,model_dir,mass_col='MASS',mass_err_plus='MASSMAX',mass
     #df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
     return df_bootstrapped
 
-def VVmax(df,z_survey=1,method='ZPEG'):
+def VVmax(df,zmin_survey=0,zmax_survey=1,method='ZPEG'):
     from astropy.cosmology import WMAP9 as cosmo
-
-    Vsurvey = cosmo.comoving_volume(z_survey)
+    if zmin_survey>0:
+        vmin = cosmo.comoving_volume(zmin_survey)
+    else:
+        vmin = 0*(u.mpc**3)
+    Vsurvey = cosmo.comoving_volume(zmax_survey) - vmin
 
     if method=='grid':
         distmod_z = cosmo.distmod(df['redshift'])
@@ -116,7 +119,10 @@ def VVmax(df,z_survey=1,method='ZPEG'):
 
     elif method=='ZPEG':
 
-        df['VVmax'] = Vsurvey/cosmo.comoving_volume(df['ZMAX_completeness'])
+        if zmin_survey>0:
+            df['VVmax'] = Vsurvey/(cosmo.comoving_volume(df['ZMAX_completeness'])-vmin)
+        else:
+            df['VVmax'] = Vsurvey/cosmo.comoving_volume(df['ZMAX_completeness'])
         df['VVmax'].clip(1,inplace=True)
 
     return df
