@@ -104,14 +104,17 @@ def sample_field_asymm(df,model_dir,mass_col='MASS',mass_err_plus='MASSMAX',mass
                                   x_err_plus =detections[err_col_plus].values +0.001,
                                   x_err_minus = detections[err_col_minus].values+0.001),
                         seed=seed,algorithm='Fixed_param',iter=n_iter,chains=1,verbose=True)
+    print('Extracting chains')
     chain = fit.extract()
     df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
     df_bootstrapped.index = detections[index_col].astype(int)
+    print('Setting the fixed columns')
     truthcols = detections.set_index(index_col,drop=True)[['z_spec','z_m2','redshift',#[['SPEC_Z','z_phot','MAG_AUTO_G','MAG_AUTO_R','MAG_AUTO_I','MAG_AUTO_Z',
                                                                 mass_col,mass_err_plus,mass_err_minus,
                                                                 sfr_col,sfr_err_plus,sfr_err_minus,
                                                                 weight_col]]
     truthcols.index = truthcols.index.astype(int)
+    print('Putting the fixed values back into the bootstrap frame as truths')
     for col in truthcols.columns:
         df_bootstrapped[col] = truthcols[col]
     #df_bootstrapped =df_bootstrapped.merge(truthcols,left_index=True,right_index=True,how='inner')
