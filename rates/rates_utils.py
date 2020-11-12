@@ -105,8 +105,8 @@ def sample_field_asymm(df,model_dir,mass_col='MASS',mass_err_plus='MASSMAX',mass
                                   x_err_minus = detections[err_col_minus].values+0.001),
                         seed=seed,algorithm='Fixed_param',iter=n_iter,chains=1,verbose=True)
     print('Extracting chains')
-    chain = fit.extract()
-    df_bootstrapped = pd.DataFrame(chain['x_sim'].T)
+
+    df_bootstrapped = pd.DataFrame([i for i in fit.sim['samples'][0].chains.values()][:-1])
     df_bootstrapped.index = detections[index_col].astype(int)
     print('Setting the fixed columns')
     truthcols = detections.set_index(index_col,drop=True)[['z_spec','z_m2','redshift',#[['SPEC_Z','z_phot','MAG_AUTO_G','MAG_AUTO_R','MAG_AUTO_I','MAG_AUTO_Z',
