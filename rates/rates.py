@@ -98,7 +98,7 @@ class Rates():
             field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',
                     mass_col=mass_col,mass_err_col=mass_err_col,sfr_col = sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable='mass')
         else:
-            field_samples = sample_field_masses_asymm(self.field,self.config['rates_root']+'models/',
+            field_samples = sample_field_asymm(self.field,self.config['rates_root']+'models/',
                     mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus=mass_err_minus,
                     sfr_col = sfr_col,sfr_err_plus=sfr_err_plus,sfr_err_minus = sfr_err_minus,
                     weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable='mass')
