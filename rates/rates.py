@@ -78,7 +78,7 @@ class Rates():
                     mass_col=mass_col,mass_err_col=mass_err_col,sfr_col=sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter)
         else:
             sn_samples = sample_sn_masses_asymm(self.SN_Hosts,self.config['rates_root']+'models/',
-                    mass_col=mass_col,mass_err_plus=mass_err_col,mass_err_minus = mass_err_minus,
+                    mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus = mass_err_minus,
                     sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col,index_col=index_col,n_iter=n_iter)
 
         print('Sampling done')
@@ -167,7 +167,7 @@ class Rates():
             # SN Hosts
             sn_df = pd.read_hdf(self.SN_fn,key='z_%.2f_%.2f'%(zlo,zhi))
             sn_sample = sample_sn_masses_asymm(sn_df,self.field,self.config['rates_root']+'models/',
-                                            mass_col=mass_col,mass_err_plus=mass_err_col,mass_err_minus = mass_err_minus,
+                                            mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus = mass_err_minus,
                                             sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col_sn,index_col='CIDint',n_iter=n_iter,
                     variable=variable)
             ext = '.'+self.SN_fn.split('.')[-1]
