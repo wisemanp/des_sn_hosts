@@ -294,10 +294,10 @@ class Rates():
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snsfrgroups =self.sn_samples_sfr.groupby(pd.cut(self.sn_samples_sfr[i],
-                                                     bins=mbins))[[i,weight_col_SN]]
+                                                     bins=sfrbins))[[i,weight_col_SN]]
                 i_f = np.random.randint(0,100)
                 fieldsfrgroups = self.field_samples_sfr.groupby( pd.cut(self.field_samples_sfr[i_f],
-                                                            bins=mbins))[[i_f,weight_col_field]]
+                                                            bins=sfrbins))[[i_f,weight_col_field]]
                 xs = []
                 ys = []
 
