@@ -175,7 +175,7 @@ class Rates():
             sn_samples_z['%.2f-%.2f'%(zlo,zhi)] = sn_sample
             field_df = pd.read_hdf(self.field_fn,key='z_%.2f_%.2f'%(zlo,zhi))
             field_sample = sample_field_asymm(field_df,self.config['rates_root']+'models/',
-                                                mass_col=mass_col,mass_err_plus=mass_err_col,mass_err_minus = mass_err_minus,
+                                                mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus = mass_err_minus,
                                                 sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col_field,index_col = 'id',n_iter=int(1E2),variable=variable)
             ext = '.'+self.field_fn.split('.')[-1]
             field_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
