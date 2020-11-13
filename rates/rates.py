@@ -168,7 +168,7 @@ class Rates():
             sn_df = pd.read_hdf(self.SN_fn,key='z_%.2f_%.2f'%(zlo,zhi))
             sn_sample = sample_sn_masses_asymm(sn_df,self.field,self.config['rates_root']+'models/',
                                             mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus = mass_err_minus,
-                                            sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col_sn,index_col='CIDint',n_iter=n_iter,
+                                            sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col_SN,index_col='CIDint',n_iter=n_iter,
                     variable=variable)
             ext = '.'+self.SN_fn.split('.')[-1]
             sn_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
