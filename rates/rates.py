@@ -288,7 +288,7 @@ class Rates():
             setattr(self,'sampled_rates_mass_%s'%key,iter_df)
         return iter_df
     def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-        mbins = np.linspace(sfrmin,sfrmax,int((sfrmax-sfrmin)/sfrstep)+1)
+        sfrbins = np.linspace(sfrmin,sfrmax,int((sfrmax-sfrmin)/sfrstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=sfrbins+(sfrstep/2))
 
         with progressbar.ProgressBar(max_value = n_samples) as bar:
