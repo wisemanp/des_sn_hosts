@@ -149,7 +149,10 @@ class Rates():
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples_sfr = field_samples
 
-    def generate_samples_split_z(self,zmin=None,zmax=None,zstep=None,zbins=None,variable='mass'):
+    def generate_samples_split_z(self,zmin=None,zmax=None,zstep=None,zbins=None,
+                                    mass_col='massmc',mass_err_plus = 'mass_upperr',mass_err_minus ='mass_lowerr',
+                                    sfr_col='sfrmc',sfr_err_plus = 'sfr_upperr',sfr_err_minus ='sfr_lowerr',
+                                    weight_col_SN = 'weight',weight_col_field='V_Max_sedfit',variable='mass',asymm=True):
         sn_samples_z = {}
         field_samples_z = {}
         if not zbins:
@@ -163,15 +166,17 @@ class Rates():
                 zhi = zbins[counter+1]
             # SN Hosts
             sn_df = pd.read_hdf(self.SN_fn,key='z_%.2f_%.2f'%(zlo,zhi))
-            sn_sample = sample_sn_masses(sn_df,self.config['rates_root']+'models/',
-                                                mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
-                                                        sfr_col = 'logsfr',sfr_err_col = 'logsfr_err',
-                                                        index_col = 'CIDint',weight_col='weight',n_iter=int(1E4),variable=variable)
+            sn_sample = sample_sn_masses_asymm(sn_df,self.field,self.config['rates_root']+'models/',
+                                            mass_col=mass_col,mass_err_plus=mass_err_col,mass_err_minus = mass_err_minus,
+                                            sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col_sn,index_col='CIDint',n_iter=n_iter,
+                    variable=variable)
             ext = '.'+self.SN_fn.split('.')[-1]
             sn_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
             sn_samples_z['%.2f-%.2f'%(zlo,zhi)] = sn_sample
             field_df = pd.read_hdf(self.field_fn,key='z_%.2f_%.2f'%(zlo,zhi))
-            field_sample = sample_field_asymm(field_df,self.config['rates_root']+'models/',sfr_col='SFR',sfr_err_plus='SFRMAX',sfr_err_minus='SFRMIN',weight_col='VVmax',index_col = 'id',n_iter=int(1E4),variable=variable)
+            field_sample = sample_field_asymm(field_df,self.config['rates_root']+'models/',
+                                                mass_col=mass_col,mass_err_plus=mass_err_col,mass_err_minus = mass_err_minus,
+                                                sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col_field,index_col = 'id',n_iter=int(1E2),variable=variable)
             ext = '.'+self.field_fn.split('.')[-1]
             field_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
             field_samples_z['%.2f-%.2f'%(zlo,zhi)] = field_sample
