@@ -106,7 +106,7 @@ class Rates():
         if save_samples:
             print('Saving to file')
             ext = '.'+self.field_fn.split('.')[-1]
-            savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_mass_resampled.h5')
+            savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples_mass = field_samples
 
