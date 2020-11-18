@@ -82,7 +82,7 @@ def main(args):
         m_lost_tot = [0]#0.
         m_arr = []
         ts = []
-        for counter,age in tqdm(enumerate(ages)):
+        for counter,age in enumerate(tqdm(ages)):
             t = tf-age
             ts.append(t)
             #print("Current epoch: %.f Myr"%t)
