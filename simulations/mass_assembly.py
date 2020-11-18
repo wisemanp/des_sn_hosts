@@ -92,9 +92,9 @@ def sfr_Mz_alt(M,z):
 
 def parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-dt','--dt',help='Time step (Myr)',default=0.5,dtype=float)
-    parser.add_argument('-es','--early_step',help='Early Universe T_F step (Myr)',default=25,dtype=float)
-    parser.add_argument('-ls','--late_step',help='Late Universe T_F step (Myr)',default=50,dtype=float)
+    parser.add_argument('-dt','--dt',help='Time step (Myr)',default=0.5,type=float)
+    parser.add_argument('-es','--early_step',help='Early Universe T_F step (Myr)',default=25,type=float)
+    parser.add_argument('-ls','--late_step',help='Late Universe T_F step (Myr)',default=50, type=float)
     args = parser.parse_args()
     return args
 
@@ -155,4 +155,4 @@ def main(args):
         pd.DataFrame(track,columns=['t','age','m_formed','final_age_weights','m_tot']).to_hdf(os.path.join(save_dir,'SFHs_%.1f.h5'%dt,key='%3.0f'%tf))
 
 if __name__=="__main__":
-    main(parser())    
+    main(parser())
