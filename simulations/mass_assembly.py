@@ -63,6 +63,7 @@ def parser():
     parser.add_argument('-dt','--dt',help='Time step (Myr)',default=0.5,type=float)
     parser.add_argument('-es','--early_step',help='Early Universe T_F step (Myr)',default=25,type=float)
     parser.add_argument('-ls','--late_step',help='Late Universe T_F step (Myr)',default=50, type=float)
+    parser.add_argument('-c','--config',help='Config filename',default='/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')
     args = parser.parse_args()
     return args
 
