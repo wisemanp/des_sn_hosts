@@ -290,13 +290,17 @@ class Rates():
     def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
         sfrbins = np.linspace(sfrmin,sfrmax,int((sfrmax-sfrmin)/sfrstep)+1)
         iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=sfrbins+(sfrstep/2))
+        self.sn_samples_sfr['ssfrmc'] = self.sn_samples_sfr['sfrmc'] - self.sn_samples_sfr['massmc']
+        sn_samples = self.sn_samples_sfr[self.sn_samples_sfr['ssfrmc']>-11.5]
 
+        self.field_samples_sfr['ssfrmc'] = self.field_samples_sfr['sfrmc'] - self.field_samples_sfr['massmc']
+        field_samples = self.field_samples_sfr[self.field_samples_sfr['ssfrmc']>-11.5]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
-                snsfrgroups =self.sn_samples_sfr.groupby(pd.cut(self.sn_samples_sfr[i],
+                snsfrgroups =sn_samples.groupby(pd.cut(sn_samples[i],
                                                      bins=sfrbins))[[i,weight_col_SN]]
                 i_f = np.random.randint(0,100)
-                fieldsfrgroups = self.field_samples_sfr.groupby( pd.cut(self.field_samples_sfr[i_f],
+                fieldsfrgroups = field_samples.groupby( pd.cut(field_samples[i_f],
                                                             bins=sfrbins))[[i_f,weight_col_field]]
                 xs = []
                 ys = []
