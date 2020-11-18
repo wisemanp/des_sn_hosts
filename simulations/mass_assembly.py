@@ -63,6 +63,7 @@ def parser():
     parser.add_argument('-dt','--dt',help='Time step (Myr)',default=0.5,type=float)
     parser.add_argument('-es','--early_step',help='Early Universe T_F step (Myr)',default=25,type=float)
     parser.add_argument('-ls','--late_step',help='Late Universe T_F step (Myr)',default=50, type=float)
+    parser.add_argument('-ts','--tstart',help='Epoch to start the tracks (working backwards) (yr)',default = 0,type=float)
     parser.add_argument('-c','--config',help='Config filename',default='/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')
     args = parser.parse_args()
     return args
@@ -71,8 +72,12 @@ def main(args):
     config=yaml.load(open(args.config))
     save_dir = config['rates_root']+'SFHs/'
     dt = args.dt
-    tfs = np.concatenate([np.arange(1000,10000,args.late_step),np.arange(10000,13000,args.early_step)])
-
+    if args.tstart ==0:
+        tfs = np.concatenate([np.arange(1000,10000,args.late_step),np.arange(10000,13000,args.early_step)])
+    elif args.tstart <10000:
+        tfs = np.concatenate([np.arange(args.tstart,10000,args.late_step),np.arange(10000,13000,args.early_step)])
+    else:
+        tfs = np.arange(args.tstart,13000,args.early_step)
     for tf in tqdm(tfs):
         print("Starting epoch: %.f Myr "%tf)
 
