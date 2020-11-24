@@ -44,7 +44,7 @@ def sample_sn_masses_asymm(df,model_dir,mass_col='massmc',mass_err_plus='mass_up
         err_col_minus = sfr_err_minus
 
     elif variable=='ssfr':
-        var_col=sfr_col
+        var_col=ssfr_col
         err_col_plus = sfr_err_plus
         err_col_minus = sfr_err_minus
     fit = model_gen.sampling(data=dict(n_obs=nobs,
@@ -106,7 +106,7 @@ def sample_field_asymm(df,model_dir,mass_col='MASS',mass_err_plus='MASSMAX',mass
         err_col_minus = sfr_err_minus
 
     elif variable=='ssfr':
-        var_col=sfr_col
+        var_col=ssfr_col
         err_col_plus = sfr_err_plus
         err_col_minus = sfr_err_minus
     fit = model_gen.sampling(data=dict(n_obs=nobs,
