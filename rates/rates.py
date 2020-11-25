@@ -68,6 +68,7 @@ class Rates():
         self.rate_corr = -0.38 -np.log10(N_SN_fields/N_field_fields)
     def generate_sn_samples(self,mass_col='massmc',mass_err_col='HOST_LOGMASS_ERR',mass_err_plus = 'mass_upperr',mass_err_minus='mass_lowerr',
                                 sfr_col = 'sfrmc',sfr_err_col = 'logssfr_err',sfr_err_plus='sfr_upperr',sfr_err_minus='sfr_lowerr',
+                                ssfr_col='ssfrmc',ssfr_err_col='ssfrmc_err',ssfr_err_plus='ssfr_upperr',ssfr_err_minus='ssfr_lowerr',
                                 index_col = 'CIDint',weight_col='weight',n_iter=1E5,save_samples=True,asymm=False,variable='mass'):
         '''Wrapped around sample_sn_masses with option to save the output'''
         if weight_col not in self.SN_Hosts.columns:
@@ -75,11 +76,16 @@ class Rates():
         if not asymm:
 
             sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
-                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col=sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
+                    mass_col=mass_col,mass_err_col=mass_err_col,
+                    sfr_col=sfr_col,sfr_err_col=sfr_err_col,
+                    ssfr_col=ssfr_col,ssfr_err_col=ssfr_err_col,
+                    weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
         else:
             sn_samples = sample_sn_masses_asymm(self.SN_Hosts,self.config['rates_root']+'models/',
                     mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus = mass_err_minus,
-                    sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
+                    sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,
+                    ssfr_col=ssfr_col,ssfr_err_plus=ssfr_err_plus, ssfr_err_minus = ssfr_err_minus,
+                    weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
 
         print('Sampling done')
         if save_samples:
@@ -91,16 +97,21 @@ class Rates():
 
     def generate_field_samples(self,mass_col='mass',mass_err_col='mass_err',mass_err_plus = 'MASSMAX',mass_err_minus='MASSMIN',
     sfr_col = 'log_sfr',sfr_err_col='log_sfr_err',sfr_err_plus='SFRMAX',sfr_err_minus='SFRMIN',
+    ssfr_col='ssfrmc',ssfr_err_col='ssfrmc_err',ssfr_err_plus='ssfr_upperr',ssfr_err_minus='ssfr_lowerr',
     weight_col='weight',index_col = 'id',n_iter=1E5,save_samples=True,asymm=False,variable='mass'):
         '''Wrapped around sample_sn_masses with option to save the output'''
 
         if not asymm:
             field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',
-                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col = sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
+                    mass_col=mass_col,mass_err_col=mass_err_col,
+                    sfr_col = sfr_col,sfr_err_col=sfr_err_col,
+                    ssfr_col=ssfr_col,ssfr_err_col=ssfr_err_col,
+                    weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
         else:
             field_samples = sample_field_asymm(self.field,self.config['rates_root']+'models/',
                     mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus=mass_err_minus,
                     sfr_col = sfr_col,sfr_err_plus=sfr_err_plus,sfr_err_minus = sfr_err_minus,
+                    ssfr_col=ssfr_col,ssfr_err_plus=ssfr_err_plus, ssfr_err_minus = ssfr_err_minus,
                     weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
         print('Sampling done')
         if save_samples:
