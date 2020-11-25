@@ -6,7 +6,7 @@ from des_sn_hosts.utils import stan_utility
 
 def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',
     sfr_col='logssfr', sfr_err_col='logssfr_err',
-    ssfr_col='ssfrmc',ssfr_err_col='ssfrmc_err'
+    ssfr_col='ssfrmc',ssfr_err_col='ssfrmc_err',
     weight_col='weight',index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
