@@ -36,7 +36,7 @@ def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',
 
 def sample_sn_masses_asymm(df,model_dir,mass_col='massmc',mass_err_plus='mass_upperr',mass_err_minus = 'mass_lowerr',
                     sfr_col='sfrmc',sfr_err_plus='sfr_upperr',sfr_err_minus='sfr_lowerr',
-                    ssfr_col='ssfrmc',ssfr_err_plus='ssfr_upperr',ssfr_err_minus='ssfr_lowerr',weight_col='weight',ssfr_col='ssfrmc',
+                    ssfr_col='ssfrmc',ssfr_err_plus='ssfr_upperr',ssfr_err_minus='ssfr_lowerr',weight_col='weight',
                     index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims_asymm.stan')
     detections = df[df[mass_col]>0]
@@ -70,7 +70,8 @@ def sample_sn_masses_asymm(df,model_dir,mass_col='massmc',mass_err_plus='mass_up
         df_bootstrapped[col] = truthcols[col]
     return df_bootstrapped
 
-def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',sfr_col='log_ssfr',sfr_err_col='logssfr_err',weight_col='weight',index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
+def sample_field_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',
+sfr_col='log_ssfr',sfr_err_col='logssfr_err',weight_col='weight',index_col = 'CIDint',n_iter=1E4,seed=1234,variable='mass'):
 
     model_gen = stan_utility.compile_model(model_dir+'generate_mass_sims.stan')
     detections = df[df[mass_col]>0]
