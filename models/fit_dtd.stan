@@ -3,7 +3,7 @@ functions {
   real phi(real t, real tp, real alpha, real beta){
   /*
     The delay time distribution
-  /*
+  */
   real dtd = pow((t/tp),alpha) / (pow((t/tp),alpha-beta)+1);
   return dtd;
   }
