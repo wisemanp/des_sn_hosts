@@ -42,7 +42,7 @@ transformed parameters {
   vector[N] log_latent_rate; //log of the latent rate
   real norm; //
 
-  norm = pow(norm,10);
+  norm = pow(log_norm,10);
   for (n in 1:N)
   {
     for (m in 1:M)
