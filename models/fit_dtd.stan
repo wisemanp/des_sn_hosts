@@ -42,9 +42,9 @@ transformed parameters {
   real norm; //
 
   norm = pow(norm,10);
-  for n in (1:N)
+  for (n in 1:N)
   {
-    for m in (1:M)
+    for (m in 1:M)
     {
       latent_rate[n] += dtd(age[m],tp,alpha,beta)*SFH[n][m])/dtd(1,tp,alpha,beta);
 
