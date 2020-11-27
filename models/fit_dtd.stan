@@ -71,7 +71,7 @@ model {
   log_norm ~ normal(-13,1);
   // likelihood
 
-  lograte_obs ~ normal(latent_rate, sigma);
+  lograte_obs ~ normal(log_latent_rate, sigma);
 
 
 
