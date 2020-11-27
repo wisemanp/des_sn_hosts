@@ -41,7 +41,7 @@ transformed parameters {
   vector[N] latent_rate; // The model rates
   real norm; //
 
-  norm = pow(norm,10)
+  norm = pow(norm,10);
   for n in (1:N)
   {
     for m in (1:M)
