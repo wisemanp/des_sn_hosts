@@ -45,9 +45,10 @@ transformed parameters {
   norm = pow(log_norm,10);
   for (n in 1:N)
   {
+    latent_rate[n] = 0;
     for (m in 1:M)
     {
-      latent_rate[n] = 0;
+
       latent_rate[n] += phi(age[m],tp,alpha,beta)*SFH[n][m]/phi(1,tp,alpha,beta);
 
     }
