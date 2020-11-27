@@ -39,6 +39,7 @@ parameters {
 
 transformed parameters {
   vector[N] latent_rate; // The model rates
+  vector[N] log_latent_rate; //log of the latent rate
   real norm; //
 
   norm = pow(norm,10);
@@ -52,6 +53,7 @@ transformed parameters {
     latent_rate[n] *= 2.3*norm;
 
   }
+  log_latent_rate = log10(latent_rate);
 
   // latent y values not obscured by measurement error
   // vector[N] y_latent = slope * x_obs + intercept;
