@@ -27,7 +27,7 @@ data {
 
 parameters {
 
-  real<lower=0,upper=15> alpha; //order of early time polynomial
+  real<lower=12.5,upper=14.5> alpha; //order of early time polynomial
   real<upper=0> beta; //late time slope of the DTD
   real<lower=0> tp; // prompt time of the DTD (Gyr)
   real log_norm; // normalisation of the DTD
@@ -52,19 +52,17 @@ transformed parameters {
     latent_rate[n] *= 2.3*norm;
 
   }
-  
   log_latent_rate = log10(latent_rate);
-
 }
 
 model {
 
   // weakly informative priors
 
-  alpha ~ normal(7,1);
-  beta ~ normal(-1,0.5);
-  tp ~ normal(0.2,0.2);
-  log_norm ~ normal(-13,1);
+  alpha ~ normal(13,0.01);
+  beta ~ normal(-1,0.2);
+  tp ~ normal(0.2,0.1);
+  log_norm ~ normal(-13,0.5);
   // likelihood
 
   lograte_obs ~ normal(log_latent_rate, sigma);
