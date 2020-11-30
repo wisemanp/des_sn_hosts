@@ -46,7 +46,7 @@ transformed parameters {
   for (n in 1:N)
   {
     latent_rate[n] = 0;
-    latent_rate= phi(age,tp,alpha,beta)*SFH[n]/phi(1,tp,alpha,beta);
+    latent_rate= sum(phi(age,tp,alpha,beta)*SFH[n]/phi(1,tp,alpha,beta));
     latent_rate[n] *= 2.3*norm;
 
   }
