@@ -52,10 +52,8 @@ transformed parameters {
     latent_rate[n] *= 2.3*norm;
 
   }
-  print("t_p",tp, "Beta: ",beta, "log_norm: ",log_norm);
+  
   log_latent_rate = log10(latent_rate);
-  print("log_latent_rate: ",log_latent_rate);
-
 
 }
 
