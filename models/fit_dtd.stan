@@ -23,17 +23,14 @@ data {
   vector[M] age; // age of stellar populations
   matrix[N,M] SFH; // star formation histories
 
-  int<lower=0> N_model; // number of data points for line
-  vector[N_model] x_model; //where to evaluate the model
-
 }
 
 parameters {
 
-  real<lower=0> alpha; //order of early time polynomial
+  real<lower=0,upper=15> alpha; //order of early time polynomial
   real<upper=0> beta; //late time slope of the DTD
   real<lower=0> tp; // prompt time of the DTD (Gyr)
-  real<lower=0> log_norm; // normalisation of the DTD
+  real log_norm; // normalisation of the DTD
 
 }
 
@@ -67,9 +64,9 @@ model {
 
   // weakly informative priors
 
-  alpha ~ normal(13,1);
+  alpha ~ normal(7,1);
   beta ~ normal(-1,0.5);
-  tp ~ normal(0.2,0.5);
+  tp ~ normal(0.2,0.2);
   log_norm ~ normal(-13,1);
   // likelihood
 
