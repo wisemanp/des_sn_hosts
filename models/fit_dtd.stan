@@ -45,7 +45,7 @@ transformed parameters {
   norm = pow(log_norm,10);
   for (n in 1:N)
   {
-    latent_rate[n] = 0;
+    latent_rate[n] = 1E-8;    //some small number to keep it positive
     for (m in 1:M)
     {
 
