@@ -31,16 +31,16 @@ data {
 parameters {
 
   real<lower=0> alpha; //order of early time polynomial
-  real beta; //late time slope of the DTD
+  real<upper=0> beta; //late time slope of the DTD
   real<lower=0> tp; // prompt time of the DTD (Gyr)
   real<lower=0> log_norm; // normalisation of the DTD
 
 }
 
 transformed parameters {
-  vector[N] latent_rate; // The model rates
+  vector<lower=0>[N] latent_rate; // The model rates
   vector[N] log_latent_rate; //log of the latent rate
-  real norm; //
+  real<lower=0> norm; //
 
   norm = pow(log_norm,10);
   for (n in 1:N)
@@ -55,8 +55,9 @@ transformed parameters {
     latent_rate[n] = latent_rate[n]* 2.3*norm;
 
   }
+  print("Latent rate: ",latent_rate);
   log_latent_rate = log10(latent_rate);
-
+  print("log_latent_rate: ",log_latent_rate);
   // latent y values not obscured by measurement error
   // vector[N] y_latent = slope * x_obs + intercept;
 
