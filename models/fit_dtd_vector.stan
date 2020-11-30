@@ -1,6 +1,6 @@
 functions {
 
-  real phi(real t, real tp, real alpha, real beta){
+  vector phi(vector t, real tp, real alpha, real beta){
   /*
     The delay time distribution
   */
