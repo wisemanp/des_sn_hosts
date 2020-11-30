@@ -46,10 +46,10 @@ transformed parameters {
     for (m in 1:M)
     {
 
-      latent_rate[n] = latent_rate[n] + phi(age[m],tp,alpha,beta)*SFH[n][m]/phi(1,tp,alpha,beta); //sum the rate arising from each epoch
+      latent_rate[n]+= phi(age[m],tp,alpha,beta)*SFH[n][m]/phi(1,tp,alpha,beta); //sum the rate arising from each epoch
 
     }
-    latent_rate[n] = latent_rate[n]* 2.3*norm;
+    latent_rate[n] *= 2.3*norm;
 
   }
   print("t_p",tp, "Beta: ",beta, "log_norm: ",log_norm);
