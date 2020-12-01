@@ -79,7 +79,7 @@ for counter,tf in enumerate(ordered_keys[::-1]):   # Iterate through the SFHs fo
 
         model_df[m].loc[ts] = sfh_df['m_formed'].values
 
-obs = r_BC03_noneb.sampled_rates_mass_fine_BC03.dropna(axis=0
+obs = r_BC03_noneb.sampled_rates_mass_fine_BC03.dropna(axis=0)
 model_ms = np.array(model_df.columns.tolist())
 fitting_arr = np.zeros((len(obs.index),len(model_df.index)))
 #f,ax=plt.subplots()
