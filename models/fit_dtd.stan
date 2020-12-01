@@ -45,12 +45,9 @@ transformed parameters {
     latent_rate[n] = 1E-8;    //some small number to keep it positive
     for (m in 1:M)
     {
-
       latent_rate[n]+= phi(age[m],tp,alpha,beta)*SFH[n][m]/phi(1,tp,alpha,beta); //sum the rate arising from each epoch
-
     }
     latent_rate[n] *= 2.3*norm;
-
   }
   log_latent_rate = log10(latent_rate);
 }
@@ -63,10 +60,8 @@ model {
   beta ~ normal(-1,0.2);
   tp ~ normal(0.2,0.1);
   log_norm ~ normal(-13,0.5);
+
   // likelihood
-
   lograte_obs ~ normal(log_latent_rate, sigma);
-
-
 
 }
