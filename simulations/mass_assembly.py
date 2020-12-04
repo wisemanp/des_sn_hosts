@@ -129,7 +129,7 @@ def main(args):
         #print(m_lost_tot)
         final_age_weights = m_formed - m_lost_tot
         track = np.array([ts,zs,ages,m_formed,final_age_weights,m_arr]).T
-        pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot']).to_hdf(os.path.join(save_dir,'SFHs_%.1f.h5'%dt),key='%3.0f'%tf)
+        pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot']).to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f.h5'%dt),key='%3.0f'%tf)
 
 if __name__=="__main__":
     main(parser())
