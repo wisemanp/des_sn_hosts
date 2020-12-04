@@ -35,7 +35,8 @@ def sfr_Mz(M,z):
 
 def psi_Mz_alt(M,z):
     #print("Alternate SFRs: \n",36.4*(M/1E+10)**0.7 * np.exp(1.9*z)/(np.exp(1.7*z)+np.exp(0.2*z)))
-    return 36.4*(M/1E+10)**0.7 * np.exp(1.9*z)/(np.exp(1.7*z)+np.exp(0.2*z))
+    #return 36.4*(M/1E+10)**0.7 * np.exp(1.9*z)/(np.exp(1.7*z)+np.exp(0.2*z))
+    return ((M/1E+10)**0.7) * np.exp(1.9*(z))/(np.exp(1.7*(z-2))+np.exp(0.2*(z-2)))
 
 def logMQ_z_alt(z):
 
@@ -98,7 +99,7 @@ def main(args):
                 z_t = 0
             zs.append(z_t)
             #print("current redshift: %.2f"%z_t)
-            m_created = sfr_Mz(m,z_t)*dt*1E+6
+            m_created = sfr_Mz_alt(m,z_t)*dt*1E+6
             m_formed.append(m_created)
 
             #print("Mass formed in the last %3f Myr: %2g Msun"%(dt,m_created))
