@@ -56,13 +56,13 @@ from des_sn_hosts.rates.rates import Rates
 import yaml
 import numpy as np
 
-sn_hosts_fn ='/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701_FITRES_merged_SNR3_weighted_vmax_cuts_sedfit_BC03_noneb_mc.h5'  #'/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701_FITRES_merged_SNR3_weighted_cuts_MS_ZPEG.h5'
+sn_hosts_fn ='/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701_FITRES_merged_SNR3_eff_vmax_cuts_sedfit_BC03_noneb_mc.h5'  #'/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701_FITRES_merged_SNR3_weighted_cuts_MS_ZPEG.h5'
 X3_hostlib_fn = '/media/data3/wiseman/des/coadding/results/deep/deep_X3_hostlib_sedfit_BC03_vmax_mc.h5'
 r_BC03_noneb = Rates(SN_hosts_fn=sn_hosts_fn,field_fn=X3_hostlib_fn,
           config=yaml.load(open('/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')))
 r_BC03_noneb.field.rename(columns={'redshift_sedfit':'redshift'},inplace=True)
 r_BC03_noneb.rate_corr-= np.log10(59/46)
-r_BC03_noneb.sampled_rates_mass_fine_BC03 = pd.read_hdf(r_BC03_noneb.config['rates_root']+'data/mcd_rates_BC03_noneb.h5',key='bootstrap_samples_mass_0.25')
+r_BC03_noneb.sampled_rates_mass_fine_BC03 = pd.read_hdf(r_BC03_noneb.config['rates_root']+'data/mcd_rates_BC03_noneb_eff.h5',key='bootstrap_samples_mass_0.25')
 store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_0.5.h5','r')
 
 ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
@@ -100,7 +100,7 @@ for counter,m in enumerate(10**obs.index):
     fitting_arr[counter,:] = ms_interp
 from des_sn_hosts.utils import stan_utility
 
-model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd.stan')
+model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl.stan')
 x_model = np.linspace(7,12,100)
 
 data = dict(N = len(fitting_arr),
@@ -112,5 +112,5 @@ data = dict(N = len(fitting_arr),
             sigma = obs[np.arange(0,100)].std(axis=1),
             )
 fit = model.sampling(data=data, seed=1234, iter=int(1000),
-        warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples.dat')
+        warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff')
 print(fit)
