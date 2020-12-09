@@ -112,5 +112,7 @@ data = dict(N = len(fitting_arr),
             sigma = obs[np.arange(0,100)].std(axis=1),
             )
 fit = model.sampling(data=data, seed=1234, iter=int(1000),
-        warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_tp')
+
+warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_tp')
+
 print(fit)
