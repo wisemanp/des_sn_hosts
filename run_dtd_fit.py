@@ -57,12 +57,12 @@ import yaml
 import numpy as np
 
 sn_hosts_fn ='/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701_FITRES_merged_SNR3_eff_vmax_cuts_sedfit_BC03_noneb_mc.h5'  #'/media/data3/wiseman/des/desdtd/data/5yr_MV_20200701_FITRES_merged_SNR3_weighted_cuts_MS_ZPEG.h5'
-X3_hostlib_fn = '/media/data3/wiseman/des/coadding/results/deep/deep_X3_hostlib_sedfit_BC03_vmax_mc.h5'
+X3_hostlib_fn = '/media/data3/wiseman/des/coadding/results/deep/deep_X3_hostlib_finalz_sedfit_BC03_vmax_mc.h5'
 r_BC03_noneb = Rates(SN_hosts_fn=sn_hosts_fn,field_fn=X3_hostlib_fn,
           config=yaml.load(open('/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')))
 r_BC03_noneb.field.rename(columns={'redshift_sedfit':'redshift'},inplace=True)
 r_BC03_noneb.rate_corr-= np.log10(59/46)
-r_BC03_noneb.sampled_rates_mass_fine_BC03 = pd.read_hdf(r_BC03_noneb.config['rates_root']+'data/mcd_rates_BC03_noneb_eff.h5',key='bootstrap_samples_mass_0.25')
+r_BC03_noneb.sampled_rates_mass_fine_BC03 = pd.read_hdf(r_BC03_noneb.config['rates_root']+'data/mcd_rates_BC03_noneb_eff_finalz.h5',key='bootstrap_samples_mass_0.25')
 store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_0.5.h5','r')
 
 ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
@@ -112,7 +112,6 @@ data = dict(N = len(fitting_arr),
             sigma = obs[np.arange(0,100)].std(axis=1),
             )
 fit = model.sampling(data=data, seed=1234, iter=int(1000),
-
-warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_tp')
+    warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp')
 
 print(fit)
