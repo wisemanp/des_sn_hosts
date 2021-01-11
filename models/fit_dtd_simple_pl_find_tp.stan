@@ -29,8 +29,8 @@ data {
 
 parameters {
 
-  real<upper=0> beta; //late time slope of the DTD
-  real<lower=0.04> tp; // prompt time of the DTD (Gyr)
+  real<lower=-2,upper=0> beta; //late time slope of the DTD
+  real<lower=0.02,upper=0.5> tp; // prompt time of the DTD (Gyr)
   //real log_norm; // normalisation of the DTD
 
 }
@@ -38,9 +38,7 @@ parameters {
 transformed parameters {
   vector<lower=0>[N] latent_rate; // The model rates
   vector[N] log_latent_rate; //log of the latent rate
-  //real<lower=0> norm; //
 
-  //norm = pow(10,-12.35);
   for (n in 1:N)
   {
     latent_rate[n] = 1E-18;    //some small number to keep it positive
@@ -48,7 +46,6 @@ transformed parameters {
     {
       latent_rate[n]+= phi(age[m],tp,pow(10,-12.35),beta)*SFH[n][m]; //sum the rate arising from each epoch
     }
-    //latent_rate[n] *= 2.3*norm;
   }
   log_latent_rate = log10(latent_rate);
 }
@@ -57,7 +54,7 @@ model {
 
   // weakly informative priors
 
-  beta ~ normal(-1,0.3);
+  beta ~ normal(-1,0.1);
   tp ~ cauchy(0.06,0.2);
   //log_norm ~ normal(-12.7,0.5);
 
