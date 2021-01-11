@@ -38,7 +38,7 @@ parameters {
 transformed parameters {
   vector<lower=0>[N] latent_rate; // The model rates
   vector[N] log_latent_rate; //log of the latent rate
-  real<lower=0> norm; //
+  //real<lower=0> norm; //
 
   //norm = pow(10,-12.35);
   for (n in 1:N)
