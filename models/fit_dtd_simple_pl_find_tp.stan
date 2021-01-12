@@ -31,18 +31,18 @@ parameters {
 
   real<lower=-2,upper=0> beta; //late time slope of the DTD
   real<lower=0.02,upper=1> tp; // prompt time of the DTD (Gyr)
-  real norm; // normalisation of the DTD
-
+  real log_norm; // log of the normalisation of the DTD
+  real log_tp; // log of the prompt time
 }
 
 transformed parameters {
   vector<lower=0>[N] latent_rate; // The model rates
   vector[N] log_latent_rate; //log of the latent rate
-  real log_tp; // log of the prompt time
-  real<lower=-15,upper=-10> log_norm; // log of the normalisation
+  real tp; // log of the prompt time
+  real norm; // normalisation
 
-  log_tp = log10(tp);
-  log_norm = log10(norm);
+  tp = pow(10,tp);
+  norm = pow(10,log_norm);
   for (n in 1:N)
   {
     latent_rate[n] = 1E-18;    //some small number to keep it positive
