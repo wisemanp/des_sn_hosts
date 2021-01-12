@@ -37,7 +37,7 @@ parameters {
 transformed parameters {
   vector<lower=0>[N] latent_rate; // The model rates
   vector[N] log_latent_rate; //log of the latent rate
-  real tp<lower=0.02,upper=1>; // log of the prompt time
+  real<lower=0.02,upper=1> tp; // log of the prompt time
   real norm; // normalisation
 
   tp = pow(10,tp);
