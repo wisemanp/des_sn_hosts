@@ -40,7 +40,7 @@ transformed parameters {
   real tp; // log of the prompt time
   real norm; // normalisation
 
-  tp = pow(10,tp);
+  tp = pow(10,log_tp);
   norm = pow(10,log_norm);
   for (n in 1:N)
   {
