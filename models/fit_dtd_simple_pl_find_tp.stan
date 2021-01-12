@@ -58,7 +58,7 @@ model {
   // weakly informative priors
 
   beta ~ normal(-1,0.5);
-  log_tp ~ normal(-1.3,2);
+  log_tp ~ normal(-1.3,0.2);
   log_norm ~ normal(-12.7,0.5);
 
   // likelihood
