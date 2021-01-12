@@ -30,7 +30,7 @@ data {
 parameters {
 
   real<lower=-5,upper=0> beta; //late time slope of the DTD
-  real<lower=0.02,upper=1> tp; // prompt time of the DTD (Gyr)
+  real<lower=0.02> tp; // prompt time of the DTD (Gyr)
   real norm; // normalisation of the DTD
 
 }
