@@ -475,10 +475,11 @@ class Rates():
             rate = rate.loc[scatter_mmin:scatter_mmax]
             for counter,c in enumerate(rate.columns):
                 label=None
-
+                if data_only and counter==0:
+                    label= label_text
 
                 ax.scatter(rate.index,rate[c],marker='o',
-                               alpha=0.05,s=10,label=None,**kwargs)
+                               alpha=0.05,s=10,label=label,**kwargs)
                 ax.xaxis.set_minor_locator(MultipleLocator(0.25))
                 ax.yaxis.set_minor_locator(MultipleLocator(0.125))
                 ax.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
@@ -487,8 +488,7 @@ class Rates():
             for counter,i in enumerate(rate.index):
                 label=None
 
-                if data_only and counter==0:
-                    label= label_text
+                
                 ax.errorbar(i,rate.loc[i].mean(),xerr=(rate.index[1]-rate.index[0])/2,
                                 marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w',label=label,**kwargs)
         if not data_only:
