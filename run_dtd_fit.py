@@ -100,7 +100,7 @@ for counter,m in enumerate(10**obs.index):
     fitting_arr[counter,:] = ms_interp
 from des_sn_hosts.utils import stan_utility
 
-model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan')
+model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl.stan')
 x_model = np.linspace(7,12,100)
 
 data = dict(N = len(fitting_arr),
@@ -112,7 +112,7 @@ data = dict(N = len(fitting_arr),
             sigma = obs[np.arange(0,100)].std(axis=1),
             )
 fit = model.sampling(data=data, seed=1234, iter=int(1000),
-    warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp')
+    warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz')
 df = fit.to_dataframe()
-df.to_hdf(r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp.h5',key='samples')
+df.to_hdf(r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz.h5',key='samples')
 print(fit)
