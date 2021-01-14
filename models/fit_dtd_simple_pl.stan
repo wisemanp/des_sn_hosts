@@ -29,9 +29,9 @@ data {
 
 parameters {
 
-  real<upper=0> beta; //late time slope of the DTD
+  real<lower=-2,upper=0> beta; //late time slope of the DTD
   //real<lower=0> tp; // prompt time of the DTD (Gyr)
-  real log_norm; // normalisation of the DTD
+  real<lower=-20,upper=-5> log_norm; // normalisation of the DTD
 
 }
 
@@ -57,7 +57,7 @@ model {
 
   // weakly informative priors
 
-  beta ~ normal(-1,0.3);
+  beta ~ normal(-1,0.5);
   //tp ~ normal(0.2,0.1);
   log_norm ~ normal(-12.7,0.5);
 
