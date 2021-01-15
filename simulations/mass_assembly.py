@@ -45,7 +45,7 @@ def logMQ_z_alt(z):
 
 def pQ_Mz_alt(M,z):
     #print("Quenching function: \n",0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.5)))
-    return 0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.1))
+    return 0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.5))
 
 def pmin_z(z):
     return 1-((z-10)/10)**2
