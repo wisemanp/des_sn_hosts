@@ -27,7 +27,7 @@ def logMQ_z(z):
 
 def pQ_Mz(M,z):
     #print("Quenching function: \n",0.5*(1-erf((np.log10(M)-logMQ_z(z))/1.5)))
-    return 0.5*(1-erf((np.log10(M)-logMQ_z(z))/1.5))
+    return 0.5*(1-erf((np.log10(M)-logMQ_z(z))/1.1))
 
 def sfr_Mz(M,z):
     return pQ_Mz(M,z) * psi_Mz(M,z)
@@ -45,7 +45,7 @@ def logMQ_z_alt(z):
 
 def pQ_Mz_alt(M,z):
     #print("Quenching function: \n",0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.5)))
-    return 0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.5))
+    return 0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.1))
 
 def pmin_z(z):
     return 1-((z-10)/10)**2
@@ -129,7 +129,7 @@ def main(args):
         #print(m_lost_tot)
         final_age_weights = m_formed - m_lost_tot
         track = np.array([ts,zs,ages,m_formed,final_age_weights,m_arr]).T
-        pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot']).to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_Qerf_1.5.h5'%dt),key='%3.0f'%tf)
+        pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot']).to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_Qerf_1.1.h5'%dt),key='%3.0f'%tf)
 
 if __name__=="__main__":
     main(parser())
