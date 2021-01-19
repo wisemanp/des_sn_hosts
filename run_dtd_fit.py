@@ -63,7 +63,7 @@ r_BC03_noneb = Rates(SN_hosts_fn=sn_hosts_fn,field_fn=X3_hostlib_fn,
 r_BC03_noneb.field.rename(columns={'redshift_sedfit':'redshift'},inplace=True)
 r_BC03_noneb.rate_corr-= np.log10(59/46)
 r_BC03_noneb.sampled_rates_mass_fine_BC03 = pd.read_hdf(r_BC03_noneb.config['rates_root']+'data/mcd_rates_BC03_noneb_eff_finalz.h5',key='bootstrap_samples_mass_0.25')
-store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_0.5.h5','r')
+store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
 
 ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
 model_df = pd.DataFrame(index = store['/'+str(ordered_keys[-1])]['age'].values[::-1])
@@ -100,7 +100,7 @@ for counter,m in enumerate(10**obs.index):
     fitting_arr[counter,:] = ms_interp
 from des_sn_hosts.utils import stan_utility
 
-model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl.stan')
+model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan')
 x_model = np.linspace(7,12,100)
 
 data = dict(N = len(fitting_arr),
@@ -112,7 +112,7 @@ data = dict(N = len(fitting_arr),
             sigma = obs[np.arange(0,100)].std(axis=1),
             )
 fit = model.sampling(data=data, seed=1234, iter=int(1000),
-    warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz')
+    warmup=500,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp_qerf1.1')
 df = fit.to_dataframe()
-df.to_hdf(r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz.h5',key='samples')
+df.to_hdf(r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp_qerf1.1.h5',key='samples')
 print(fit)
