@@ -45,33 +45,42 @@ for counter,tf in enumerate(ordered_keys[::-1]):   # Iterate through the SFHs fo
         ts =sfh_df['age'].values[::-1]
         model_df[m] = 0
         model_df[m].loc[ts] = sfh_df['m_formed'].values
-obs = r_BC03_noneb.sampled_rates_mass_fine_BC03_lccut.replace([np.inf,-np.inf],np.NaN).dropna(axis=0,how='any')#.loc[9.:11.5]
-model_ms = np.array(model_df.columns.tolist())
-fitting_arr = np.zeros((len(model_df.index),len(obs.index)))
-for counter,m in enumerate(10**obs.index):
-    argmin = np.argmin(np.abs(m-model_ms))
-    m1 =model_ms[argmin]
-    min_diff = model_ms[argmin] - m
-    if min_diff >0:
-        m2 = model_ms[argmin+1]
-    else:
-        m2 = model_ms[argmin-1]
-    frac_diff = (m-m1 )/(m2-m1)
-    ms_interp = model_df[m1] + frac_diff*(model_df[m2] - model_df[m1])
-    fitting_arr[:,counter] = ms_interp
+
 from des_sn_hosts.utils import stan_utility
 
 model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan')
 x_model = np.linspace(7,12,100)
+obs = r_BC03_noneb.sampled_rates_mass_fine_BC03_lccut.replace([np.inf,-np.inf],np.NaN).dropna(axis=0
+                                            ,how='any')#.loc[9.:11.5]
+model_ms = np.array(model_df.columns.tolist())
+fitting_arr = np.zeros((len(model_df.index),len(obs.index)))
+#f,ax=plt.subplots()
+for counter,m in enumerate(10**obs.index):
 
-data = dict(N = len(fitting_arr),
+    argmin = np.argmin(np.abs(m-model_ms))
+    m1 =model_ms[argmin]
+    min_diff = model_ms[argmin] - m
+
+    if min_diff >0:
+        m2 = model_ms[argmin+1]
+
+    else:
+        m2 = model_ms[argmin-1]
+    frac_diff = (m-m1 )/(m2-m1)
+
+    ms_interp = model_df[m1] + frac_diff*(model_df[m2] - model_df[m1])
+    fitting_arr[:,counter] = ms_interp
+
+#ax.set_yscale('log')
+data_x1hi = dict(N = len(fitting_arr[0,:]),
             M = len(model_df.index),
             age = model_df.index.values/1000,
-            SFH = fitting_arr,
+            SFH = fitting_arr.T,
             logmass_obs = obs.index,
-            lograte_obs = obs[np.arange(0,100)].median(axis=1).values,
-            sigma = obs[np.arange(0,100)].std(axis=1),
+            lograte_obs = np.median(obs[np.arange(0,100)].values,axis=1),
+            sigma = np.nanstd(obs[np.arange(0,100)],axis=1),
             )
+
 fit = model.sampling(data=data, seed=1234, iter=int(2000),
     warmup=1000,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp_%s'%args.cut)
 df = fit.to_dataframe()
