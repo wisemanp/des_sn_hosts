@@ -5,7 +5,7 @@ import astropy
 import argparse
 import warnings
 from astropy.utils.exceptions import AstropyWarning
-
+import yaml
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
 
