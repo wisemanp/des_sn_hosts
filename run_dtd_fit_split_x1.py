@@ -14,7 +14,7 @@ from des_sn_hosts.rates.rates import Rates
 
 def parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c','--cut',help='Which lc cut to do',default='None',type=float)
+    parser.add_argument('-c','--cut',help='Which lc cut to do',default='None',type=str)
     args = parser.parse_args()
     return args
 args = parser()
