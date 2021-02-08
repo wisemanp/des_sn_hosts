@@ -1,29 +1,8 @@
 import numpy as np
 import pandas as pd
-import subprocess
-import glob
-import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
-from matplotlib.lines import Line2D
-import seaborn as sns
-from astropy.coordinates import SkyCoord
-import logging
-from astropy.table import Table
-import astropy.io.fits as fits
-import os
-import scipy.stats as stats
-from shutil import copyfile
-from astropy import units as u
-from astropy import wcs
-import aplpy
-import numpy as np
-import subprocess
-import glob
-import matplotlib.pyplot as plt
 import os
 import astropy
-import sys
-
+import argparse
 import warnings
 from astropy.utils.exceptions import AstropyWarning
 
@@ -31,30 +10,8 @@ np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
 
 sns.set_color_codes(palette='colorblind')
-import time
-import _pickle as cpickle
-import itertools
-import progressbar
-from tqdm import tqdm
-
-plt.rcParams['errorbar.capsize']=4
-#plt.style.use('dark_background')
-plt.style.use('default')
-sns.set_context('paper')
-plt.rcParams.update({'font.size': 20})
-plt.rcParams.update({'figure.figsize': [16,9]})
-plt.rcParams.update({'xtick.direction':'in'})
-plt.rcParams.update({'ytick.direction':'in'})
-
-from des_sn_hosts.simulations.sim import ZPowerCosmoSchechterSim
-from des_sn_hosts.utils.utils import Constants
-c = Constants()
-from astropy.cosmology import WMAP9 as cosmo
-import confuse
-
 from des_sn_hosts.rates.rates import Rates
-import yaml
-import numpy as np
+
 
 def parser():
     parser = argparse.ArgumentParser()
