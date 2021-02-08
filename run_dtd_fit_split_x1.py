@@ -47,8 +47,8 @@ for counter,tf in enumerate(ordered_keys[::-1]):   # Iterate through the SFHs fo
         model_df[m].loc[ts] = sfh_df['m_formed'].values
 obs = r_BC03_noneb.sampled_rates_mass_fine_BC03_lccut.replace([np.inf,-np.inf],np.NaN).dropna(axis=0,how='any')#.loc[9.:11.5]
 model_ms = np.array(model_df.columns.tolist())
-fitting_arr = np.zeros((len(model_df.index),len(obs_x1hi.index)))
-for counter,m in enumerate(10**obs_x1hi.index):
+fitting_arr = np.zeros((len(model_df.index),len(obs.index)))
+for counter,m in enumerate(10**obs.index):
     argmin = np.argmin(np.abs(m-model_ms))
     m1 =model_ms[argmin]
     min_diff = model_ms[argmin] - m
