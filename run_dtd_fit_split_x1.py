@@ -72,7 +72,7 @@ for counter,m in enumerate(10**obs.index):
     fitting_arr[:,counter] = ms_interp
 
 #ax.set_yscale('log')
-data_x1hi = dict(N = len(fitting_arr[0,:]),
+data = dict(N = len(fitting_arr[0,:]),
             M = len(model_df.index),
             age = model_df.index.values/1000,
             SFH = fitting_arr.T,
