@@ -9,7 +9,6 @@ from astropy.utils.exceptions import AstropyWarning
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
 
-sns.set_color_codes(palette='colorblind')
 from des_sn_hosts.rates.rates import Rates
 
 
