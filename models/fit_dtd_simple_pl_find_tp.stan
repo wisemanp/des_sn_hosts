@@ -31,7 +31,7 @@ parameters {
 
   real<lower=-2,upper=0> beta; //late time slope of the DTD
   real<lower=-20,upper=-5> log_norm; // log of the normalisation of the DTD
-  real<lower=-2,upper=-0.5> log_tp; // log of the prompt time
+  real<lower=-2,upper=0.5> log_tp; // log of the prompt time
 }
 
 transformed parameters {
