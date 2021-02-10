@@ -1,13 +1,13 @@
 functions {
 
-  real phi(real t, real tpe, real tpl, real norm, real beta){
+  real phi(real t, real tpe, real tpl, real norm){
 
   //  The delay time distribution
 
   real dtd = 0 ; // initialise the DTD
   if (t > tpe)
     if (t<=tpl)
-      dtd = norm * pow(t,beta);
+      dtd = norm * pow(t,-1);
   return dtd;
   }
 
@@ -30,7 +30,7 @@ data {
 
 parameters {
 
-  real<lower=-2,upper=0> beta; //late time slope of the DTD
+  //real<lower=-2,upper=0> beta; //late time slope of the DTD
   real<lower=-20,upper=-5> log_norm; // log of the normalisation of the DTD
   real<lower=-2,upper=1> log_tpe; // log of the prompt time
   real<lower=log_tpe,upper=2> log_tpl; // log of the late time
@@ -51,7 +51,7 @@ transformed parameters {
     latent_rate[n] = 1E-18;    //some small number to keep it positive
     for (m in 1:M)
     {
-      latent_rate[n]+= phi(age[m],tpe,tpl,norm,-1)*SFH[n][m]; //sum the rate arising from each epoch
+      latent_rate[n]+= phi(age[m],tpe,tpl,norm)*SFH[n][m]; //sum the rate arising from each epoch
     }
   }
   log_latent_rate = log10(latent_rate);
