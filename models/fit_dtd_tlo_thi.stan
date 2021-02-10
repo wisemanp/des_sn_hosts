@@ -5,8 +5,9 @@ functions {
   //  The delay time distribution
 
   real dtd = 0 ; // initialise the DTD
-  if (t > tpe) & (t<=tpl)
-    dtd = norm * pow(t,beta);
+  if (t > tpe)
+    if (t<=tpl)
+      dtd = norm * pow(t,beta);
   return dtd;
   }
 
