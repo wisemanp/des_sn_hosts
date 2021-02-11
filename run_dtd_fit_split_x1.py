@@ -51,9 +51,9 @@ from des_sn_hosts.utils import stan_utility
 
 if args.dtd == 'standard':
     model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan')
-if args.dtd == 'tetl' and args.c =='x1_lo':
+if args.dtd == 'tetl' and args.cut =='x1_lo':
     model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_tardy_prior.stan')
-elif args.dtd == 'tetl' and args.c =='x1_hi':
+elif args.dtd == 'tetl' and args.cut =='x1_hi':
     model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_prompt_prior.stan')
 x_model = np.linspace(7,12,100)
 obs = r_BC03_noneb.sampled_rates_mass_fine_BC03_lccut.replace([np.inf,-np.inf],np.NaN).dropna(axis=0
