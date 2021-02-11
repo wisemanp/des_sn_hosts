@@ -15,6 +15,7 @@ from des_sn_hosts.rates.rates import Rates
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c','--cut',help='Which lc cut to do',default='None',type=str)
+    parser.add_argument('-d','--dtd',help='Which DTD: [standard, tetl]',default='standard')
     args = parser.parse_args()
     return args
 args = parser()
@@ -48,7 +49,12 @@ for counter,tf in enumerate(ordered_keys[::-1]):   # Iterate through the SFHs fo
 
 from des_sn_hosts.utils import stan_utility
 
-model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan')
+if args.dtd == 'standard':
+    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan')
+if args.dtd == 'tetl' and args.c =='x1_lo':
+    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_tardy_prior.stan')
+elif args.dtd == 'tetl' and args.c =='x1_hi':
+    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_prompt_prior.stan')
 x_model = np.linspace(7,12,100)
 obs = r_BC03_noneb.sampled_rates_mass_fine_BC03_lccut.replace([np.inf,-np.inf],np.NaN).dropna(axis=0
                                             ,how='any')#.loc[9.:11.5]
