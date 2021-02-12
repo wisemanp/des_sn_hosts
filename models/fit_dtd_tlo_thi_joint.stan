@@ -57,7 +57,7 @@ transformed parameters {
 
   for (n in 1:Nlo)
   {
-    latent_rate[n] = 1E-18;    //some small number to keep it positive
+    latent_rate_lo[n] = 1E-18;    //some small number to keep it positive
     for (m in 1:Mlo)
     {
       latent_rate_lo[n]+= phi(age_lo[m],tpe,tpl,(1-frac_normhi)*pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
@@ -67,7 +67,7 @@ transformed parameters {
 
   for (n in 1:Nhi)
   {
-    latent_rate[n] = 1E-18;    //some small number to keep it positive
+    latent_rate_hi[n] = 1E-18;    //some small number to keep it positive
     for (m in 1:Mhi)
     {
       latent_rate_hi[n]+= phi(age_hi[m],0.04,tpe,frac_normhi*pow(10,-12.75))*SFH_hi[n][m]; //sum the rate arising from each epoch
