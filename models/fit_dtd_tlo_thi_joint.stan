@@ -38,7 +38,7 @@ data {
 
 parameters {
 
-  real<lower=0,upper=1>frac_normhi; // fraction of high-x1 SNe
+  //real<lower=0,upper=1>frac_normhi; // fraction of high-x1 SNe
   real<lower=-2,upper=1> log_tpe; // log of the prompt time
   real<lower=log_tpe,upper=2> log_tpl; // log of the late time
 }
@@ -60,7 +60,7 @@ transformed parameters {
     latent_rate_lo[n] = 1E-18;    //some small number to keep it positive
     for (m in 1:Mlo)
     {
-      latent_rate_lo[n]+= phi(age_lo[m],tpe,tpl,(1-frac_normhi)*pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
+      latent_rate_lo[n]+= phi(age_lo[m],tpe,tpl,pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
     }
   }
   log_latent_rate_lo = log10(latent_rate_lo);
@@ -70,7 +70,7 @@ transformed parameters {
     latent_rate_hi[n] = 1E-18;    //some small number to keep it positive
     for (m in 1:Mhi)
     {
-      latent_rate_hi[n]+= phi(age_hi[m],0.04,tpe,frac_normhi*pow(10,-12.75))*SFH_hi[n][m]; //sum the rate arising from each epoch
+      latent_rate_hi[n]+= phi(age_hi[m],0.04,tpe,pow(10,-12.75))*SFH_hi[n][m]; //sum the rate arising from each epoch
     }
   }
   log_latent_rate_hi = log10(latent_rate_hi);
@@ -79,7 +79,7 @@ transformed parameters {
 model {
 
   // weakly informative priors
-  frac_normhi ~ normal(0.5,0.5);
+  //frac_normhi ~ normal(0.5,0.5);
   log_tpe ~ normal(0,0.2);
   log_tpl ~ normal(1,0.2);
 
