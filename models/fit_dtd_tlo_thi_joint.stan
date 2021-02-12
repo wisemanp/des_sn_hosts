@@ -79,7 +79,7 @@ transformed parameters {
 model {
 
   // weakly informative priors
-  frac_normhi ~ normal(0.5,0.5)
+  frac_normhi ~ normal(0.5,0.5);
   log_tpe ~ normal(0,0.2);
   log_tpl ~ normal(1,0.2);
 
