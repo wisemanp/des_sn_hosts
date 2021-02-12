@@ -27,8 +27,8 @@ data {
   matrix[Nlo,Mlo] SFH_lo; // star formation histories
 
   int<lower=0> Nhi; // number of data points
-  vector[Nhi] logmass_obs_lo; // x observations
-  vector[Nhi] lograte_obs_lo; // y observations
+  vector[Nhi] logmass_obs_hi; // x observations
+  vector[Nhi] lograte_obs_hi; // y observations
   vector<lower=0>[Nhi] sigma; // heteroskedastic measurement error
   int<lower=0> Mhi; // length of the SFH matrix
   vector[Mhi] age_hi; // age of stellar populations
