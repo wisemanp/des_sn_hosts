@@ -37,7 +37,7 @@ data {
 parameters {
 
   //real<lower=0,upper=1>frac_normhi; // fraction of high-x1 SNe
-  real<lower=-2,upper=1.14> log_tpe; // log of the prompt time
+  real<lower=-2,upper=1.13> log_tpe; // log of the prompt time
   real<lower=log_tpe+0.001,upper=1.14> log_tpl; // log of the late time
 }
 
