@@ -66,7 +66,7 @@ transformed parameters {
         if (age_lo[m]< tpl)
           latent_rate_lo[n]+= ((age_lo[m] - tpe)/(tpl - tpe))*phi(age_lo[m],tpe,pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
         else
-          latent_rate_lo[n]+= phi(age_lo[m],tpe,pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
+          latent_rate_lo[n]+= phi(age_lo[m],tpe,pow(10,-12.68))*SFH_lo[n][m]; //sum the rate arising from each epoch
     }
   }
   log_latent_rate_lo = log10(latent_rate_lo);
@@ -77,7 +77,7 @@ transformed parameters {
     for (m in 1:M)
     {
       if (age_hi[m] < tpe )
-        latent_rate_hi[n]+= phi(age_hi[m],0.04,pow(10,-12.75))*SFH_hi[n][m]; //sum the rate arising from each epoch; //sum the rate arising from each epoch
+        latent_rate_hi[n]+= phi(age_hi[m],0.04,pow(10,-12.68))*SFH_hi[n][m]; //sum the rate arising from each epoch; //sum the rate arising from each epoch
       else if (age_hi[m] >= tpe)
         if (age_hi[m] < tpl)
           latent_rate_hi[n]+= (1-((age_hi[m] - tpe)/(tpl - tpe)))*phi(age_hi[m],0.04,pow(10,-12.75))*SFH_hi[n][m]; //sum the rate arising from each epoch
