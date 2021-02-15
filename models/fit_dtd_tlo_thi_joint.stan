@@ -60,10 +60,10 @@ transformed parameters {
     latent_rate_lo[n] = 1E-18;    //some small number to keep it positive
     for (m in 1:Mlo)
     {
-      if (age[m] < tpe)
+      if (age_lo[m] < tpe)
         frac_prompt = 1;
-      elseif (tpe < age[m] < tpl)
-        frac_prompt = (age[m] - tpe)/(tpl - tpe);
+      elseif (tpe < age_lo[m] < tpl)
+        frac_prompt = (age_lo[m] - tpe)/(tpl - tpe);
       else
         frac_prompt = 0;
       latent_rate_lo[n]+= (1-frac_prompt)*phi(age_lo[m],tpe,pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
@@ -76,10 +76,10 @@ transformed parameters {
     latent_rate_hi[n] = 1E-18;    //some small number to keep it positive
     for (m in 1:Mhi)
     {
-      if (age[m] < tpe)
+      if (age_hi[m] < tpe)
         frac_prompt = 1;
-      elseif (tpe < age[m] < tpl)
-        frac_prompt = (age[m] - tpe)/(tpl - tpe);
+      elseif (tpe < age_hi[m] < tpl)
+        frac_prompt = (age_hi[m] - tpe)/(tpl - tpe);
       else
         frac_prompt = 0;
       latent_rate_hi[n]+= frac_prompt*phi(age_hi[m],0.04,pow(10,-12.75))*SFH_hi[n][m]; //sum the rate arising from each epoch
