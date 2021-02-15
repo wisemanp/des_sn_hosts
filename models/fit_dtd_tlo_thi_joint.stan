@@ -62,7 +62,7 @@ transformed parameters {
     {
       if (age_lo[m] < tpe)
         frac_prompt = 1;
-      elseif (tpe < age_lo[m] < tpl)
+      else if (tpe < age_lo[m] < tpl)
         frac_prompt = (age_lo[m] - tpe)/(tpl - tpe);
       else
         frac_prompt = 0;
