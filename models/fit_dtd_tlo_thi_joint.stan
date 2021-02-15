@@ -16,7 +16,6 @@ functions {
 
 
 data {
-  int<lower=0> Ntot; //number of data points for the sum
   int<lower=0> Nlo; // number of data points
   vector[Nlo] logmass_obs_lo; // x observations
   vector[Nlo] lograte_obs_lo; // y observations
