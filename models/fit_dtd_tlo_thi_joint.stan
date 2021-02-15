@@ -48,7 +48,7 @@ transformed parameters {
   vector[Nhi] log_latent_rate_hi; //log of the latent rate
   real tpe; // log of the prompt time
   real tpl; // log of the late time
-  vector[M]<lower=0,upper=1> frac_prompt; // fraction of SNe that are prompt
+  vector<lower=0,upper=1>[M] frac_prompt; // fraction of SNe that are prompt
 
   tpe = pow(10,log_tpe);
   tpl = pow(10,log_tpl);
