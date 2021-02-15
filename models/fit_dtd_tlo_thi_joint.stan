@@ -60,15 +60,13 @@ transformed parameters {
     else if (tpe < age_lo[m] < tpl)
       frac_prompt[m] = (age_lo[m] - tpe)/(tpl - tpe);
     else
-      frac_prompt[m] = 0
-
+      frac_prompt[m] = 0;
       }
   for (n in 1:Nlo)
   {
     latent_rate_lo[n] = 1E-18;    //some small number to keep it positive
     for (m in 1:M)
     {
-
       latent_rate_lo[n]+= (1-frac_prompt[m])*phi(age_lo[m],tpe,pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
     }
   }
