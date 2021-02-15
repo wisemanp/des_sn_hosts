@@ -20,17 +20,16 @@ data {
   vector[Nlo] logmass_obs_lo; // x observations
   vector[Nlo] lograte_obs_lo; // y observations
   vector<lower=0>[Nlo] sigma_lo; // heteroskedastic measurement error
-  int<lower=0> Mlo; // length of the SFH matrix
-  vector[Mlo] age_lo; // age of stellar populations
-  matrix[Nlo,Mlo] SFH_lo; // star formation histories
+  int<lower=0> M; // length of the SFH matrix
+  vector[M] age_lo; // age of stellar populations
+  matrix[Nlo,M] SFH_lo; // star formation histories
 
   int<lower=0> Nhi; // number of data points
   vector[Nhi] logmass_obs_hi; // x observations
   vector[Nhi] lograte_obs_hi; // y observations
   vector<lower=0>[Nhi] sigma_hi; // heteroskedastic measurement error
-  int<lower=0> Mhi; // length of the SFH matrix
-  vector[Mhi] age_hi; // age of stellar populations
-  matrix[Nhi,Mhi] SFH_hi; // star formation histories
+  vector[M] age_hi; // age of stellar populations
+  matrix[Nhi,M] SFH_hi; // star formation histories
 
 
 }
@@ -49,23 +48,28 @@ transformed parameters {
   vector[Nhi] log_latent_rate_hi; //log of the latent rate
   real tpe; // log of the prompt time
   real tpl; // log of the late time
-  real<lower=0,upper=1> frac_prompt; // fraction of SNe that are prompt
+  vector[M]<lower=0,upper=1> frac_prompt; // fraction of SNe that are prompt
 
   tpe = pow(10,log_tpe);
   tpl = pow(10,log_tpl);
 
+  for (m in 1:M)
+  {
+    if (age_lo[m] < tpe)
+      frac_prompt[m] = 1;
+    else if (tpe < age_lo[m] < tpl)
+      frac_prompt[m] = (age_lo[m] - tpe)/(tpl - tpe);
+    else
+      frac_prompt[m] = 0
+
+      }
   for (n in 1:Nlo)
   {
     latent_rate_lo[n] = 1E-18;    //some small number to keep it positive
-    for (m in 1:Mlo)
+    for (m in 1:M)
     {
-      if (age_lo[m] < tpe)
-        frac_prompt = 1;
-      else if (tpe < age_lo[m] < tpl)
-        frac_prompt = (age_lo[m] - tpe)/(tpl - tpe);
-      else
-        frac_prompt = 0;
-      latent_rate_lo[n]+= (1-frac_prompt)*phi(age_lo[m],tpe,pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
+
+      latent_rate_lo[n]+= (1-frac_prompt[m])*phi(age_lo[m],tpe,pow(10,-12.75))*SFH_lo[n][m]; //sum the rate arising from each epoch
     }
   }
   log_latent_rate_lo = log10(latent_rate_lo);
@@ -73,7 +77,7 @@ transformed parameters {
   for (n in 1:Nhi)
   {
     latent_rate_hi[n] = 1E-18;    //some small number to keep it positive
-    for (m in 1:Mhi)
+    for (m in 1:M)
     {
       if (age_hi[m] < tpe)
         frac_prompt = 1;
@@ -81,7 +85,7 @@ transformed parameters {
         frac_prompt = (age_hi[m] - tpe)/(tpl - tpe);
       else
         frac_prompt = 0;
-      latent_rate_hi[n]+= frac_prompt*phi(age_hi[m],0.04,pow(10,-12.75))*SFH_hi[n][m]; //sum the rate arising from each epoch
+      latent_rate_hi[n]+= frac_prompt[m]*phi(age_hi[m],0.04,pow(10,-12.75))*SFH_hi[n][m]; //sum the rate arising from each epoch
     }
   }
   log_latent_rate_hi = log10(latent_rate_hi);
