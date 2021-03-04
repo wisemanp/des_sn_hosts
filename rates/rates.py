@@ -447,11 +447,11 @@ class Rates():
         y_obs = np.nanmean(df.loc[xmin:xmax].values,axis=1)
         y_err = np.nanstd(df.loc[xmin:xmax].astype(float).values,axis=1)
 
-        data = dict(N = len(x_obs),
-                    x_obs = x_obs,
-                    y_obs = y_obs,
+        data = dict(N = len(x_obs[~np.isnan(y_err)]),
+                    x_obs = x_obs[~np.isnan(y_err)],
+                    y_obs = y_obs[~np.isnan(y_err)],
                     #sigma_x=np.array(xerr[:-2]),
-                    sigma=y_err,
+                    sigma=y_err[~np.isnan(y_err)],
                     N_model=100,
                    x_model=x_model)
         fit = model.sampling(data=data, seed=seed, iter=int(n_iter))
