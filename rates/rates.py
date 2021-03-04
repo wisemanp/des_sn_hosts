@@ -444,8 +444,8 @@ class Rates():
             model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
         x_model = np.linspace(xmin,xmax,100)
         x_obs = np.array(df.loc[xmin:xmax].index)
-        y_obs = df.mean(axis=1).loc[xmin:xmax].values
-        y_err = df.std(axis=1).loc[xmin:xmax].values
+        y_obs = np.nanmean(df.loc[xmin:xmax].values,axis=1)
+        y_err = np.nanstd(df.loc[xmin:xmax].values,axis=1)
 
         data = dict(N = len(x_obs),
                     x_obs = x_obs,
@@ -488,7 +488,7 @@ class Rates():
             for counter,i in enumerate(rate.index):
                 label=None
 
-                
+
                 ax.errorbar(i,rate.loc[i].mean(),xerr=(rate.index[1]-rate.index[0])/2,
                                 marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w',label=label,**kwargs)
         if not data_only:
