@@ -444,7 +444,7 @@ class Rates():
             model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
         x_model = np.linspace(xmin,xmax,100)
         x_obs = np.array(df.loc[xmin:xmax].index)
-        y_obs = np.nanmean(df.loc[xmin:xmax].values,axis=1)
+        y_obs = np.nanmean(df.loc[xmin:xmax].astype(float).values,axis=1)
         y_err = np.nanstd(df.loc[xmin:xmax].astype(float).values,axis=1)
 
         data = dict(N = len(x_obs[~np.isnan(y_err)]),
