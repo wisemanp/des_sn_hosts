@@ -445,7 +445,7 @@ class Rates():
         x_model = np.linspace(xmin,xmax,100)
         x_obs = np.array(df.loc[xmin:xmax].index)
         y_obs = np.nanmean(df.loc[xmin:xmax].values,axis=1)
-        y_err = np.nanstd(df.loc[xmin:xmax].values,axis=1)
+        y_err = np.nanstd(df.loc[xmin:xmax].astype(float).values,axis=1)
 
         data = dict(N = len(x_obs),
                     x_obs = x_obs,
