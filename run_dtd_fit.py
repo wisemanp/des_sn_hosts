@@ -67,7 +67,7 @@ store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.
 
 ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
 model_df = pd.DataFrame(index = store['/'+str(ordered_keys[-1])]['age'].values[::-1])
-z =0.55
+z =0.5
 for counter,tf in enumerate(ordered_keys[::-1]):   # Iterate through the SFHs for galaxies of different final masses
     #print(tf)
     sfh_df = store['/'+str(tf)]
@@ -100,7 +100,7 @@ for counter,m in enumerate(10**obs.index):
     fitting_arr[counter,:] = ms_interp
 from des_sn_hosts.utils import stan_utility
 
-model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_tp.stan')
+model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl.stan')
 x_model = np.linspace(7,12,100)
 
 data = dict(N = len(fitting_arr),
@@ -112,7 +112,7 @@ data = dict(N = len(fitting_arr),
             sigma = obs[np.arange(0,100)].std(axis=1),
             )
 fit = model.sampling(data=data, seed=1234, iter=int(2000),
-    warmup=1000,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp')
+    warmup=1000,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz')
 df = fit.to_dataframe()
-df.to_hdf(r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp.h5',key='samples')
+df.to_hdf(r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz.h5',key='samples')
 print(fit)
