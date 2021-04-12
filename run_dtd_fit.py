@@ -100,7 +100,7 @@ for counter,m in enumerate(10**obs.index):
     fitting_arr[counter,:] = ms_interp
 import stan_utility
 
-model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl.stan')
+model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl.stan',model_name='dtd_simple_pl')
 x_model = np.linspace(7,12,100)
 
 data = dict(N = len(fitting_arr),

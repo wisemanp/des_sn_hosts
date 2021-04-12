@@ -94,7 +94,7 @@ for counter,m in enumerate(10**obs_x1hi.index):
 #obs = r_BC03_noneb.sampled_rates_mass_fine_BC03.loc[8.75:11.75]
 
 import stan_utility
-model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_joint.stan')
+model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_joint.stan',model_name='dtd_simple_pl_tlo_thi_joint')
 data = dict(Nlo = len(fitting_arr_lo[0,:]),
             M = len(model_df.index),
             age_lo = model_df.index.values/1000,

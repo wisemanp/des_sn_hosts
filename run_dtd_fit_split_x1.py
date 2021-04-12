@@ -50,11 +50,11 @@ for counter,tf in enumerate(ordered_keys[::-1]):   # Iterate through the SFHs fo
 import stan_utility
 
 if args.dtd == 'standard':
-    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan')
+    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan',model_name='dtd_simple_pl_tp')
 if args.dtd == 'tetl' and args.cut =='x1_lo':
-    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_tardy_prior.stan')
+    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_tardy_prior.stan',model_name='dtd_simple_pl_tlo_thi_tardy')
 elif args.dtd == 'tetl' and args.cut =='x1_hi':
-    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_prompt_prior.stan')
+    model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_prompt_prior.stan',model_name='dtd_simple_pl_tlo_thi_prompt')
 x_model = np.linspace(7,12,100)
 obs = r_BC03_noneb.sampled_rates_mass_fine_BC03_lccut.replace([np.inf,-np.inf],np.NaN).dropna(axis=0
                                             ,how='any')#.loc[9.:11.5]
