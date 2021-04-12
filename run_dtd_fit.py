@@ -98,7 +98,7 @@ for counter,m in enumerate(10**obs.index):
 
     ms_interp = model_df[m1] + frac_diff*(model_df[m2] - model_df[m1])
     fitting_arr[counter,:] = ms_interp
-from des_sn_hosts.utils import stan_utility
+import stan_utility
 
 model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl.stan')
 x_model = np.linspace(7,12,100)
