@@ -47,7 +47,7 @@ for counter,tf in enumerate(ordered_keys[::-1]):   # Iterate through the SFHs fo
         model_df[m] = 0
         model_df[m].loc[ts] = sfh_df['m_formed'].values
 
-from des_sn_hosts.utils import stan_utility
+import stan_utility
 
 if args.dtd == 'standard':
     model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_simple_pl_find_tp.stan')

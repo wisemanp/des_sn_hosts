@@ -15,7 +15,7 @@ from scipy import stats
 from scipy.optimize import curve_fit
 import progressbar
 import pystan
-from des_sn_hosts.utils import stan_utility
+import stan_utility
 import corner
 import itertools
 

@@ -93,7 +93,7 @@ for counter,m in enumerate(10**obs_x1hi.index):
     fitting_arr_hi[:,counter] = ms_interp
 #obs = r_BC03_noneb.sampled_rates_mass_fine_BC03.loc[8.75:11.75]
 
-from des_sn_hosts.utils import stan_utility
+import stan_utility
 model = stan_utility.compile_model('/home/wiseman/code/des_sn_hosts/'+'models/fit_dtd_tlo_thi_joint.stan')
 data = dict(Nlo = len(fitting_arr_lo[0,:]),
             M = len(model_df.index),

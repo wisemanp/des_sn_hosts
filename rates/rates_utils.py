@@ -2,7 +2,7 @@ import pystan
 import pandas as pd
 import numpy as np
 import progressbar
-from des_sn_hosts.utils import stan_utility
+import stan_utility
 
 def sample_sn_masses(df,model_dir,mass_col='log_m',mass_err_col='logm_err',
     sfr_col='logssfr', sfr_err_col='logssfr_err',
