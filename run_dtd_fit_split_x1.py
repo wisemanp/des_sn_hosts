@@ -33,7 +33,7 @@ r_BC03_noneb.rate_corr -= np.log10(des_time)
 
 r_BC03_noneb.sampled_rates_mass_fine_BC03_lccut = pd.read_hdf(r_BC03_noneb.config['rates_root']+'data/mcd_rates_BC03_noneb_eff_3d_finalz_V20cuts_zmax06_%s.h5'%args.cut,key='bootstrap_samples_mass_0.25')
 
-store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
+store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_5.0_Qerf_1.1.h5','r')
 
 ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
 model_df = pd.DataFrame(index = store['/'+str(ordered_keys[-1])]['age'].values[::-1])

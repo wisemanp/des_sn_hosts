@@ -63,7 +63,7 @@ r_BC03_noneb = Rates(SN_hosts_fn=sn_hosts_fn,field_fn=X3_hostlib_fn,
 r_BC03_noneb.field.rename(columns={'redshift_sedfit':'redshift'},inplace=True)
 r_BC03_noneb.rate_corr-= np.log10(59/46)
 r_BC03_noneb.sampled_rates_mass_fine_BC03 = pd.read_hdf(r_BC03_noneb.config['rates_root']+'data/mcd_rates_BC03_noneb_eff_finalz.h5',key='bootstrap_samples_mass_0.25')
-store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
+store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_5.0_Qerf_1.1.h5','r')
 
 ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
 model_df = pd.DataFrame(index = store['/'+str(ordered_keys[-1])]['age'].values[::-1])
@@ -111,8 +111,8 @@ data = dict(N = len(fitting_arr),
             lograte_obs = obs[np.arange(0,100)].median(axis=1).values,
             sigma = obs[np.arange(0,100)].std(axis=1),
             )
-fit = model.sampling(data=data, seed=1234, iter=int(10000),
-    warmup=5000,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp')
+fit = model.sampling(data=data, seed=1234, iter=int(2000),
+    warmup=1000,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp')
 df = fit.to_dataframe()
 df.to_hdf(r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp.h5',key='samples')
 print(fit)

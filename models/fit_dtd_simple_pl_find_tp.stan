@@ -31,7 +31,7 @@ parameters {
 
   real<lower=-2,upper=0> beta; //late time slope of the DTD
   real<lower=-15,upper=-10> log_norm; // log of the normalisation of the DTD
-  real<lower=-2,upper=-0.15> log_tp; // log of the prompt time
+  real<lower=-2,upper=1> log_tp; // log of the prompt time
 }
 
 transformed parameters {
@@ -58,7 +58,7 @@ model {
   // weakly informative priors
 
   beta ~ normal(-1,0.5);
-  log_tp ~ normal(-1.3,0.2);
+  log_tp ~ normal(-1.3,1);
   log_norm ~ normal(-12.7,0.5);
 
   // likelihood
