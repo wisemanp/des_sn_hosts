@@ -86,7 +86,7 @@ data = dict(N = len(fitting_arr[0,:]),
             sigma = np.nanstd(obs[np.arange(0,100)],axis=1),
             )
 
-fit = model.sampling(data=data, seed=1234, iter=int(2000),
+fit = model.sampling(data=data, seed=1234, iter=int(5000),
     warmup=1000,sample_file = r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp_%s'%args.cut)
 df = fit.to_dataframe()
 df.to_hdf(r_BC03_noneb.config['rates_root']+'/data/dtd_samples_with_eff_finalz_tp_%s.h5'%args.cut,key='samples')
