@@ -439,9 +439,9 @@ class Rates():
     def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3,dispersion=False,**kwargs):
         if dispersion:
 
-            model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero_scatter.stan')
+            model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero_scatter.stan',model_name="fit_y_line_hetero_scatter")
         else:
-            model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
+            model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan',model_name="fit_y_line_hetero")
         x_model = np.linspace(xmin,xmax,100)
         x_obs = np.array(df.loc[xmin:xmax].index)
         y_obs = np.nanmean(df.loc[xmin:xmax].astype(float).values,axis=1)
