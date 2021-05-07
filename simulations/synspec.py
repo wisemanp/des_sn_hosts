@@ -204,8 +204,8 @@ class SynSpec():
             att = att_model(wave[lims])
             return wave[lims].value,flux[lims]*10**(-0.4*att)
     def calculate_colour(self,spec_list,flt1='UX',flt2='RJ'):
-        filter1 = load_spectrum(filt_dir+'%s_B90.dat'%flt1)
-        filter2 = load_spectrum(filt_dir+'%s.dat'%flt2)
+        filter1 = load_spectrum(self.filt_dir+'%s_B90.dat'%flt1)
+        filter2 = load_spectrum(self.filt_dir+'%s.dat'%flt2)
         #print('Loaded filters')
 
         fluxes = self.get_spec_fluxes(spec_list,z=0,filters=[filter1,filter2])
