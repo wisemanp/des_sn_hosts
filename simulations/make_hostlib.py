@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 
 from dust_extinction.parameter_averages import F19
-from spectral_utils import load_spectrum, SynSpec, convert_escma_fluxes_to_griz_mags
+from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags
+from synspec import SynSpec 
 bc03_flux_conv_factor = 3.12e7
 def parser():
     parser = argparse.ArgumentParser()
