@@ -4,8 +4,15 @@ import pandas as pd
 import os
 from astropy.table import Table
 import astropy.units as u
+from scipy.stats import norm
 
 aura_dir = '/media/data3/wiseman/des/AURA/'
+def phi_t_pl(t,tp,s,norm):
+            '''Functional form of the delay time distribution'''
+            return ((0*t)*(t<tp))+((norm*(t**s))*(t>tp))
+beta = -1.14
+dtd_norm = 2.08E-13
+
 class SynSpec():
     def __init__(self,root_dir=aura_dir,template_obj_list =None,neb=False):
         self.root_dir = root_dir
