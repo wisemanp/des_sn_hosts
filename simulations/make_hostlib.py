@@ -8,6 +8,15 @@ import argparse
 from astropy.cosmology import FlatLambdaCDM
 cosmo = FlatLambdaCDM(70,0.3)
 bc03_flux_conv_factor = 3.12e7
+
+# DTD parameters from W21
+beta_x1hi = -1.68
+norm_x1hi = 0.51E-13
+beta_x1lo = -0.79
+norm_x1lo = 1.19E-13
+beta = -1.14
+dtd_norm = 2.08E-13
+
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-z','--z',help='Redshift',default=0.5,type=str)
