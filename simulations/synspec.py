@@ -5,7 +5,7 @@ import os
 from astropy.table import Table
 import astropy.units as u
 from scipy.stats import norm
-
+from dust_extinction.parameter_averages import CCM89, F19
 aura_dir = '/media/data3/wiseman/des/AURA/'
 def phi_t_pl(t,tp,s,norm):
             '''Functional form of the delay time distribution'''
