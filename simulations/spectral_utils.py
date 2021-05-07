@@ -4,7 +4,8 @@ import scipy.interpolate
 import scipy.optimize
 from pysynphot import observation
 from pysynphot import spectrum
-
+import numpy as np
+import pandas as pd 
 #------------------------------------------------------------------------
 # spectrum and filter class definitions
 class Spectrum(object):
