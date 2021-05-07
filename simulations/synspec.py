@@ -229,7 +229,7 @@ class SynSpec():
         #lHb_arr/= 3.12e7 # convert to BC03 units
         nLy_arr = 10**self.nLy
 
-        lHbs = nLy_arr * sfh_coeffs_PW21
+        lHbs = nLy_arr * sfh_coeffs
         line_strengths = np.multiply(np.matrix(lHbs),np.matrix(em_lines.ratio).T)
 
         em_lums = np.array(np.sum(line_strengths,axis=1))
