@@ -398,7 +398,7 @@ def SG_smooth_spec(in_spec, window, polydeg):
     return out_spec
 
 # Extra spectral utilities
-def convert_escma_fluxes_to_griz_mags(flux_array,
+def convert_escma_fluxes_to_griz_mags(flux_array,zp_fluxes
                                 ):
     """
     Input MUST be 4x arrays of griz fluxes

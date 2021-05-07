@@ -105,7 +105,7 @@ def run(args):
     flux_df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi','pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total','f_g','f_r','f_i','f_z'])
     zp_fluxes = np.array([2.207601113629584299e-06,1.880824499994395390e-06,1.475307638780991749e-06,1.014740352137762549e-06])
     default_des_syserrs = np.array([0.03, 0.02, 0.02, 0.03])
-    mags,fuJys=convert_escma_fluxes_to_griz_mags(flux_df[['f_g','f_r','f_i','f_z']])
+    mags,fuJys=convert_escma_fluxes_to_griz_mags(flux_df[['f_g','f_r','f_i','f_z']],zp_fluxes)
     flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
     flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
     flux_df['g_r'] = flux_df['mag_g'] - flux_df['mag_r']
