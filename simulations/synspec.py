@@ -1,4 +1,8 @@
 from spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
+import numpy as np
+import pandas as pd
+import os 
+
 aura_dir = '/media/data3/wiseman/des/AURA/'
 class SynSpec():
     def __init__(self,root_dir=aura_dir,template_obj_list =None,neb=False):
