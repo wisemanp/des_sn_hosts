@@ -1,7 +1,9 @@
 from spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
 import numpy as np
 import pandas as pd
-import os 
+import os
+from astropy.table import Table
+from import astropy.units as u
 
 aura_dir = '/media/data3/wiseman/des/AURA/'
 class SynSpec():
