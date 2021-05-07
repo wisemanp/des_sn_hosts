@@ -492,9 +492,9 @@ class NebularContinuum(object):
         self.lumin = lumin
 
   # Function to iterpolate SFHs onto the BC03 age grid
-def interpolate_SFH(sfh,mtot):
+def interpolate_SFH(sfh,mtot,t_arr):
     '''Function to iterpolate SFHs onto the BC03 age grid '''
     sfh['stellar_age'] = sfh.age.values[::-1]
-    gb =sfh.groupby(pd.cut(sfh['stellar_age'],bins=np.concatenate([[0],10**(bc03_logt_float_array)/(1E+6)]))).agg(sum)
+    gb =sfh.groupby(pd.cut(sfh['stellar_age'],bins=np.concatenate([[0],10**(t_arr)/(1E+6)]))).agg(sum)
 
     return gb['m_formed'].values/mtot

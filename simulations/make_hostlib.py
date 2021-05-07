@@ -88,7 +88,7 @@ def run(args):
                 pred_rate_total = np.sum(SN_age_dist)
                 ages = sfh_df['stellar_age']/1000
                 mwsa = np.average(sfh_df['stellar_age'],weights=sfh_df['m_formed']/mtot)
-                sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot)
+                sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
                 if mtot>1E+10:
                     mu_Rv = 2.6
                     avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
