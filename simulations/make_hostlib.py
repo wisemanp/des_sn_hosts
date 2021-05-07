@@ -3,7 +3,7 @@ import pandas as pd
 
 from dust_extinction.parameter_averages import F19
 from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags
-from synspec import SynSpec 
+from synspec import SynSpec
 bc03_flux_conv_factor = 3.12e7
 def parser():
     parser = argparse.ArgumentParser()
@@ -96,7 +96,7 @@ def run(args):
     flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
     flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
     flux_df['g_r'] = flux_df['mag_g'] - flux_df['mag_r']
-    flux_df.to_hdf('/media/data3/wiseman/des/AURA/all_model_params_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f.h5'%(z_array[0],z_array[-1],av_arr[0],av_arr[-1],logU),key='main')
+    flux_df.to_hdf('/media/data3/wiseman/des/AURA/all_model_params_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i.h5'%(z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res),key='main')
     print("Done!")
 if __name__=="__main__":
     args = parser()

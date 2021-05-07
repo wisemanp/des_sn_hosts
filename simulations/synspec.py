@@ -1,5 +1,5 @@
 from spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
-
+aura_dir = '/media/data3/wiseman/des/AURA/'
 class SynSpec():
     def __init__(self,root_dir=aura_dir,template_obj_list =None,neb=False):
         self.root_dir = root_dir
