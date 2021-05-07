@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 from astropy.table import Table
-from import astropy.units as u
+import astropy.units as u
 
 aura_dir = '/media/data3/wiseman/des/AURA/'
 class SynSpec():
