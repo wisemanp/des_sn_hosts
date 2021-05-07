@@ -51,7 +51,7 @@ def run(args):
     f1.close()
     bc03_logt_array = np.array(bc03_logt_list)
     ntemp = len(bc03_logt_array)
-
+    bc03_logt_float_array =np.array([float(x) for x in (bc03_logt_array)])
     bc03_dir = '/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'
     template_obj_list = []
     nLy_list = []
@@ -59,6 +59,7 @@ def run(args):
         bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (bc03_dir, bc03_logt_list[i])
         new_template_spec =  load_spectrum(bc03_fn)
         template_obj_list.append(new_template_spec)
+
     s = SynSpec(template_obj_list = template_obj_list,neb=True)
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
