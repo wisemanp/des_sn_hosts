@@ -38,8 +38,6 @@ class Sim():
     def _load_flux_df(self,fn):
         return pd.read_hdf(fn)
 
-
-
     def _calculate_absolute_rates(self):
         '''For each simulated galaxy, we calculate the expected rate of SNe Ia by multplying it with the stellar mass density at that stellar mass
         TODO: Currently this is for the SMF at z=0.5 but should update it to vary with redshift'''
@@ -381,6 +379,12 @@ class Sim():
             self.mb_err.append(np.max([0.03,np.random.normal(10**(0.4*(m_obs-1.5) - 10)+0.02,0.03)]))
 
     def set_cint(self,mu,sigma):
+        '''
+
+        :param mu:
+        :param sigma:
+        :return:
+        '''
         self.cint= norm(mu,sigma)
 
     def set_cint_young(self,mu,sigma):
@@ -389,6 +393,28 @@ class Sim():
     def set_cint_old(self,mu,sigma):
         self.cint_old= norm(mu,sigma)
     def choose_rv(self,m,split=10,low=2.75,high=1.5):
+        '''
+
+        :param m: stellar mass (in log10 units)
+        :type m: float
+        :param split: mass split value (in log10 units)
+        :type split: float
+        :param low: Rv value for low mass galaxies
+        :type low: float
+        :param high: Rv value for high mass galaxies
+        :type high: float
+        :return: Rv value for the given mass
+        :rtype float
+
+        :example:
+
+        >>> m=9
+        >>> split=10
+        >>> low=2.8
+        >>> choose_rv(m,split)
+        2.8
+
+        '''
         return choose_rv(m,split,low,high)
 
     def setup_sampling(self):
