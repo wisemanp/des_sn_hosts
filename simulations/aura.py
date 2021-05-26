@@ -21,7 +21,13 @@ aura_dir = os.environ['AURA_DIR']
 
 class Sim():
     def __init__(self,fn,cosmo='default'):
+        '''
 
+        :param fn:
+        :type fn:
+        :param cosmo:
+        :type cosmo:
+        '''
         self.flux_df = self._load_flux_df(fn)
         self._calculate_absolute_rates()
         self._make_multi_index()
