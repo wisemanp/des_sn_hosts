@@ -15,11 +15,11 @@ from scipy import stats
 from scipy.optimize import curve_fit
 import progressbar
 import pystan
-from des_sn_hosts.utils import stan_utility
+import stan_utility
 import corner
 import itertools
 
-from des_sn_hosts.rates.rates_utils import sample_sn_masses, sample_field_masses, sample_field_masses_asymm
+from des_sn_hosts.rates.rates_utils import sample_sn_masses,sample_sn_masses_asymm, sample_field_masses, sample_field_asymm, split_by_z, SN_G_MC
 sns.set_color_codes(palette='colorblind')
 
 class Rates():
@@ -66,40 +66,58 @@ class Rates():
 
     def _get_rate_corr(self,N_SN_fields,N_field_fields):
         self.rate_corr = -0.38 -np.log10(N_SN_fields/N_field_fields)
-    def generate_sn_samples(self,mass_col='HOST_LOGMASS',mass_err_col='HOST_LOGMASS_ERR',
-                                sfr_col = 'logssfr',sfr_err_col = 'logssfr_err',
-                                index_col = 'CIDint',weight_col='weight',n_iter=1E5,save_samples=True):
+    def generate_sn_samples(self,mass_col='massmc',mass_err_col='HOST_LOGMASS_ERR',mass_err_plus = 'mass_upperr',mass_err_minus='mass_lowerr',
+                                sfr_col = 'sfrmc',sfr_err_col = 'logssfr_err',sfr_err_plus='sfr_upperr',sfr_err_minus='sfr_lowerr',
+                                ssfr_col='ssfrmc',ssfr_err_col='ssfrmc_err',ssfr_err_plus='ssfr_upperr',ssfr_err_minus='ssfr_lowerr',
+                                index_col = 'CIDint',weight_col='weight',n_iter=1E5,save_samples=True,asymm=False,variable='mass'):
         '''Wrapped around sample_sn_masses with option to save the output'''
         if weight_col not in self.SN_Hosts.columns:
             self.SN_Hosts[weight_col] = 1
-        sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
-                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col=sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter)
+        if not asymm:
+
+            sn_samples = sample_sn_masses(self.SN_Hosts,self.config['rates_root']+'models/',
+                    mass_col=mass_col,mass_err_col=mass_err_col,
+                    sfr_col=sfr_col,sfr_err_col=sfr_err_col,
+                    ssfr_col=ssfr_col,ssfr_err_col=ssfr_err_col,
+                    weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
+        else:
+            sn_samples = sample_sn_masses_asymm(self.SN_Hosts,self.config['rates_root']+'models/',
+                    mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus = mass_err_minus,
+                    sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,
+                    ssfr_col=ssfr_col,ssfr_err_plus=ssfr_err_plus, ssfr_err_minus = ssfr_err_minus,
+                    weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
+
         print('Sampling done')
         if save_samples:
             print('Saving to file')
             ext = '.'+self.SN_fn.split('.')[-1]
-            savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_mass_resampled.h5')
+            savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
             sn_samples.to_hdf(savename,key='Bootstrap_samples')
         self.sn_samples_mass = sn_samples
 
     def generate_field_samples(self,mass_col='mass',mass_err_col='mass_err',mass_err_plus = 'MASSMAX',mass_err_minus='MASSMIN',
     sfr_col = 'log_sfr',sfr_err_col='log_sfr_err',sfr_err_plus='SFRMAX',sfr_err_minus='SFRMIN',
-    weight_col='weight',index_col = 'id',n_iter=1E5,save_samples=True,asymm=False):
+    ssfr_col='ssfrmc',ssfr_err_col='ssfrmc_err',ssfr_err_plus='ssfr_upperr',ssfr_err_minus='ssfr_lowerr',
+    weight_col='weight',index_col = 'id',n_iter=1E5,save_samples=True,asymm=False,variable='mass'):
         '''Wrapped around sample_sn_masses with option to save the output'''
 
         if not asymm:
             field_samples = sample_field_masses(self.field,self.config['rates_root']+'models/',
-                    mass_col=mass_col,mass_err_col=mass_err_col,sfr_col = sfr_col,sfr_err_col=sfr_err_col,weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable='mass')
+                    mass_col=mass_col,mass_err_col=mass_err_col,
+                    sfr_col = sfr_col,sfr_err_col=sfr_err_col,
+                    ssfr_col=ssfr_col,ssfr_err_col=ssfr_err_col,
+                    weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
         else:
-            field_samples = sample_field_masses_asymm(self.field,self.config['rates_root']+'models/',
+            field_samples = sample_field_asymm(self.field,self.config['rates_root']+'models/',
                     mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus=mass_err_minus,
                     sfr_col = sfr_col,sfr_err_plus=sfr_err_plus,sfr_err_minus = sfr_err_minus,
-                    weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable='mass')
+                    ssfr_col=ssfr_col,ssfr_err_plus=ssfr_err_plus, ssfr_err_minus = ssfr_err_minus,
+                    weight_col=weight_col,index_col=index_col,n_iter=n_iter,variable=variable)
         print('Sampling done')
         if save_samples:
             print('Saving to file')
             ext = '.'+self.field_fn.split('.')[-1]
-            savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_mass_resampled.h5')
+            savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples_mass = field_samples
 
@@ -142,41 +160,79 @@ class Rates():
             field_samples.to_hdf(savename,key='Bootstrap_samples')
         self.field_samples_sfr = field_samples
 
-    def load_sn_samples(self,variable = 'mass'):
+    def generate_samples_split_z(self,zmin=None,zmax=None,zstep=None,zbins=None,
+                                    mass_col='massmc',mass_err_plus = 'mass_upperr',mass_err_minus ='mass_lowerr',
+                                    sfr_col='sfrmc',sfr_err_plus = 'sfr_upperr',sfr_err_minus ='sfr_lowerr',
+                                    weight_col_SN = 'weight',weight_col_field='V_Max_sedfit',variable='mass',asymm=True):
+        sn_samples_z = {}
+        field_samples_z = {}
+        if not zbins:
+            zbin_los = np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)
+        else:
+            zbin_los = zbins[:-1]
+        for counter,zlo in enumerate(zbin_los):
+            if zstep:
+                zhi=zlo+zstep
+            else:
+                zhi = zbins[counter+1]
+            # SN Hosts
+            sn_df = pd.read_hdf(self.SN_fn,key='z_%.2f_%.2f'%(zlo,zhi))
+            sn_sample = sample_sn_masses_asymm(sn_df,self.config['rates_root']+'models/',
+                                            mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus = mass_err_minus,
+                                            sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col_SN,index_col='CIDint',n_iter=int(1E3),
+                    variable=variable)
+            ext = '.'+self.SN_fn.split('.')[-1]
+            sn_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
+            sn_samples_z['%.2f-%.2f'%(zlo,zhi)] = sn_sample
+            field_df = pd.read_hdf(self.field_fn,key='z_%.2f_%.2f'%(zlo,zhi))
+            field_sample = sample_field_asymm(field_df,self.config['rates_root']+'models/',
+                                                mass_col=mass_col,mass_err_plus=mass_err_plus,mass_err_minus = mass_err_minus,
+                                                sfr_col=sfr_col,sfr_err_plus=sfr_err_plus, sfr_err_minus = sfr_err_minus,weight_col=weight_col_field,index_col = 'id',n_iter=int(1E2),variable=variable)
+            ext = '.'+self.field_fn.split('.')[-1]
+            field_sample.to_hdf(self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable),key='Bootstrap_samples_z_%.2f_%.2f'%(zlo,zhi))
+            field_samples_z['%.2f-%.2f'%(zlo,zhi)] = field_sample
+        setattr(self,'sn_samples_%s_z'%variable,sn_samples_z)
+        setattr(self,'field_samples_%s_z'%variable,field_samples_z)
+        return sn_samples_z, field_samples_z
 
-
+    def load_sn_samples(self,variable = 'mass',key_ext=None):
         ext = '.'+self.SN_fn.split('.')[-1]
         savename=self.config['rates_root']+'data/'+os.path.split(self.SN_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
+        if not key_ext:
+            setattr(self,'sn_samples_%s'%variable,pd.read_hdf(savename,key='Bootstrap_samples'))
+        else:
+            setattr(self,'sn_samples_%s_%s'%(variable,key_ext),pd.read_hdf(savename,key='Bootstrap_samples_%s'%key_ext))
 
-        if variable =='mass':
-            self.sn_samples_mass = sn_samples = pd.read_hdf(savename,key='Bootstrap_samples')
-        elif variable =='sfr':
-            self.sn_samples_sfr = sn_samples = pd.read_hdf(savename,key='Bootstrap_samples')
-    def load_field_samples(self,variable='mass'):
+    def load_field_samples(self,variable='mass',key_ext=None):
 
         ext = '.'+self.field_fn.split('.')[-1]
         savename=self.config['rates_root']+'data/'+os.path.split(self.field_fn)[-1].replace(ext,'_%s_resampled.h5'%variable)
-        if variable =='mass':
-            self.field_samples_mass = pd.read_hdf(savename,key='Bootstrap_samples')
-        elif variable =='sfr':
-            self.field_samples_sfr = pd.read_hdf(savename,key='Bootstrap_samples')
+        if not key_ext:
+            setattr(self,'field_samples_%s'%variable,pd.read_hdf(savename,key='Bootstrap_samples'))
+        else:
+            setattr(self,'field_samples_%s_%s'%(variable,key_ext),pd.read_hdf(savename,key='Bootstrap_samples_%s'%key_ext))
+
     def cut_z(self,z_min=0,z_max=1):
         for sn_samples,field_samples in zip([self.sn_samples_mass,self.sn_samples_sfr],[self.field_samples_mass,self.field_samples_sfr]):
 
             sn_samples = sn_samples[(sn_samples['zHD']<z_max)&(sn_samples['zHD']>z_min)]
             field_samples = field_samples[(field_samples['redshift']<z_max)&(field_samples['redshift']>z_min)]
 
+    def split_by_z(self,zmin=0.2,zmax=1.2,zstep=0.2,zbins=None):
+        split_by_z(self.SN_Hosts,self.SN_fn,zmin=zmin,zmax=zmax,zstep=zstep,zbins=zbins)
+        split_by_z(self.field,self.field_fn,zcol='redshift',zmin=zmin,zmax=zmax,zstep=zstep,zbins=zbins,do_VVmax=True)
+
     def get_SN_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25):
         self.snzgroups = self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.zHD,
-                                                bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['zHD']
+                                                bins=np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)))['zHD']
         self.snmassgroups =self.SN_Hosts.groupby(pd.cut(self.SN_Hosts.HOST_LOGMASS,
-                                                bins=np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)))['HOST_LOGMASS'] #,'VVmax'
+                                                bins=np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)))['HOST_LOGMASS'] #,'VVmax'
 
     def get_field_bins(self,zmin=0,zmax=1.2,zstep=0.2,mmin=7.25,mmax=13,mstep=0.25,mass_col='log_mass'):
         self.fieldzgroups =self.field.groupby(pd.cut(self.field.redshift,
-                                                bins=np.linspace(zmin,zmax,((zmax-zmin)/zstep)+1)))['redshift']
+                                                bins=np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)))['redshift']
         self.fieldmassgroups = self.field.groupby( pd.cut(self.field[mass_col],
-                                                bins=np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)))[mass_col]
+                                                bins=np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)))[mass_col]
 
     def SN_G(self, scale='log',):
         '''Plots the SN/G rate for the data'''
@@ -213,47 +269,51 @@ class Rates():
         axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
 
     def SN_G_MC(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-        mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
-        with progressbar.ProgressBar(max_value = n_samples) as bar:
-            for i in range(0,n_samples):
-                snmassgroups =self.sn_samples_mass.groupby(pd.cut(self.sn_samples_mass[i],
-                                                     bins=mbins))[[i,weight_col_SN]]
-                i_f = np.random.randint(0,100)
-                fieldmassgroups = self.field_samples_mass.groupby( pd.cut(self.field_samples_mass[i_f],
-                                                            bins=mbins))[[i_f,weight_col_field]]
-                xs = []
-                ys = []
-
-                for (n,g),(n2,g2) in zip(snmassgroups,fieldmassgroups):
-
-                    if g.size >0 and g2.size>0:
-                        xs.append(n.mid)
-
-                        ys.append(np.log10(g[weight_col_SN].sum()/g2[weight_col_field].sum())+self.rate_corr) # We want a per-year rate.
-
-                xs = np.array(xs)
-                ys = np.array(ys)
-                entry = pd.Series(ys,index=xs)
-                iter_df.loc[entry.index,i] = entry
-                bar.update(i)
         if not savename:
             savename=self.config['rates_root']+'data/mcd_rates.h5'
-        iter_df.to_hdf(savename,index=True,key='bootstrap_samples_mass')
+        iter_df = SN_G_MC(self.sn_samples_mass,self.field_samples_mass,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename,
+         weight_col_SN=weight_col_SN,weight_col_field=weight_col_field,key_ext='%.2f'%mstep,rate_corr = self.rate_corr)
         self.sampled_rates_mass = iter_df
 
-    def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
-        mbins = np.linspace(sfrmin,sfrmax,((sfrmax-sfrmin)/sfrstep)+1)
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
 
+
+    def SN_G_MC_z(self,zmin=None,zmax=None,zstep=None,zbins=None,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
+        #print('Calculating rates for redshift bins: ',np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False))
+        if not zbins:
+            zbin_los = np.linspace(zmin,zmax,int((zmax-zmin)/zstep),endpoint=False)
+        else:
+            zbin_los = zbins[:-1]
+        for counter,zlo in enumerate(zbin_los):
+            if zstep:
+                zhi=zlo+zstep
+            else:
+                zhi = zbins[counter+1]
+            print(zlo,'-',zhi)
+            key = 'z_%.2f_%.2f'%(zlo,zhi)
+            sn_df = getattr(self,'sn_samples_mass_%s'%key)
+            field_df = getattr(self,'field_samples_mass_%s'%key)
+            savename=self.config['rates_root']+'data/mcd_rates.h5'
+            key = key+'_%.2f'%mstep
+            iter_df = SN_G_MC(sn_df,field_df,n_samples=n_samples,mmin=mmin,mmax=mmax,mstep=mstep,savename=savename,
+                    variable='mass',key_ext=key,weight_col_SN=weight_col_SN,weight_col_field=weight_col_field,rate_corr = self.rate_corr)
+            setattr(self,'sampled_rates_mass_%s'%key,iter_df)
+        return iter_df
+    def SN_G_MC_SFR(self,n_samples=1E4,sfrmin=-3,sfrmax=2,sfrstep=0.25,savename=None, weight_col_SN='weight',weight_col_field='weight'):
+        sfrbins = np.linspace(sfrmin,sfrmax,int((sfrmax-sfrmin)/sfrstep)+1)
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=sfrbins+(sfrstep/2))
+        self.sn_samples_sfr['ssfrmc'] = self.sn_samples_sfr['sfrmc'] - self.sn_samples_sfr['massmc']
+        sn_samples = self.sn_samples_sfr[self.sn_samples_sfr['ssfrmc']>-11.5]
+
+        self.field_samples_sfr['ssfrmc'] = self.field_samples_sfr['sfrmc'] - self.field_samples_sfr['massmc']
+        field_samples = self.field_samples_sfr[self.field_samples_sfr['ssfrmc']>-11.5]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
-                snsfrgroups =self.sn_samples_sfr.groupby(pd.cut(self.sn_samples_sfr[i],
-                                                     bins=mbins))[[i,weight_col_SN]]
+                snsfrgroups =sn_samples.groupby(pd.cut(sn_samples[i],
+                                                     bins=sfrbins))[[i,weight_col_SN]]
                 i_f = np.random.randint(0,100)
-                fieldsfrgroups = self.field_samples_sfr.groupby( pd.cut(self.field_samples_sfr[i_f],
-                                                            bins=mbins))[[i_f,weight_col_field]]
+                fieldsfrgroups = field_samples.groupby( pd.cut(field_samples[i_f],
+                                                            bins=sfrbins))[[i_f,weight_col_field]]
                 xs = []
                 ys = []
 
@@ -275,11 +335,11 @@ class Rates():
         self.sampled_rates_sfr = iter_df
 
     def SN_G_MC_MASS_SFR(self,n_samples=1E4,mmin=7.25,mmax=13,mstep=0.25,sfr_cut_1=-11,sfr_cut_2=-9.5, sn_ssfr_col = 'logssfr', field_ssfr_col='SPECSFR', savename=None,weight_col_SN='weight',weight_col_field='weight'):
-        mbins = np.linspace(mmin,mmax,((mmax-mmin)/mstep)+1)
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
+        mbins = np.linspace(mmin,mmax,int((mmax-mmin)/mstep)+1)
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+(mstep/2))
         # passive
-        sn_passive = self.sn_samples[self.sn_samples[sn_ssfr_col]<sfr_cut_1]
-        field_passive = self.field_samples[self.field_samples[field_ssfr_col]<sfr_cut_1]
+        sn_passive = self.sn_samples_mass[self.sn_samples_mass[sn_ssfr_col]<sfr_cut_1]
+        field_passive = self.field_samples_mass[self.field_samples_mass[field_ssfr_col]<sfr_cut_1]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_passive.groupby(pd.cut(sn_passive[i],
@@ -308,9 +368,9 @@ class Rates():
         self.sampled_passive_rates = iter_df
 
         #moderately starforming
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
-        sn_moderate = self.sn_samples[(self.sn_samples[sn_ssfr_col]>=sfr_cut_1)&(self.sn_samples[sn_ssfr_col]<sfr_cut_2)]
-        field_moderate = self.field_samples[(self.field_samples[field_ssfr_col]>=sfr_cut_1)&(self.field_samples[field_ssfr_col]<sfr_cut_2)]
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+(mstep/2))
+        sn_moderate = self.sn_samples_mass[(self.sn_samples_mass[sn_ssfr_col]>=sfr_cut_1)&(self.sn_samples_mass[sn_ssfr_col]<sfr_cut_2)]
+        field_moderate = self.field_samples_mass[(self.field_samples_mass[field_ssfr_col]>=sfr_cut_1)&(self.field_samples_mass[field_ssfr_col]<sfr_cut_2)]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_moderate.groupby(pd.cut(sn_moderate[i],
@@ -338,9 +398,9 @@ class Rates():
         self.sampled_moderate_rates = iter_df
 
         #highly starforming
-        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+0.125)
-        sn_high = self.sn_samples[self.sn_samples[sn_ssfr_col]>=sfr_cut_2]
-        field_high = self.field_samples[self.field_samples[field_ssfr_col]>=sfr_cut_2]
+        iter_df = pd.DataFrame(columns = range(0,int(n_samples),1),index=mbins+(mstep/2))
+        sn_high = self.sn_samples_mass[self.sn_samples_mass[sn_ssfr_col]>=sfr_cut_2]
+        field_high = self.field_samples_mass[self.field_samples_mass[field_ssfr_col]>=sfr_cut_2]
         with progressbar.ProgressBar(max_value = n_samples) as bar:
             for i in range(0,n_samples):
                 snmassgroups =sn_high.groupby(pd.cut(sn_high[i],
@@ -368,21 +428,30 @@ class Rates():
         self.sampled_high_rates = iter_df
 
     def load_sampled_rates(self,fn,ext='mass'):
-        df = pd.read_hdf(fn,key='bootstrap_samples_%s'%ext)
-        setattr(self,'sampled_rates_%s'%ext,df)
-    def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3):
+        if ext:
 
-        model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan')
+            df = pd.read_hdf(fn,key='bootstrap_samples_%s'%ext)
+            setattr(self,'sampled_rates_%s'%ext,df)
+        else:
+            df = pd.read_hdf(fn,key='bootstrap_samples')
+            setattr(self,'sampled_rates',df)
+        return df
+    def fit_line(self,df,xmin=8,xmax=11,seed=123456,n_iter=4E3,dispersion=False,**kwargs):
+        if dispersion:
+
+            model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero_scatter.stan',model_name="fit_y_line_hetero_scatter")
+        else:
+            model = stan_utility.compile_model(self.root_dir+'models/fit_yline_hetero.stan',model_name="fit_y_line_hetero")
         x_model = np.linspace(xmin,xmax,100)
         x_obs = np.array(df.loc[xmin:xmax].index)
-        y_obs = df.mean(axis=1).loc[xmin:xmax].values
-        y_err = df.std(axis=1).loc[xmin:xmax].values
+        y_obs = np.nanmean(df.loc[xmin:xmax].astype(float).values,axis=1)
+        y_err = np.nanstd(df.loc[xmin:xmax].astype(float).values,axis=1)
 
-        data = dict(N = len(x_obs),
-                    x_obs = x_obs,
-                    y_obs = y_obs,
+        data = dict(N = len(x_obs[~np.isnan(y_err)]),
+                    x_obs = x_obs[~np.isnan(y_err)],
+                    y_obs = y_obs[~np.isnan(y_err)],
                     #sigma_x=np.array(xerr[:-2]),
-                    sigma=y_err,
+                    sigma=y_err[~np.isnan(y_err)],
                     N_model=100,
                    x_model=x_model)
         fit = model.sampling(data=data, seed=seed, iter=int(n_iter))
@@ -390,51 +459,67 @@ class Rates():
 
 
 
-    def plot_fit_mass(self,fit,mmin=8,mmax=11):
-        fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
+    def plot_fit_mass(self,fit,rate,mmin=8,mmax=11,f=None,ax=None,label_text=None,data_only = False,line_only=False,scatter_mmin=None,scatter_mmax=None,**kwargs):
+        if not f:
+            f,ax = plt.subplots(figsize=(12,7))
+
         chain = fit.extract()
 
     # Plot the points from above as a comparison
         x_model = np.linspace(mmin,mmax,100)
-        for counter,c in enumerate(self.sampled_rates_mass.columns):
-            label=None
-            if counter == 0:
-                label='Observations'
-            axmbinlog.scatter(self.sampled_rates_mass.index,self.sampled_rates_mass[c],color='g',marker='o',
-                           alpha=0.05,s=10,label=label)
-            axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
-            axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
-            axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
-            axmbinlog.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
-            axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
-        for i in self.sampled_rates_mass.index:
-            axmbinlog.errorbar(i,self.sampled_rates_mass.loc[i].mean(),xerr=(self.sampled_rates_mass.index[1]-self.sampled_rates_mass.index[0])/2,
-                            color='g',marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
+        if not line_only:
+            if not scatter_mmin:
+                scatter_mmin=rate.index.min()
+            if not scatter_mmax:
+                scatter_mmax=rate.index.max()
+            rate = rate.loc[scatter_mmin:scatter_mmax]
+            for counter,c in enumerate(rate.columns):
+                label=None
+                if data_only and counter==0:
+                    label= label_text
 
-        level = 95
+                ax.scatter(rate.index,rate[c],marker='o',
+                               alpha=0.05,s=10,label=label,**kwargs)
+                ax.xaxis.set_minor_locator(MultipleLocator(0.25))
+                ax.yaxis.set_minor_locator(MultipleLocator(0.125))
+                ax.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
+                ax.set_xlabel('Stellar Mass $\log (M_*/M_{\odot})$',size=20)
+                ax.set_ylabel('$\log ($SN Rate [Galaxy$^{-1}$ yr$^{-1}$]$)$',size=20)
+            for counter,i in enumerate(rate.index):
+                label=None
 
-        axmbinlog.fill_between(x_model,
-                        np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
-                        np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
-                        color='c',alpha=0.2)
 
-        level = 68
-        axmbinlog.fill_between(x_model,
-                        np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
-                        np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
-                        color='c',alpha=0.3)
+                ax.errorbar(i,rate.loc[i].mean(),xerr=(rate.index[1]-rate.index[0])/2,
+                                marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w',label=label,**kwargs)
+        if not data_only:
+            level = 95
 
-        axmbinlog.plot(x_model,
-                        np.percentile(chain['line'], 50, axis=0 ),
-                        color='b',alpha=1,linestyle='-',linewidth=1,label='$dR/dM_* = %.2f$'%np.median(chain['slope']))
+            ax.fill_between(x_model,
+                            np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                            np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                            alpha=0.2,**kwargs)
 
-        leg =axmbinlog.legend()
+            level = 68
+            ax.fill_between(x_model,
+                            np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
+                            np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
+                            alpha=0.3,**kwargs)
+            if label_text:
+                label= label_text+': $dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
+            else:
+                label= '$dR/dM_* = %.2f +/- %.2f$'%(np.median(chain['slope']),np.std(chain['slope']))
+            ax.plot(x_model,
+                            np.percentile(chain['line'], 50, axis=0 ),
+                            alpha=1,linestyle='-',linewidth=1,label=label,**kwargs)
+
+        leg =ax.legend()
         for lh in leg.legendHandles:
             lh.set_alpha(1)
         plt.savefig(self.root_dir +'figs/rate_vs_mass_slopes_stanfit_test.png')
-
-    def plot_fit_sfr(self,fit,sfrmin=-3,sfrmax=2):
-        fmbinlog,axmbinlog = plt.subplots(figsize=(12,7))
+        return f,ax
+    def plot_fit_sfr(self,fit,sfrmin=-3,sfrmax=2,f=None,ax=None):
+        if not f:
+            f,ax = plt.subplots(figsize=(12,7))
         chain = fit.extract()
 
     # Plot the points from above as a comparison
@@ -443,35 +528,35 @@ class Rates():
             label=None
             if counter == 0:
                 label='Observations'
-            axmbinlog.scatter(self.sampled_rates_sfr.index,self.sampled_rates_sfr[c],color='g',marker='o',
+            ax.scatter(self.sampled_rates_sfr.index,self.sampled_rates_sfr[c],color='g',marker='o',
                            alpha=0.05,s=10,label=label)
-            axmbinlog.xaxis.set_minor_locator(MultipleLocator(0.25))
-            axmbinlog.yaxis.set_minor_locator(MultipleLocator(0.125))
-            axmbinlog.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
-            axmbinlog.set_xlabel('$\log$ (SFR / $M_{\odot}$ yr$^{-1}$)',size=20)
-            axmbinlog.set_ylabel('$\log (N$ (SN hosts) / $N$ (Field Galaxies) )',size=20)
+            ax.xaxis.set_minor_locator(MultipleLocator(0.25))
+            ax.yaxis.set_minor_locator(MultipleLocator(0.125))
+            ax.tick_params(which='both',right=True,top=True,direction='in',labelsize=16)
+            ax.set_xlabel('$\log$ (SFR / $M_{\odot}$ yr$^{-1}$)',size=20)
+            ax.set_ylabel('$\log ($SN Rate [Galaxy$^{-1}$ yr$^{-1}$]$)$',size=20)
         for i in self.sampled_rates_sfr.index:
-            axmbinlog.errorbar(i,self.sampled_rates_sfr.loc[i].mean(),xerr=(self.sampled_rates_sfr.index[1]-self.sampled_rates_sfr.index[0])/2,
+            ax.errorbar(i,self.sampled_rates_sfr.loc[i].mean(),xerr=(self.sampled_rates_sfr.index[1]-self.sampled_rates_sfr.index[0])/2,
                             color='g',marker='D',alpha=0.5,markersize=2,mew=0.5,mec='w')
 
         level = 95
 
-        axmbinlog.fill_between(x_model,
+        ax.fill_between(x_model,
                         np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
                         np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
                         color='c',alpha=0.2)
 
         level = 68
-        axmbinlog.fill_between(x_model,
+        ax.fill_between(x_model,
                         np.percentile(chain['line'], 50 - 0.5*level, axis=0 ),
                         np.percentile(chain['line'], 50 + 0.5*level, axis=0 ),
                         color='c',alpha=0.3)
 
-        axmbinlog.plot(x_model,
+        ax.plot(x_model,
                         np.percentile(chain['line'], 50, axis=0 ),
                         color='b',alpha=1,linestyle='-',linewidth=1,label='$dR/dSFR = %.2f$'%np.median(chain['slope']))
 
-        leg =axmbinlog.legend()
+        leg =ax.legend()
         for lh in leg.legendHandles:
             lh.set_alpha(1)
         plt.savefig(self.root_dir +'figs/rate_vs_sfr_slopes_stanfit_test.png')
