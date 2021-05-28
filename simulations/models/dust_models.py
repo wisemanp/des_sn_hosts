@@ -40,7 +40,15 @@ def mass_rv_step(mass, rv_low=3.0, rv_high=2.0, rv_sig_low=0.5, rv_sig_high=0.5,
 
 def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, mass_fix_low=8, mass_fix_high=12):
     '''
-
+    :param mass:
+    :param Rv_low:
+    :param Rv_high:
+    :param rv_sig_low:
+    :param rv_sig_high:
+    :param mass_fix_low:
+    :param mass_fix_high:
+    :return: Rvs
+    :rtype array
     '''
     Rv_slope = (Rv_high-Rv_low) /(mass_fix_high - mass_fix_low)
     sig_slope = (Rv_sig_high-Rv_sig_low) /(mass_fix_high - mass_fix_low)
@@ -50,3 +58,29 @@ def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1,
     for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
         Rvs.append(np.random.normal(Rv_mu,Rv_sig)
     return Rvs
+
+def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, age_fix_low=0.1, age_fix_high=12):
+    '''
+    :param age:
+    :param Rv_low:
+    :param Rv_high:
+    :param Rv_sig_low:
+    :param Rv_sig_high:
+    :param age_fix_low:
+    :param age_fix_high:
+    :return: Rvs
+    :rtype array
+    '''
+    Rv_slope = (Rv_high-Rv_low) /(age_fix_high - age_fix_low)
+    sig_slope = (Rv_sig_high-Rv_sig_low) /(age_fix_high - age_fix_low)
+    Rv_mus = Rv_low +((age-age_fix_low) *Rv_slope)
+    Rv_sigs = Rv_sig_low+((age - age_fix_low)*sig_slope)
+    Rvs = []
+    for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
+        Rvs.append(np.random.normal(Rv_mu,Rv_sig)
+    return Rvs
+
+def E_exp(tau,n):
+    '''
+
+    '''
