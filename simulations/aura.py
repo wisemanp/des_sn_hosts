@@ -61,6 +61,28 @@ class Sim():
         # We now have three levels to the index: z, mass, Av. For any given z and mass, the stellar populations are identical at any Av, but the output fluxes and colours are not.
         self.multi_df = self.flux_df.set_index([z_str,mass_str,Av_str,])
 
+    def _sample_SNe_z(self,z):
+        distmod = self.cosmo.distmod(z).value
+        z_df = self.multi_df.loc['%.2f' % z]
+        z_df['N_total'].replace(0., np.NaN, inplace=True)
+        z_df = z_df.dropna(subset=['N_total'])
+        z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
+        z_df['N_SN_int'] = z_df['N_SN_float'].astype(int)
+        # Now we set up some index arrays so that we can sample masses properly
+        m_inds = ['%.2f' % m for m in z_df['mass'].unique()]
+        m_rates = []
+        for m in m_inds:
+            m_df = z_df.loc[m]
+            mav_inds = (m, '%.5f' % (m_df.Av.unique()[0]))
+            m_rates.append(z_df.loc[mav_inds]['N_SN_int'])
+
+        # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
+        m_samples = np.random.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples * rate_factor))
+        # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
+        # The stellar population arrays are identical no matter what the Av is.
+        m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
+        Av_grid = z_df.Av.unique()
+
     def _sample_SNe(self,z,dust,M0,alpha,sigma_alpha,beta,sigma_beta,sigma_int,gamma_m, gamma_l,mass_step_loc,age_step_loc,method,which,n_samples,beta_young=2,beta_old=3,alpha_young=0.1,alpha_old=0.2):
         ''' Function that takes a sample of SNe given a set of input parameters. This is the 'hidden' working function; the user interacts via sample_SNe()'''
         print(z)

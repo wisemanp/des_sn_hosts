@@ -1,7 +1,11 @@
 import numpy as np
-from scipy.stats import norm
+from scipy.stats import norm, expon
 
+from distributions import P_Edust
 
+law_Rvs ={
+    'C00':4.05
+}
 def age_rv_step(age, rv_young=3.0, rv_old=2.0, rv_sig_young=0.5, rv_sig_old=0.5, age_split=3):
     """
 
@@ -16,8 +20,8 @@ def age_rv_step(age, rv_young=3.0, rv_old=2.0, rv_sig_young=0.5, rv_sig_old=0.5,
     """
     norm_young = norm(rv_young, rv_sig_young)
     norm_old = norm(rv_old, rv_sig_old)
-    return (norm_young.rvs(size=len(age[age < age_split])) * (age < age_split)) + (
-                norm_old.rvs(size=len(age[age > age_split])) * (age > age_split))
+    return (norm_young.rvs(size=len(age)) * (age < age_split)) + (
+                norm_old.rvs(size=len(age)) * (age > age_split))
 
 
 def mass_rv_step(mass, rv_low=3.0, rv_high=2.0, rv_sig_low=0.5, rv_sig_high=0.5, mass_split=10):
@@ -34,8 +38,8 @@ def mass_rv_step(mass, rv_low=3.0, rv_high=2.0, rv_sig_low=0.5, rv_sig_high=0.5,
     """
     norm_low = norm(rv_low, rv_sig_low)
     norm_high = norm(rv_high, rv_sig_high)
-    return (norm_low.rvs(size=len(mass[mass < mass_split])) * (mass < mass_split)) + (
-                norm_high.rvs(size=len(mass[mass > mass_split])) * (mass > mass_split))
+    return (norm_low.rvs(size=len(mass)) * (mass < mass_split)) + (
+                norm_high.rvs(size=len(mass)) * (mass > mass_split))
 
 
 def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, mass_fix_low=8, mass_fix_high=12):
@@ -80,7 +84,108 @@ def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, a
         Rvs.append(np.random.normal(Rv_mu,Rv_sig)
     return Rvs
 
-def E_exp(tau,n):
+def E_exp(TauE,n=1):
+    '''
+    Returns n values of the reddening E(B-V) for a given mean reddening tau.
+    :param tau:
+    :type tau: float
+    :param n:
+    :type n: int
+    :return: E
+    :rtype: array
+    '''
+    E = expon(scale=TauE,size=n)
+    return E
+
+def E_exp_mass(mass,Tau_low,Tau_high,mass_split=10):
     '''
 
+    :param mass:
+    :type mass:
+    :param Tau_low:
+    :type Tau_low:
+    :param Tau_high:
+    :type Tau_high:
+    :return:
+    :rtype:
     '''
+
+    E_low = expon(scale=Tau_low)
+    E_high = expon(scale=Tau_high)
+    return (E_low.rvs(size=len(mass)) * (mass < mass_split)) + (
+            E_high.rvs(size=len(mass)) * (mass > mass_split))
+
+def E_exp_age(age,Tau_low,Tau_high,age_split=3):
+    '''
+
+    :param age:
+    :type age:
+    :param age_split:
+    :type age_split:
+    :param Tau_low:
+    :type Tau_low:
+    :param Tau_high:
+    :type Tau_high:
+    :return:
+    :rtype:
+    '''
+
+    E_low = expon(scale=Tau_low)
+    E_high = expon(scale=Tau_high)
+    return (E_low.rvs(size=len(age)) * (age < age_split)) + (
+            E_high.rvs(size=len(age)) * (age > age_split))
+
+def Rv_random(Rv_mu,Rv_sig,n):
+    return np.random.normal(Rv_mu,Rv_sig,size=n)
+def E_calc(Av,Rv):
+    '''
+
+    :param Av:
+    :type Av: array-like
+    :param Rv:
+    :type Rv: array-like
+    :return: E
+    :rtype: array-like
+    '''
+    E = Av*Rv
+    return E
+
+def E_from_host_random(Av,Av_sig=0.25,Rv=4.05,Rv_sig=0.5):
+    '''
+
+    :param Rv_sig: standard deviation of Rv distribution to draw from
+    :type Rv_sig: float or array of float
+    :param Rv: dust law slope Rv
+    :type Rv: array of float
+    :param Av_sig: standard deviation of Av distirbution to draw from
+    :type Av_sig: float or array of float
+    :param Av:V-band extinction Av
+    :type Av: array of float
+    :return: E
+    :rtype: array-like
+    '''
+    E = []
+    for A,R in zip(Av,Rv):
+        E.append(np.random.norm(A,Av_sig)/np.random.norm(R,Rv_sig))
+    return E
+
+def E_two_component(TauE_int, Rv_int,Av_host,Rv_host,Av_sig_host,Rv_sig_host,n=1):
+    '''
+    Two-component reddening
+    :param TauE_int:
+    :type TauE_int:
+    :param Rv_int:
+    :type Rv_int:
+    :param Av_host:
+    :type Av_host:
+    :param Rv_host:
+    :type Rv_host:
+    :param Av_sig_host:
+    :type Av_sig_host:
+    :param Rv_sig_host:
+    :type Rv_sig_host:
+    :return:
+    :rtype:
+    '''
+    E_int = E_exp(TauE_int,n))
+    Rv
