@@ -83,6 +83,9 @@ class Sim():
         m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
         Av_grid = z_df.Av.unique()
 
+    def _get_dust(self,config):
+
+
     def _sample_SNe(self,z,dust,M0,alpha,sigma_alpha,beta,sigma_beta,sigma_int,gamma_m, gamma_l,mass_step_loc,age_step_loc,method,which,n_samples,beta_young=2,beta_old=3,alpha_young=0.1,alpha_old=0.2):
         ''' Function that takes a sample of SNe given a set of input parameters. This is the 'hidden' working function; the user interacts via sample_SNe()'''
         print(z)

@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="81045d16-b9a1-45a7-b3eb-a334fcc6a4a7" name="Default Changelist" comment="Adding new dust models">
-      <change afterPath="$PROJECT_DIR$/simulations/models/colour_models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/simulations/models/host_dust.py" afterDir="false" />
+    <list default="true" id="81045d16-b9a1-45a7-b3eb-a334fcc6a4a7" name="Default Changelist" comment="Adding docs folder">
+      <change beforePath="$PROJECT_DIR$/.idea/des_sn_hosts.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/des_sn_hosts.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/simulations/aura.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulations/aura.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulations/models/dust_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulations/models/dust_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulations/models/stretch_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulations/models/stretch_models.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -38,7 +29,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -75,14 +66,7 @@
       <option name="project" value="LOCAL" />
       <updated>1622125530854</updated>
     </task>
-    <task id="LOCAL-00004" summary="Adding new dust models">
-      <created>1622209775666</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1622209775666</updated>
-    </task>
-    <option name="localTasksCounter" value="5" />
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -100,7 +84,6 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Integrating with pycharm" />
     <MESSAGE value="Adding docs folder" />
-    <MESSAGE value="Adding new dust models" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding new dust models" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding docs folder" />
   </component>
 </project>
