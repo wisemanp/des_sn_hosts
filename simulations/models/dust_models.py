@@ -189,3 +189,4 @@ def E_two_component(TauE_int, Rv_int,Av_host,Rv_host,Av_sig_host,Rv_sig_host,n=1
     '''
     E_int = E_exp(TauE_int,n))
     Rv
+
