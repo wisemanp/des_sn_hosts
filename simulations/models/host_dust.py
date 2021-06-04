@@ -56,8 +56,8 @@ def choose_Av_SN_E_Rv_step(Av_grid,Es,mass,Rv_mu_low,Rv_mu_high,Rv_sig_low,Rv_si
     :rtype:
     '''
 
-    norm_low = norm(rv_low, rv_sig_low)
-    norm_high = norm(rv_high, rv_sig_high)
+    norm_low = norm(Rv_mu_low, Rv_sig_low)
+    norm_high = norm(Rv_mu_high, Rv_sig_high)
     Rv = (norm_low.rvs(size=len(mass)) * (mass < mass_split)) + (
             norm_high.rvs(size=len(mass)) * (mass > mass_split))
     p_array = norm(Es/Rv,Av_sig).pdf(np.array(len(Es)*[Av_grid,]).T)

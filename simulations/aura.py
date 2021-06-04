@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from astropy.table import Table
 import os
+from yaml import safe_load as yload
 import scipy.stats as stats
 import sys
 import pickle
@@ -9,18 +10,21 @@ import warnings
 from astropy.utils.exceptions import AstropyWarning
 from astropy.cosmology import FlatLambdaCDM
 
+from sn_model import SN_Model
+from .utils.gal_functions import schechter, single_schechter, double_schechter
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 import itertools
 from tqdm import tqdm
 
+
 from utils import plotter
 from models import *
 aura_dir = os.environ['AURA_DIR']
 
-class Sim():
-    def __init__(self,fn,cosmo='default'):
+class Sim(SN_Model):
+    def __init__(self,conf_path,cosmo='default'):
         '''
 
         :param fn:
@@ -28,13 +32,17 @@ class Sim():
         :param cosmo:
         :type cosmo:
         '''
-        self.flux_df = self._load_flux_df(fn)
+        self.config = self._get_config(conf_path)
+        self.flux_df = self._load_flux_df(config['hostlib_fn'])
         self._calculate_absolute_rates()
         self._make_multi_index()
         if cosmo=='default':
             self.cosmo = FlatLambdaCDM(70,0.3)
         else:
             self.cosmo=cosmo
+
+    def _get_config(self,conf_path):
+        conf = yload(conf_path)
     def _load_flux_df(self,fn):
         return pd.read_hdf(fn)
 
@@ -82,13 +90,21 @@ class Sim():
         # The stellar population arrays are identical no matter what the Av is.
         m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
         Av_grid = z_df.Av.unique()
+        m_samples_float = z_df.loc[m_av0_samples].mass.values
+        age_samples_float = z_df.loc[m_av0_samples].mean_age.values
+        sn_rv_model = self.config['SN_rv_model']['model']
+        sn_rv_model_type = sn_rv_model.split('_')[0]
+        rv_func = getattr(self, sn_rv_model)
+        if sn_rv_model_type=='mass':
+            rvs = rv_func(m_samples_float,**self.config['SN_rv_model']['params'])
+        elif sn_rv_model_type=='age':
+            rvs = rv_func(age_samples_float, **self.config['SN_rv_model']['params'])
+        elif sn_rv_model_type=='random':
+            rvs = rv_func( **self.config['SN_rv_model']['params'])
 
-    def _get_dust(self,config):
-        '''
 
-        '''
 
-    def 
+
     def _sample_SNe(self,z,dust,M0,alpha,sigma_alpha,beta,sigma_beta,sigma_int,gamma_m, gamma_l,mass_step_loc,age_step_loc,method,which,n_samples,beta_young=2,beta_old=3,alpha_young=0.1,alpha_old=0.2):
         ''' Function that takes a sample of SNe given a set of input parameters. This is the 'hidden' working function; the user interacts via sample_SNe()'''
         print(z)

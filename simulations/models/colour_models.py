@@ -13,7 +13,7 @@ def c_int_gauss(mu,sig,n=1):
     :return:
     :rtype:
     '''
-    return norm(mu,sig,size=n)
+    return norm(mu,sig).rvs(size=n)
 
 def c_int_asymm(mu,sig_minus,sig_plus,n=1):
     '''

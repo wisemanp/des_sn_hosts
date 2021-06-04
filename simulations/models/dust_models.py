@@ -135,7 +135,7 @@ def E_exp_age(age,Tau_low,Tau_high,age_split=3):
     return (E_low.rvs(size=len(age)) * (age < age_split)) + (
             E_high.rvs(size=len(age)) * (age > age_split))
 
-def Rv_random(Rv_mu,Rv_sig,n):
+def random_rv(Rv_mu,Rv_sig,n):
     return np.random.normal(Rv_mu,Rv_sig,size=n)
 def E_calc(Av,Rv):
     '''

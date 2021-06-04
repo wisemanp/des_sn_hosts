@@ -18,11 +18,23 @@ def x1_int_asymm(mu,sig_minus,sig_plus,n=1):
         x1s.append(asymmetric_gaussian(x1_grid,mu,sig_minus,sig_plus))
     return np.array(x1s)
 
+def x1_twogauss_fix(mu_low,sig_low,mu_high,sig_high,frac_low=0.5,n=1):
+    '''
+
+    '''
+    norm_low = norm(mu_low,sig_low)
+    norm_high = norm(mu_high,sig_high)
+    fracs = [frac_low,1-frac_low]
+    x1s []
+    for i in range(n):
+        x1s.append(np.random.choice([norm_low.rvs(),norm_high.rvs()],p=fracs))
+    return np.array(x1s)
+
 class x1_twogauss_age():
     '''
 
     '''
-    def __init__(self,mu_old,mu_young,sig_old,sig_young,age_step,old_prob=0.5):
+    def __init__(self,mu_old,sig_old,mu_young,sig_young,age_step,old_prob=0.5):
         self._set_norm_old(mu_old,sig_old)
         self._set_norm_young(mu_young,sig_young)
         self.age_step = age_step
