@@ -33,7 +33,7 @@ class Sim(SN_Model):
         :type cosmo:
         '''
         self.config = self._get_config(conf_path)
-        self.flux_df = self._load_flux_df(config['hostlib_fn'])
+        self.flux_df = self._load_flux_df(self.config['hostlib_fn'])
         self._calculate_absolute_rates()
         self._make_multi_index()
         if cosmo=='default':
