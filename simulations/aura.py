@@ -90,7 +90,7 @@ class Sim(SN_Model):
     def sample_SNe(self,z_arr,n_samples_arr):
         self.sim_df = pd.DataFrame()
         for z,n in zip(z_arr,n_samples_arr):
-            self.sim_df = self.sim_df.append(n_samples_arr(z,n))
+            self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
 
     def _sample_SNe_z(self,z,n_samples):
         args['distmod'] = self.cosmo.distmod(z).value
