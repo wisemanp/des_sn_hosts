@@ -93,6 +93,7 @@ class Sim(SN_Model):
             self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
 
     def _sample_SNe_z(self,z,n_samples):
+        args = {}
         args['distmod'] = self.cosmo.distmod(z).value
         z_df = self.multi_df.loc['%.2f' % z]
         z_df['N_total'].replace(0., np.NaN, inplace=True)
@@ -112,7 +113,7 @@ class Sim(SN_Model):
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
         # The stellar population arrays are identical no matter what the Av is.
         m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
-        args = {}
+
         args['Av_grid'] = z_df.Av.unique()
         args['mass'] = z_df.loc[m_av0_samples].mass.values
         args['age'] = z_df.loc[m_av0_samples].mean_age.values
@@ -122,7 +123,10 @@ class Sim(SN_Model):
 
         host_Av_func = getattr(self,self.config['Host_Av_model']['model'])
         args['host_Av'] = host_Av_func(args,self.config['Host_Av_model']['params'])
-
+        m_av_samples_inds = [[m_av0_samples[i],'%.5f'%args['host_Av'][i]] for i in range(len(args['host_Av']))
+        gal_df = z_df.loc[m_av_samples_inds]
+        args['U-R'] = gal_df['U-R']
+        args['mean_ages'] = gal_df['mean_age']
         E_func = getattr(self,self.config['SN_E_model']['model'])
         args['E'] = E_func(args,self.config['SN_E_model']['params'])
 
