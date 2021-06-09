@@ -1,8 +1,6 @@
 import numpy as np
 from scipy.stats import norm, expon
 
-from distributions import P_Edust
-
 law_Rvs ={
     'C00':4.05
 }
@@ -60,7 +58,7 @@ def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1,
     Rv_sigs = Rv_sig_low+((mass - mass_fix_low)*sig_slope)
     Rvs = []
     for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
-        Rvs.append(np.random.normal(Rv_mu,Rv_sig)
+        Rvs.append(np.random.normal(Rv_mu,Rv_sig))
     return Rvs
 
 def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, age_fix_low=0.1, age_fix_high=12):
@@ -81,7 +79,7 @@ def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, a
     Rv_sigs = Rv_sig_low+((age - age_fix_low)*sig_slope)
     Rvs = []
     for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
-        Rvs.append(np.random.normal(Rv_mu,Rv_sig)
+        Rvs.append(np.random.normal(Rv_mu,Rv_sig))
     return Rvs
 
 def E_exp(TauE,n=1):
@@ -160,7 +158,7 @@ def E_from_host_random(Av,Av_sig=0.25,Rv=4.05,Rv_sig=0.5):
     :param Av_sig: standard deviation of Av distirbution to draw from
     :type Av_sig: float or array of float
     :param Av:V-band extinction Av
-    :type Av: array of float
+    :type Av: array
     :return: E
     :rtype: array-like
     '''
@@ -169,7 +167,7 @@ def E_from_host_random(Av,Av_sig=0.25,Rv=4.05,Rv_sig=0.5):
         E.append(np.random.norm(A,Av_sig)/np.random.norm(R,Rv_sig))
     return E
 
-def E_two_component(TauE_int, Rv_int,Av_host,Rv_host,Av_sig_host,Rv_sig_host,n=1):
+def E_two_component(TauE_int, Av_host,Rv_host,Av_sig_host,Rv_sig_host,n=1):
     '''
     Two-component reddening
     :param TauE_int:
@@ -187,6 +185,7 @@ def E_two_component(TauE_int, Rv_int,Av_host,Rv_host,Av_sig_host,Rv_sig_host,n=1
     :return:
     :rtype:
     '''
-    E_int = E_exp(TauE_int,n))
-    Rv
+    E_int = E_exp(TauE_int,n)
+    E_host = E_from_host_random(Av_host,Av_sig_host,Rv_host,Rv_sig_host)
+    return E_int + E_host
 

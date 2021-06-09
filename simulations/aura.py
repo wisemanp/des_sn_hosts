@@ -10,7 +10,7 @@ import warnings
 from astropy.utils.exceptions import AstropyWarning
 from astropy.cosmology import FlatLambdaCDM
 
-from sn_model import SN_Model
+from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, single_schechter, double_schechter
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
@@ -19,8 +19,8 @@ import itertools
 from tqdm import tqdm
 
 
-from utils import plotter
-from models import *
+from .utils import plotter
+
 aura_dir = os.environ['AURA_DIR']
 
 class Sim(SN_Model):
@@ -69,8 +69,30 @@ class Sim(SN_Model):
         # We now have three levels to the index: z, mass, Av. For any given z and mass, the stellar populations are identical at any Av, but the output fluxes and colours are not.
         self.multi_df = self.flux_df.set_index([z_str,mass_str,Av_str,])
 
-    def _sample_SNe_z(self,z):
-        distmod = self.cosmo.distmod(z).value
+    def _get_z_dist(self,z_vals):
+        '''
+
+        :param z_vals: an array of redshifts that will have the same distribution that you want the simulation to have. This can be observed or simulated data.
+        :type z_vals:
+        :return:
+        :rtype:
+        '''
+        counts, bins = np.histogram(z_vals,
+                                    bins=[0.125, 0.175, 0.225, 0.275, 0.325, 0.375, 0.425, 0.475, 0.525, 0.575, 0.625,
+                                          0.675])
+        norm_counts = counts / np.sum(counts)
+        norm_counts = counts / np.sum(counts)
+        n_samples_arr = norm_counts * 25000
+        n_samples_arr = np.concatenate([[5000], n_samples_arr])
+        return n_samples_arr
+
+    def sample_SNe(self,z_arr,n_samples_arr):
+        self.sim_df = pd.DataFrame()
+        for z,n in zip(z_arr,n_samples_arr):
+            self.sim_df = self.sim_df.append(n_samples_arr(z,n))
+
+    def _sample_SNe_z(self,z,n_samples):
+        args['distmod'] = self.cosmo.distmod(z).value
         z_df = self.multi_df.loc['%.2f' % z]
         z_df['N_total'].replace(0., np.NaN, inplace=True)
         z_df = z_df.dropna(subset=['N_total'])
@@ -89,19 +111,32 @@ class Sim(SN_Model):
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
         # The stellar population arrays are identical no matter what the Av is.
         m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
-        Av_grid = z_df.Av.unique()
-        m_samples_float = z_df.loc[m_av0_samples].mass.values
-        age_samples_float = z_df.loc[m_av0_samples].mean_age.values
-        sn_rv_model = self.config['SN_rv_model']['model']
-        sn_rv_model_type = sn_rv_model.split('_')[0]
-        rv_func = getattr(self, sn_rv_model)
-        if sn_rv_model_type=='mass':
-            rvs = rv_func(m_samples_float,**self.config['SN_rv_model']['params'])
-        elif sn_rv_model_type=='age':
-            rvs = rv_func(age_samples_float, **self.config['SN_rv_model']['params'])
-        elif sn_rv_model_type=='random':
-            rvs = rv_func( **self.config['SN_rv_model']['params'])
+        args = {}
+        args['Av_grid'] = z_df.Av.unique()
+        args['mass'] = z_df.loc[m_av0_samples].mass.values
+        args['age'] = z_df.loc[m_av0_samples].mean_age.values
 
+        rv_func = getattr(self, self.config['SN_rv_model']['model'])
+        args['rv'] = rv_func(args,self.config['SN_rv_model']['params'])
+
+        host_Av_func = getattr(self,self.config['Host_Av_model']['model'])
+        args['host_Av'] = host_Av_func(args,self.config['Host_Av_model']['params'])
+
+        E_func = getattr(self,self.config['SN_E_model']['model'])
+        args['E'] = E_func(args,self.config['SN_E_model']['params'])
+
+        colour_func = getattr(self,self.config['SN_colour_model']['model'])
+        args['c'] = colour_func(args,self.config['SN_colour_model']['params'])
+
+        x1_func = getattr(self,self.config['x1_model']['model'])
+        args = x1_func(args,self.config['x1_model']['params'])
+
+        mb_func = getattr(self,self.config['mB_model']['model'])
+        args['mB'] = mb_func(args,self.config['mb_model']['params'])
+        args['mB_err'] =np.max([0.03,np.random.normal(10**(0.4*(args['mB']-1.5) - 10)+0.02,0.03)])
+        z_sim_df = pd.DataFrame(args)
+        z_sim_df['z'] = z
+        return z_sim_df
 
 
 
@@ -464,24 +499,6 @@ class Sim(SN_Model):
     def setup_sampling(self):
         self.m_obs,self.mb_err,self.x1s,self.cs,self.cints,self.E_SNs,self.masses,self.U_Rs,self.Avs,self.Rvs,self.Rv_SNe,self.zs,self.mean_ages,self.SN_ages,self.betas,self.alphas=[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]
 
-    def sample_SNe(self,zarr,cint_arr,dust='host',M0=-19.365,alpha=0.15,sigma_alpha=0.03,beta=3.1,sigma_beta =0.35,sigma_int = 0.11,
-                   gamma_m=0.03,gamma_l = 0.03,mass_step_loc=10,age_step_loc=0.8,method='linear',x1_split=False,n_samples_arr=[1000],beta_young=2,beta_old=3,alpha_young=0.1,alpha_old=0.2):
-        self.setup_sampling()
-        self.method = method
-        for counter,z in enumerate(zarr):
-            n_samples =n_samples_arr[counter]
-            mu,sig = cint_arr[counter]
-            self.set_cint(mu,sig)
-            if method[:8] == 'two_beta':
-                self.set_cint_young(mu,sig)
-                self.set_cint_old(mu,sig)
-            if not x1_split:
-                self._sample_SNe(z,dust,M0,alpha,sigma_alpha,beta,sigma_beta,sigma_int,gamma_m, gamma_l,mass_step_loc,age_step_loc,method,which='total',n_samples=n_samples,alpha_young=alpha_young,alpha_old=alpha_old)
-            else:
-                self._sample_SNe(z,dust,M0,alpha,sigma_alpha,beta,sigma_beta,sigma_int,gamma_m, gamma_l,mass_step_loc,age_step_loc,method,which='x1_lo',n_samples=n_samples,alpha_young=alpha_young,alpha_old=alpha_old)
-                self._sample_SNe(z,dust,M0,alpha,sigma_alpha,beta,sigma_beta,sigma_int,gamma_m, gamma_l,mass_step_loc,age_step_loc,method,which='x1_hi',n_samples=n_samples,alpha_young=alpha_young,alpha_old=alpha_old)
-        self.sim_df = pd.DataFrame(np.array([self.zs,self.masses,self.U_Rs,self.Avs,self.Rvs,self.Rv_SNe,self.cs,self.x1s,self.m_obs,self.mb_err,self.mean_ages,self.SN_ages,self.E_SNs,self.betas]).T,
-                                   columns=['z','mass','U-R','Av','Rv_host','Rv_SN','c','x1','m_obs','mb_err','mean_age','SN_age','E_SN','beta_sim'])
 
     ######################
     # Plotting functions #

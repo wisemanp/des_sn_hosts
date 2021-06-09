@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.stats import norm
-from distributions import asymmetric_gaussian
+from .distributions import asymmetric_gaussian
 def x1_int_asymm(mu,sig_minus,sig_plus,n=1):
     '''
     Sample x1 from an asymmetric Gaussian of mean mu, lower std sig_minus, upper std sig_plus
@@ -25,7 +25,7 @@ def x1_twogauss_fix(mu_low,sig_low,mu_high,sig_high,frac_low=0.5,n=1):
     norm_low = norm(mu_low,sig_low)
     norm_high = norm(mu_high,sig_high)
     fracs = [frac_low,1-frac_low]
-    x1s []
+    x1s = []
     for i in range(n):
         x1s.append(np.random.choice([norm_low.rvs(),norm_high.rvs()],p=fracs))
     return np.array(x1s)

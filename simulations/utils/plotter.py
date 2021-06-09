@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_color_codes(palette='colorblind')
 import itertools
+import os
 aura_dir = os.environ['AURA_DIR']
 
 plt.style.use('default')
