@@ -42,7 +42,8 @@ class Sim(SN_Model):
             self.cosmo=cosmo
 
     def _get_config(self,conf_path):
-        return yload(conf_path)
+        with open(conf_path,'r') as f:
+            return yload(f)
     def _load_flux_df(self,fn):
         return pd.read_hdf(fn)
 
