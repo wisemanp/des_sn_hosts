@@ -12,14 +12,14 @@ from astropy.cosmology import FlatLambdaCDM
 
 from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, single_schechter, double_schechter
+from .utils.plotter import *
+
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 import itertools
 from tqdm import tqdm
 
-
-from .utils import plotter
 
 aura_dir = os.environ['AURA_DIR']
 
