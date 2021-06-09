@@ -109,7 +109,7 @@ class Sim(SN_Model):
             m_rates.append(z_df.loc[mav_inds]['N_SN_int'])
 
         # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
-        m_samples = np.random.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples * rate_factor))
+        m_samples = np.random.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
         # The stellar population arrays are identical no matter what the Av is.
         m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
