@@ -74,7 +74,7 @@ class SN_Model():
     def c_int_asymm(self,args,params):
         return c_int_asymm(params['mu'],params['sig_minus'],params['sig_plus'],args['n'])
 
-    def c_int_plus_dist(self,args,params):
+    def c_int_plus_dust(self,args,params):
         return c_int_plus_dust(args['E'],params['c_int_type'],params['c_int_params'])
 
     def tripp(self,args,params):
