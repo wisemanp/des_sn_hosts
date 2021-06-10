@@ -124,21 +124,18 @@ class Sim(SN_Model):
         host_Av_func = getattr(self,self.config['Host_Av_model']['model'])
         E_func = getattr(self, self.config['SN_E_model']['model'])
         args['E'] = E_func(args, self.config['SN_E_model']['params'])
-        self.args = args
+
         args['host_Av'] = host_Av_func(args,self.config['Host_Av_model']['params'])
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
         gal_df = z_df.loc[m_av_samples_inds]
         args['U-R'] = gal_df['U_R']
         args['mean_ages'] = gal_df['mean_age']
-
-
-
         colour_func = getattr(self,self.config['SN_colour_model']['model'])
         args['c'] = colour_func(args,self.config['SN_colour_model']['params'])
 
         x1_func = getattr(self,self.config['x1_model']['model'])
         args = x1_func(args,self.config['x1_model']['params'])
-
+        self.args=args
         mb_func = getattr(self,self.config['mB_model']['model'])
         args['mB'] = mb_func(args,self.config['mB_model']['params'])
         args['mB_err'] =np.max([0.03,np.random.normal(10**(0.4*(args['mB']-1.5) - 10)+0.02,0.03)])
