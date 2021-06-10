@@ -51,6 +51,6 @@ mB_model:
     sig_beta: 0.1
     M0: -19.375
     sigma_int: 0.1
-    mass_step: 0.0
-    age_step: 0.0
+    mass_step: [0.0,10]
+    age_step: [0.0,1]
 
