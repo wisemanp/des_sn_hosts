@@ -128,8 +128,8 @@ class Sim(SN_Model):
         args['host_Av'] = host_Av_func(args,self.config['Host_Av_model']['params'])
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
         gal_df = z_df.loc[m_av_samples_inds]
-        args['U-R'] = gal_df['U_R']
-        args['mean_ages'] = gal_df['mean_age']
+        args['U-R'] = gal_df['U_R'].values
+        args['mean_ages'] = gal_df['mean_age'].values
         colour_func = getattr(self,self.config['SN_colour_model']['model'])
         args = colour_func(args,self.config['SN_colour_model']['params'])
 
@@ -142,6 +142,7 @@ class Sim(SN_Model):
         args['mB_err'] =[np.max([0.03,np.random.normal(10**(0.4*(args['mB'][i]-1.5) - 10)+0.02,0.03)])
                          for i in range(len(args['mB']))]
         self.args = args
+        args['distmod'] = np.ones_like(args['c'])*args['distmod']
         z_sim_df = pd.DataFrame(args)
         z_sim_df['z'] = z
         return z_sim_df
