@@ -143,6 +143,7 @@ class Sim(SN_Model):
                          for i in range(len(args['mB']))]
         self.args = args
         args['distmod'] = np.ones_like(args['c'])*args['distmod']
+        del args['Av_grid']
         z_sim_df = pd.DataFrame(args)
         z_sim_df['z'] = z
         return z_sim_df
