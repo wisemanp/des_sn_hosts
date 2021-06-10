@@ -75,7 +75,7 @@ class SN_Model():
         return c_int_asymm(params['mu'],params['sig_minus'],params['sig_plus'],args['n'])
 
     def c_int_plus_dust(self,args,params):
-        return c_int_plus_dust(args['E'],params['c_int_type'],params['c_int_params'])
+        return c_int_plus_dust(args,params['c_int_type'],params['c_int_params'])
 
     def tripp(self,args,params):
         return tripp(params['alpha'],params['beta'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],args)

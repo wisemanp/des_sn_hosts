@@ -131,7 +131,7 @@ class Sim(SN_Model):
         args['U-R'] = gal_df['U_R']
         args['mean_ages'] = gal_df['mean_age']
         colour_func = getattr(self,self.config['SN_colour_model']['model'])
-        args['c'] = colour_func(args,self.config['SN_colour_model']['params'])
+        args = colour_func(args,self.config['SN_colour_model']['params'])
 
         x1_func = getattr(self,self.config['x1_model']['model'])
         args = x1_func(args,self.config['x1_model']['params'])

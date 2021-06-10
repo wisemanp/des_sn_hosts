@@ -32,7 +32,7 @@ def c_int_asymm(mu,sig_minus,sig_plus,n=1):
         cs.append(asymmetric_gaussian(mu,sig_minus,sig_plus))
     return np.array(cs)
 
-def c_int_plus_dust(Es,c_int_type,c_int_params):
+def c_int_plus_dust(args,c_int_type,c_int_params):
     '''
 
     :param n:
@@ -43,9 +43,11 @@ def c_int_plus_dust(Es,c_int_type,c_int_params):
     :rtype:
     '''
     if c_int_type=='norm':
-        c_ints = c_int_gauss(c_int_params['mu'],c_int_params['sig'],n=len(Es))
+        c_ints = c_int_gauss(c_int_params['mu'],c_int_params['sig'],n=len(args['E']))
     elif c_int_type=='asymm':
-        c_ints = c_int_asymm(c_int_params['mu'],c_int_params['sig_minus'],c_int_params['sig_plus'],n=len(Es))
-    return Es + c_ints
+        c_ints = c_int_asymm(c_int_params['mu'],c_int_params['sig_minus'],c_int_params['sig_plus'],n=len(args['E']))
+    args['c'] = args['E']+c_ints
+    args['c_int'] = c_ints
+    return args
 
 
