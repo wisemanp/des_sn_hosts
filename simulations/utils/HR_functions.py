@@ -2,25 +2,15 @@ import numpy as np
 from astropy.cosmology import FlatLambdaCDM
 
 def add_mass_step(logM,mag=0.1,loc=10):
-    if logM>loc:
-        return mag*-0.5
-    else:
-        return mag*0.5
+    return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
+
 def add_age_step(age,mag=0.1,loc=1):
-    if age>loc:
-        return mag*-0.5
-    else:
-        return mag*0.5
+    return ((age>loc) * mag*-0.5) + ((age<loc)* mag*0.5)
 def add_age_step_choice(age,mag=0.1):
-    if age=='old':
-        return mag*-0.5
-    else:
-        return mag*0.5
+    return ((age=='old') * mag*-0.5) + ((age=='young')* mag*0.5)
+
 def fit_mass_step(logM,mag=0.1,loc=10):
-    if logM>loc:
-        return mag*-0.5
-    else:
-        return mag*0.5
+    return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
 
 def rms_mu_res_nostep(x0,args):
     df,fa,fb=args[0],args[1],args[2]
