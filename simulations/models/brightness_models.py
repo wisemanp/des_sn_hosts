@@ -1,5 +1,5 @@
 from scipy.stats import norm
-
+import numpy as np
 from ..utils.HR_functions import add_age_step, add_mass_step
 
 
