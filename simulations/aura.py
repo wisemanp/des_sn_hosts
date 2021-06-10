@@ -135,12 +135,13 @@ class Sim(SN_Model):
 
         x1_func = getattr(self,self.config['x1_model']['model'])
         args = x1_func(args,self.config['x1_model']['params'])
-        self.args=args
+
         mb_func = getattr(self,self.config['mB_model']['model'])
         args['mB'] = mb_func(args,self.config['mB_model']['params'])
 
         args['mB_err'] =[np.max([0.03,np.random.normal(10**(0.4*(args['mB'][i]-1.5) - 10)+0.02,0.03)])
                          for i in range(len(args['mB']))]
+        self.args = args
         z_sim_df = pd.DataFrame(args)
         z_sim_df['z'] = z
         return z_sim_df
