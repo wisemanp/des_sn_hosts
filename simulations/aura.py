@@ -93,6 +93,8 @@ class Sim(SN_Model):
             self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
 
     def _sample_SNe_z(self,z,n_samples):
+        if n_samples == 0:
+            return pd.DataFrame(columns=self.sim_df.columns)
         args = {}
         args['distmod'] = self.cosmo.distmod(z).value
         z_df = self.multi_df.loc['%.2f' % z]
