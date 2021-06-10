@@ -107,7 +107,7 @@ def E_exp_mass(mass,Tau_low,Tau_high,mass_split=10):
     :return:
     :rtype:
     '''
-
+    mass = np.log10(mass)
     E_low = expon(scale=Tau_low)
     E_high = expon(scale=Tau_high)
     return (E_low.rvs(size=len(mass)) * (mass < mass_split)) + (
