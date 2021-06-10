@@ -122,13 +122,15 @@ class Sim(SN_Model):
         args['rv'] = rv_func(args,self.config['SN_rv_model']['params'])
 
         host_Av_func = getattr(self,self.config['Host_Av_model']['model'])
+        E_func = getattr(self, self.config['SN_E_model']['model'])
+        args['E'] = E_func(args, self.config['SN_E_model']['params'])
         args['host_Av'] = host_Av_func(args,self.config['Host_Av_model']['params'])
         m_av_samples_inds = [[m_av0_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
         gal_df = z_df.loc[m_av_samples_inds]
         args['U-R'] = gal_df['U-R']
         args['mean_ages'] = gal_df['mean_age']
-        E_func = getattr(self,self.config['SN_E_model']['model'])
-        args['E'] = E_func(args,self.config['SN_E_model']['params'])
+
+
 
         colour_func = getattr(self,self.config['SN_colour_model']['model'])
         args['c'] = colour_func(args,self.config['SN_colour_model']['params'])
