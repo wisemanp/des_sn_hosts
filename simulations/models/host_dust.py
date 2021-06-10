@@ -35,9 +35,9 @@ def choose_Av_SN_E_Rv_norm(Av_grid,Es,Rv_mu,Rv_sig,Av_sig):
     :rtype:
     '''
     Rv = norm(Rv_mu,Rv_sig).rvs(len(Es))
-    print(Rv)
+
     p_array = norm(Es/Rv,Av_sig).pdf(np.array(len(Es)*[Av_grid,]).T)
-    print(p_array)
+    np.nan_to_num(p_array,nan=Av_grid[0])
     avs = np.array([np.random.choice(Av_grid,p=p_array[:,i]/np.sum(p_array[:,i])) for i in range(p_array.shape[1])])
     return avs
 
