@@ -34,10 +34,10 @@ class x1_twogauss_age():
     '''
 
     '''
-    def __init__(self,mu_old,sig_old,mu_young,sig_young,age_step,old_prob=0.5):
+    def __init__(self,mu_old,sig_old,mu_young,sig_young,age_step_loc,old_prob=0.5):
         self._set_norm_old(mu_old,sig_old)
         self._set_norm_young(mu_young,sig_young)
-        self.age_step = age_step
+        self.age_step_loc = age_step_loc
         self.old_prob = old_prob
     def _set_norm_old(self,mu_old,sig_old):
         self.norm_old = norm(mu_old,sig_old)
@@ -50,11 +50,11 @@ class x1_twogauss_age():
         x1s = []
         prog_age_choices = []
         for counter,age in enumerate(ages):
-            if age > self.age_step:
+            if age > self.age_step_loc:
                 x1_rand = {'old':self.norm_old.rvs(),'young':self.norm_young.rvs()}
                 prog_age_choice = np.random.choice(['old','young'],p=old_probs)
                 x1s.append(x1_rand[prog_age_choice])
-            elif age < self.age_step:
+            elif age <= self.age_step_loc:
                 prog_age_choice = 'young'
                 x1.append(self.norm_young.rvs())
             prog_age_choices.append(prog_age_choice)
