@@ -105,11 +105,11 @@ class Sim(SN_Model):
             self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
         if save_df:
             if savepath=='default':
-                savepath = self.root_dir + self.rv_func.__name__ + ' '+
-                self.host_Av_func.__name__ + ' ' +
-                self.E_func.__name__ + ' ' +
-                self.colour_func.__name__ + ' ' +
-                self.x1_func.__name__ + ' ' +
+                savepath = self.root_dir + self.rv_func.__name__ + ' '+\
+                self.host_Av_func.__name__ + ' ' +\
+                self.E_func.__name__ + ' ' +\
+                self.colour_func.__name__ + ' ' +\
+                self.x1_func.__name__ + ' ' +\
                 self.mb_func.__name__ +'.h5'
             self.sim_df.to_hdf(savepath,key='sim')
 
