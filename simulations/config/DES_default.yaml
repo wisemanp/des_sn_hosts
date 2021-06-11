@@ -1,6 +1,7 @@
 
 hostlib_fn: /media/data3/wiseman/des/AURA/all_model_params_z0.05_1.20_av0.00_1.00_rv_rand_full_age_dists_neb_U-2.00_res_2.h5
-
+config:
+  root_dir: $AURA_DIR
 SN_rv_model:
   model: mass_rv_step
   params:
