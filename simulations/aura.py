@@ -170,6 +170,8 @@ class Sim(SN_Model):
         z_sim_df['z'] = z
         return z_sim_df
 
+    def load_sim(self,path):
+        self.sim_df = pd.read_hdf(path,key='sim')
     def fit_mu_res(self):
         fitter = getattr(self,self.config['mu_res_fitter']['fitter'])
         self.fitter(self.config['mu_res_fitter']['params'])
