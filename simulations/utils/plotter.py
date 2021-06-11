@@ -84,10 +84,10 @@ def plot_galaxy_properties(sim):
 
 def plot_x1s(sim,df):
     f,(ax1,ax2,ax3)=plt.subplots(1,3,figsize=(16,5),sharey=True)
-    ax1.scatter(df['mass'],df['x1'],c=df['Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
+    ax1.scatter(df['mass'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
     ax1.set_xscale('log')
-    cm=ax2.scatter(df['U-R'],df['x1'],c=df['Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-    ax3.scatter(df['SN_age'],df['x1'],c=df['Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
+    cm=ax2.scatter(df['U-R'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
+    ax3.scatter(df['SN_age'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
     ax3.set_xscale('log')
     plt.tight_layout()
     plt.subplots_adjust(wspace=0)
@@ -111,10 +111,10 @@ def plot_x1s(sim,df):
     plt.savefig(aura_dir+'figs/'+'SN_x1_hist_%s'%sim.method)
 def plot_cs(sim,df):
     f,(ax1,ax2,ax3)=plt.subplots(1,3,figsize=(14,5),sharey=True)
-    ax1.scatter(df['mass'],df['c'],c=df['Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
+    ax1.scatter(df['mass'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
     ax1.set_xscale('log')
-    cm=ax2.scatter(df['U-R'],df['c'],c=df['Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-    ax3.scatter(df['SN_age'],df['c'],c=df['Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
+    cm=ax2.scatter(df['U-R'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
+    ax3.scatter(df['SN_age'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
     ax3.set_xscale('log')
     plt.tight_layout()
     plt.subplots_adjust(wspace=0)
@@ -137,7 +137,7 @@ def plot_cs(sim,df):
     plt.savefig(aura_dir+'figs/'+'SN_c_hist_%s'%sim.method)
 def plot_hosts(sim,df):
     f,ax=plt.subplots(figsize=(8,6.5))
-    ax.scatter(df['mass'],df['Av'],alpha=0.1,c='c',edgecolor='w')
+    ax.scatter(df['mass'],df['host_Av'],alpha=0.1,c='c',edgecolor='w')
     ax.set_xscale('log')
     ax.set_xlabel('Stellar Mass',size=20)
     ax.set_ylabel('$A_V$',size=20)
@@ -148,7 +148,7 @@ def plot_hosts(sim,df):
     ax.set_ylabel('$R_V$',size=20)
     ax.set_ylim(1,6)
     f,ax=plt.subplots(figsize=(8,6.5))
-    ax.scatter(df['Av'],df['x1'],alpha=0.1,c='c',edgecolor='w')
+    ax.scatter(df['host_Av'],df['x1'],alpha=0.1,c='c',edgecolor='w')
 
     ax.set_ylabel('$x_1$',size=20)
     ax.set_xlabel('$A_V$',size=20)
@@ -192,7 +192,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
         print(n.mid)
         ax.errorbar(n.mid,g['mu_res'].mean(),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='c',marker='s',markersize=20,ls='none')
 
-    step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mb_err'],sim.sim_df['U-R'],1)
+    step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mB_err'],sim.sim_df['U-R'],1)
     ax.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=ax.transAxes)
     ax.set_xlabel('$U-R$',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
@@ -211,7 +211,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logmass'],bins=np.linspace(8,12,3))):
         print(n.mid)
         ax.errorbar(n.mid,g['mu_res'].median(),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='c',marker='s',markersize=20,)
-    step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mb_err'],sim.sim_df['logmass'],10)
+    step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mB_err'],sim.sim_df['logmass'],10)
     ax.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=ax.transAxes)
     ax.set_xlabel('$\log(M_*/M_{\odot})$',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
@@ -320,7 +320,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
             model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
             model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
             model_c_mids_hi.append(n.mid)
-            g2 = g[g['SN_age']<=3000]
+            g2 = g[g['mean_age']<=3000]
 
             model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
             model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))

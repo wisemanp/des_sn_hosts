@@ -54,7 +54,7 @@ class SN_Model():
 
     def x1_twogauss_age(self,args,params):
         sampler = x1_twogauss_age(params['mu_old'],params['sig_old'],params['mu_young'],params['sig_young'],params['age_step_loc'],params['old_prob'])
-        args['x1'],args['prog_age'] =  sampler.sample(args['age'])
+        args['x1'],args['prog_age'] =  sampler.sample(args['SN_age'])
         return args
     def choose_Av_SN_E_rv_fix(self,args,params):
         return choose_Av_SN_E_rv_fix(args['Av_grid'],args['E'],params['Rv'],params['Av_sig'])
