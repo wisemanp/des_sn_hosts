@@ -5,6 +5,8 @@ import seaborn as sns
 sns.set_color_codes(palette='colorblind')
 import itertools
 import os
+import pandas as pd
+des5yr = pd.read_csv('/media/data3/wiseman/des/AURA/data/df_after_cuts_z0.6_UR1.csv')
 aura_dir = os.environ['AURA_DIR']
 
 plt.style.use('default')
@@ -15,6 +17,8 @@ plt.rcParams.update({'xtick.direction':'in'})
 plt.rcParams.update({'ytick.direction':'in'})
 split_colour_1 = '#f28500'
 split_colour_2 = '#8500f2'
+
+
 
 def plot_galaxy_properties(sim):
 
@@ -105,7 +109,7 @@ def plot_x1s(sim,df):
     f,ax=plt.subplots(figsize=(8,6.5))
     hist=ax.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3)
     ax.set_xlabel('$x_1$',size=20)
-    ax.hist(MV5yrlowz['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES 5yr')
+    ax.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES 5yr')
     #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
     ax.legend()
     plt.savefig(aura_dir+'figs/'+'SN_x1_hist_%s'%sim.method)
@@ -130,7 +134,7 @@ def plot_cs(sim,df):
     ax1.set_ylim(-0.32,0.4)
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.hist(df['c'],bins=np.linspace(-0.3,0.3,25),histtype='step',density=True,label='Sim',lw=3)
-    ax.hist(MV5yrlowz['c'],density=True,bins=25,histtype='step',color=split_colour_1,label='Obs DES',lw=3)
+    ax.hist(des5yr['c'],density=True,bins=25,histtype='step',color=split_colour_1,label='Obs DES',lw=3)
     #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
     ax.legend()
     ax.set_xlabel('c',size=20)
