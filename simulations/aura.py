@@ -76,7 +76,7 @@ class Sim(SN_Model):
         # We now have three levels to the index: z, mass, Av. For any given z and mass, the stellar populations are identical at any Av, but the output fluxes and colours are not.
         self.multi_df = self.flux_df.set_index([z_str,mass_str,Av_str,])
 
-    def _get_z_dist(self,z_vals):
+    def _get_z_dist(self,z_vals,n=25000,frac_low_z=0.2):
         '''
 
         :param z_vals: an array of redshifts that will have the same distribution that you want the simulation to have. This can be observed or simulated data.
@@ -89,8 +89,8 @@ class Sim(SN_Model):
                                           0.675])
         norm_counts = counts / np.sum(counts)
         norm_counts = counts / np.sum(counts)
-        n_samples_arr = norm_counts * 25000
-        n_samples_arr = np.concatenate([[5000], n_samples_arr])
+        n_samples_arr = norm_counts * n
+        n_samples_arr = np.concatenate([[n*frac_low_z], n_samples_arr])
         return n_samples_arr
 
     def sample_SNe(self,z_arr,n_samples_arr,save_df=True,savepath='default'):
