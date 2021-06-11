@@ -26,8 +26,8 @@ def chisq_mu_res_nostep(x0,args):
     M0 =x0[2]
     mod = cosmo.distmod(df['z']).value
 
-    obs = df['m_obs'] +alpha*df['x1'] - beta*df['c'] -M0
-    err = df['mb_err']
+    obs = df['mB'] +alpha*df['x1'] - beta*df['c'] -M0
+    err = df['mB_err']
     return np.sum(((obs-mod)**2)/err**2)
 
 def get_mu_res_nostep(x0,df,params,cosmo):
@@ -43,7 +43,7 @@ def get_mu_res_nostep(x0,df,params,cosmo):
         beta=fb
     M0 =x0[2]
     mod = cosmo.distmod(df['z']).value
-    obs = df['m_obs'] +alpha*df['x1'] - beta*df['c'] -M0
+    obs = df['mB'] +alpha*df['x1'] - beta*df['c'] -M0
     return obs-mod
 
 def chisq_mu_res_step(x0,args):
@@ -61,8 +61,8 @@ def chisq_mu_res_step(x0,args):
     M0 =x0[3]
     mod = cosmo.distmod(df['z']).value
     step = np.log10(df['mass']).apply(lambda x: fit_mass_step(x,mag=gamma,loc=10))
-    obs = df['m_obs'] +alpha*df['x1'] - beta*df['c'] -M0 + step
-    err = df['mb_err']
+    obs = df['mB'] +alpha*df['x1'] - beta*df['c'] -M0 + step
+    err = df['mB_err']
     return np.sum(((obs-mod)**2)/err**2)
 
 def get_mu_res_step(x0,df,params,cosmo):
@@ -80,7 +80,7 @@ def get_mu_res_step(x0,df,params,cosmo):
     M0 =x0[3]
     mod = cosmo.distmod(df['z']).value
     step = np.log10(df['mass']).apply(lambda x: fit_mass_step(x,mag=gamma,loc=10))
-    obs = df['m_obs'] +alpha*df['x1'] - beta*df['c'] -M0 + step
+    obs = df['mB'] +alpha*df['x1'] - beta*df['c'] -M0 + step
     return obs-mod
 
 def calculate_step(mu_res,mu_res_err,host_val,split):
