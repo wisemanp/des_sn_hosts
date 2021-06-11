@@ -35,7 +35,7 @@ class Sim(SN_Model):
         self.config = self._get_config(conf_path)
         root_dir = self.config['config']['root_dir']
         if root_dir[0]=='$':
-            self.root_dir = os.environ.get(root_dir)
+            self.root_dir = os.environ.get(root_dir[1:])
         else:
             self.root_dir = root_dir
         self.flux_df = self._load_flux_df(self.config['hostlib_fn'])
