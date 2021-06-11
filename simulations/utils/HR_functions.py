@@ -12,13 +12,13 @@ def add_age_step_choice(age,mag=0.1):
 def fit_mass_step(logM,mag=0.1,loc=10):
     return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
 
-def rms_mu_res_nostep(x0,args):
-    df,fa,fb=args[0],args[1],args[2]
-    if fa==False:
+def chisq_mu_res_nostep(x0,df,params):
+    fa,fb=params['fix_alpha'],params['fix_beta']
+    if fa=='False':
         alpha=x0[0]
     else:
         alpha=fa
-    if fb==False:
+    if fb=='False':
         beta=x0[1]
     else:
         beta=fb
@@ -29,8 +29,9 @@ def rms_mu_res_nostep(x0,args):
     err = df['mb_err']
     return np.sum(((obs-mod)**2)/err**2)
 
-def get_mu_res_nostep(x0,args):
-    df,fa,fb=args[0],args[1],args[2]
+def get_mu_res_nostep(x0,df,params):
+
+    fa,fb=params['fix_alpha'],params['fix_beta']
     if fa==False:
         alpha=x0[0]
     else:
@@ -44,7 +45,7 @@ def get_mu_res_nostep(x0,args):
     obs = df['m_obs'] +alpha*df['x1'] - beta*df['c'] -M0
     return obs-mod
 
-def rms_mu_res_step(x0,args):
+def chisq_mu_res_step(x0,df,params):
     df,fa,fb=args[0],args[1],args[2]
     if fa==False:
         alpha=x0[0]
@@ -62,10 +63,9 @@ def rms_mu_res_step(x0,args):
     err = df['mb_err']
     return np.sum(((obs-mod)**2)/err**2)
 
-def get_mu_res_step(x0,args,cosmo='default'):
-    if cosmo=='default':
-        cosmo = FlatLambdaCDM(70,0.3)
-    df,fa,fb=args[0],args[1],args[2]
+def get_mu_res_step(x0,df,params):
+
+    fa,fb=params['fix_alpha'],params['fix_beta']
     if fa==False:
         alpha=x0[0]
     else:

@@ -92,3 +92,5 @@ class SN_Model():
     def tripp_rv_two_beta_popns_age(self,args,params):
         return tripp_rv_two_beta_popns_age(params['alpha'], params['beta_young'],params['sig_beta_young'], params['beta_old'], params['sig_beta_old'], params['M0'],
                                      params['sigma_int'], params['mass_step'], params['age_step'], args)
+
+

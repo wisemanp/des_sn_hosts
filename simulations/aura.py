@@ -13,6 +13,7 @@ from astropy.cosmology import FlatLambdaCDM
 from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, single_schechter, double_schechter
 from .utils.plotter import *
+from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep
 
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
@@ -114,7 +115,6 @@ class Sim(SN_Model):
             self.sim_df.to_hdf(savepath,key='sim')
 
     def _sample_SNe_z(self,z,n_samples):
-        print(z,n_samples)
         if n_samples == 0:
             return pd.DataFrame(columns=self.sim_df.columns)
         args = {}
@@ -170,3 +170,25 @@ class Sim(SN_Model):
         z_sim_df['z'] = z
         return z_sim_df
 
+    def fit_mu_res(self):
+        fitter = getattr(self,self.config['mu_res_fitter']['fitter'])
+        self.fitter(self.config['mu_res_fitter']['params'])
+        getter = getattr(self,self.config['mu_res_fitter']['fitter'].replace('fit','get'))
+        self.getter(self.config['mu_res_fitter']['params'])
+    def fit_mu_res_nostep(self,params):
+        x0 =[0.1,3.1,-19.5]
+        res =minimise(chisq_mu_res_nostep,x0,args=[self.sim_df,params])
+        self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
+
+    def get_mu_res_nostep(self,res,params):
+        self.sim_df['mu_res'] = get_mu_res_nostep(res,self.sim_df,params)
+        self.sim_df['mu_res_err'] = self.sim_df['mb_err']
+
+    def fit_mu_res_step(self,params):
+        x0 =[0.1,3.1,-19.5]
+        res =minimise(chisq_mu_res_step,x0,args=[self.sim_df,params])
+        self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
+
+    def get_mu_res_step(self,res,params):
+        self.sim_df['mu_res'] = get_mu_res_step(res,self.sim_df,params)
+        self.sim_df['mu_res_err'] = self.sim_df['mb_err']
