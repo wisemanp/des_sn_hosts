@@ -13,7 +13,7 @@ def fit_mass_step(logM,mag=0.1,loc=10):
     return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
 
 def chisq_mu_res_nostep(x0,args):
-    df,params = args[0],args[1]
+    df,params,cosmo = args[0],args[1],args[2]
     fa,fb=params['fix_alpha'],params['fix_beta']
     if fa=='False':
         alpha=x0[0]
@@ -30,7 +30,7 @@ def chisq_mu_res_nostep(x0,args):
     err = df['mb_err']
     return np.sum(((obs-mod)**2)/err**2)
 
-def get_mu_res_nostep(x0,df,params):
+def get_mu_res_nostep(x0,df,params,cosmo):
 
     fa,fb=params['fix_alpha'],params['fix_beta']
     if fa==False:
@@ -47,7 +47,7 @@ def get_mu_res_nostep(x0,df,params):
     return obs-mod
 
 def chisq_mu_res_step(x0,args):
-    df, params = args[0], args[1]
+    df, params,cosmo = args[0], args[1],args[2]
     fa,fb=params['fix_alpha'],params['fix_beta']
     if fa==False:
         alpha=x0[0]
@@ -65,7 +65,7 @@ def chisq_mu_res_step(x0,args):
     err = df['mb_err']
     return np.sum(((obs-mod)**2)/err**2)
 
-def get_mu_res_step(x0,df,params):
+def get_mu_res_step(x0,df,params,cosmo):
 
     fa,fb=params['fix_alpha'],params['fix_beta']
     if fa==False:
