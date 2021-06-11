@@ -9,6 +9,7 @@ import pickle
 import warnings
 from astropy.utils.exceptions import AstropyWarning
 from astropy.cosmology import FlatLambdaCDM
+from scipy.optimize import minimize
 
 from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, single_schechter, double_schechter
@@ -179,7 +180,7 @@ class Sim(SN_Model):
         self.getter(self.config['mu_res_fitter']['params'])
     def fit_mu_res_nostep(self,params):
         x0 =[0.1,3.1,-19.5]
-        res =minimise(chisq_mu_res_nostep,x0,args=[self.sim_df,params])
+        res =minimize(chisq_mu_res_nostep,x0,args=[self.sim_df,params])
         self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
 
     def get_mu_res_nostep(self,res,params):
@@ -188,7 +189,7 @@ class Sim(SN_Model):
 
     def fit_mu_res_step(self,params):
         x0 =[0.1,3.1,-19.5]
-        res =minimise(chisq_mu_res_step,x0,args=[self.sim_df,params])
+        res =minimize(chisq_mu_res_step,x0,args=[self.sim_df,params])
         self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
 
     def get_mu_res_step(self,res,params):
