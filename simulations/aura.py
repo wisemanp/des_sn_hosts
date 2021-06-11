@@ -106,11 +106,11 @@ class Sim(SN_Model):
             self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
         if save_df:
             if savepath=='default':
-                savepath = self.root_dir + self.rv_func.__name__ + ' '+\
-                self.host_Av_func.__name__ + ' ' +\
-                self.E_func.__name__ + ' ' +\
-                self.colour_func.__name__ + ' ' +\
-                self.x1_func.__name__ + ' ' +\
+                savepath = self.root_dir +'/'+ self.rv_func.__name__ + '_'+\
+                self.host_Av_func.__name__ + '_' +\
+                self.E_func.__name__ + '_' +\
+                self.colour_func.__name__ + '_' +\
+                self.x1_func.__name__ + '_' +\
                 self.mb_func.__name__ +'.h5'
             self.sim_df.to_hdf(savepath,key='sim')
 
@@ -173,9 +173,9 @@ class Sim(SN_Model):
     def load_sim(self,path):
         self.sim_df = pd.read_hdf(path,key='sim')
     def fit_mu_res(self):
-        fitter = getattr(self,self.config['mu_res_fitter']['fitter'])
+        self.fitter = getattr(self,self.config['mu_res_fitter']['fitter'])
         self.fitter(self.config['mu_res_fitter']['params'])
-        getter = getattr(self,self.config['mu_res_fitter']['fitter'].replace('fit','get'))
+        self.getter = getattr(self,self.config['mu_res_fitter']['fitter'].replace('fit','get'))
         self.getter(self.config['mu_res_fitter']['params'])
     def fit_mu_res_nostep(self,params):
         x0 =[0.1,3.1,-19.5]
