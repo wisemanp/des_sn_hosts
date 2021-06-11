@@ -14,7 +14,7 @@ from scipy.optimize import minimize
 from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, single_schechter, double_schechter
 from .utils.plotter import *
-from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep
+from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step
 
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
