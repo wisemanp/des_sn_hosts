@@ -62,5 +62,5 @@ mB_model:
 mu_res_fitter:
   fitter: fit_mu_res_nostep
   params:
-    alpha: False
-    beta: False
+    fix_alpha: False
+    fix_beta: False
