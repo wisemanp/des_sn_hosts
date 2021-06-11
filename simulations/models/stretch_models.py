@@ -56,7 +56,7 @@ class x1_twogauss_age():
                 x1s.append(x1_rand[prog_age_choice])
             elif age <= self.age_step_loc:
                 prog_age_choice = 'young'
-                x1.append(self.norm_young.rvs())
+                x1s.append(self.norm_young.rvs())
             prog_age_choices.append(prog_age_choice)
         if return_prog_age:
             return x1s,prog_age_choices
