@@ -1,5 +1,5 @@
 '''A set of routines for plotting AURA simulations'''
-
+import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_color_codes(palette='colorblind')
@@ -281,8 +281,6 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
         try:
             g1 = g[g['SN_age']>0.8]
-
-
             model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
             model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
             model_c_mids_hi.append(n.mid)
