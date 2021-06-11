@@ -59,3 +59,8 @@ mB_model:
       mag: 0.0
       loc: 1
 
+mu_res_fitter:
+  fitter: fit_mu_res_nostep
+  params:
+    alpha: False
+    beta: False
