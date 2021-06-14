@@ -40,6 +40,7 @@ class Sim(SN_Model):
             self.root_dir = os.environ.get(root_dir[1:])
         else:
             self.root_dir = root_dir
+        self.fig_dir = os.path.join(self.root_dir,'figs')
         self.flux_df = self._load_flux_df(self.config['hostlib_fn'])
         self._calculate_absolute_rates()
         self._make_multi_index()
@@ -47,7 +48,7 @@ class Sim(SN_Model):
             self.cosmo = FlatLambdaCDM(70,0.3)
         else:
             self.cosmo=cosmo
-
+        self._get_funcs()
 
     def _get_config(self,conf_path):
         with open(conf_path,'r') as f:
@@ -95,25 +96,29 @@ class Sim(SN_Model):
         n_samples_arr = np.concatenate([[n*frac_low_z], n_samples_arr])
         return n_samples_arr
 
-    def sample_SNe(self,z_arr,n_samples_arr,save_df=True,savepath='default'):
-        self.sim_df = pd.DataFrame()
+    def _get_funcs(self):
         self.rv_func = getattr(self, self.config['SN_rv_model']['model'])
-        self.host_Av_func = getattr(self,self.config['Host_Av_model']['model'])
+        self.host_Av_func = getattr(self, self.config['Host_Av_model']['model'])
         self.E_func = getattr(self, self.config['SN_E_model']['model'])
-        self.colour_func = getattr(self,self.config['SN_colour_model']['model'])
-        self.x1_func = getattr(self,self.config['x1_model']['model'])
+        self.colour_func = getattr(self, self.config['SN_colour_model']['model'])
+        self.x1_func = getattr(self, self.config['x1_model']['model'])
         self.mb_func = getattr(self, self.config['mB_model']['model'])
-        for z,n in zip(z_arr,n_samples_arr):
-            self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
-        if save_df:
-            if savepath=='default':
-                savepath = self.root_dir +'/'+ self.rv_func.__name__ + '_'+\
+        self.save_string = self.rv_func.__name__ + '_'+\
                 self.host_Av_func.__name__ + '_' +\
                 self.E_func.__name__ + '_' +\
                 self.colour_func.__name__ + '_' +\
                 self.x1_func.__name__ + '_' +\
-                self.mb_func.__name__ +'.h5'
-            self.sim_df.to_hdf(savepath,key='sim')
+                self.mb_func.__name__
+    def sample_SNe(self,z_arr,n_samples_arr,save_df=True,savepath='default'):
+        self.sim_df = pd.DataFrame()
+
+        for z,n in zip(z_arr,n_samples_arr):
+            self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
+        if save_df:
+            if savepath=='default':
+                savepath = self.root_dir +'/'+ self.save_string +'SN_sim.h5'
+            self.savepath=savepath
+            self.sim_df.to_hdf(self.savepath,key='sim')
 
     def _sample_SNe_z(self,z,n_samples):
         if n_samples == 0:

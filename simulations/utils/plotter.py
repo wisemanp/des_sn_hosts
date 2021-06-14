@@ -52,7 +52,7 @@ def plot_galaxy_properties(sim):
     cb.set_label('$A_V$',size=20,
                 )
 
-    plt.savefig(aura_dir+'figs/color_vs_host_params')
+    plt.savefig(sim.fig_dir +'color_vs_host_params')
     # plot U-R v mass only
     f,ax=plt.subplots(figsize=(8,6.5))
     #ax3.set_xscale('log')
@@ -83,7 +83,7 @@ def plot_galaxy_properties(sim):
     #           marker='+',label='DES U-R global',c=lisa_colours['Host Mass'],cmap='gist_rainbow')
     ax.legend(loc='upper left',fontsize=15)
     ax.set_ylim(-0.5,3)
-    plt.savefig(aura_dir+'figs/U-R_vs_data')
+    plt.savefig(sim.fig_dir +'U-R_vs_data')
 
 
 def plot_x1s(sim,df):
@@ -112,7 +112,7 @@ def plot_x1s(sim,df):
     ax.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES 5yr')
     #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
     ax.legend()
-    plt.savefig(aura_dir+'figs/'+'SN_x1_hist_%s'%sim.method)
+    plt.savefig(sim.fig_dir +'SN_x1_hist_%s'%sim.save_string)
 def plot_cs(sim,df):
     f,(ax1,ax2,ax3)=plt.subplots(1,3,figsize=(14,5),sharey=True)
     ax1.scatter(df['mass'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
@@ -138,7 +138,7 @@ def plot_cs(sim,df):
     #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
     ax.legend()
     ax.set_xlabel('c',size=20)
-    plt.savefig(aura_dir+'figs/'+'SN_c_hist_%s'%sim.method)
+    plt.savefig(sim.fig_dir +'SN_c_hist_%s'%sim.save_string)
 def plot_hosts(sim,df):
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.scatter(df['mass'],df['host_Av'],alpha=0.1,c='c',edgecolor='w')
@@ -184,7 +184,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     ax.hist(sim.sim_df['mu_res'],bins=100)
     ax.set_xlabel('$\mu_{\mathrm{res}}$',size=20)
 
-    plt.savefig(aura_dir+'figs/HR_hist_%s'%(sim.method)+label_ext)
+    plt.savefig(sim.fig_dir +'HR_hist_%s'%(sim.save_string)+label_ext)
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.method,size=20)
     cb=ax.scatter(sim.sim_df['U-R'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
@@ -204,7 +204,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     ax.set_ylim(-0.3,0.3)
     ax.set_xlim(0,2.5)
 
-    plt.savefig(aura_dir+'figs/HR_vs_UR_scatter_%s'%(sim.method)+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_UR_scatter_%s'%(sim.save_string)+label_ext)
     f,ax=plt.subplots(figsize=(8,6.5))
     sim.sim_df['logmass'] = np.log10(sim.sim_df['mass'])
     cb=ax.scatter(sim.sim_df['logmass'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
@@ -223,7 +223,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     ax.set_ylim(-0.3,0.3)
     ax.set_title(sim.method,size=20)
 
-    plt.savefig(aura_dir+'figs/HR_vs_mass_scatter_%s'%(sim.method)+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_mass_scatter_%s'%(sim.save_string)+label_ext)
     f,ax=plt.subplots(figsize=(8,6.5))
     sim.sim_df['logSN_age'] = np.log10(sim.sim_df['SN_age'])
     cb=ax.scatter(sim.sim_df['logSN_age'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
@@ -241,7 +241,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     ax.set_title(sim.method,size=20)
     ax.set_ylim(-0.3,0.3)
 
-    plt.savefig(aura_dir+'figs/HR_vs_age_scatter_%s'%(sim.method)+label_ext)
+    plt.savefig(sim.fig_dir +'/HR_vs_age_scatter_%s'%(sim.save_string)+label_ext)
     fMASS,axMASS=plt.subplots(figsize=(8,6.5))
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
@@ -277,7 +277,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     axMASS.set_title(sim.method,size=20)
     axMASS.set_ylim(-0.2,0.2)
 
-    plt.savefig(aura_dir+'figs/HR_vs_c_split_mass_%s'%(sim.method)+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_mass_%s'%(sim.save_string)+label_ext)
     fAGE,axAGE=plt.subplots(figsize=(8,6.5))
     axAGE.set_title(sim.method,size=20)
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
@@ -307,7 +307,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     axAGE.legend(fontsize=13)
     axAGE.set_ylim(-0.2,0.2)
 
-    plt.savefig(aura_dir+'figs/HR_vs_c_split_SN_age_%s'%(sim.method)+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_SN_age_%s'%(sim.save_string)+label_ext)
 
 
     fmeanAGE,axmeanAGE=plt.subplots(figsize=(8,6.5))
@@ -340,7 +340,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     axmeanAGE.legend(fontsize=13)
     axmeanAGE.set_ylim(-0.2,0.2)
 
-    plt.savefig(aura_dir+'figs/HR_vs_c_split_age_%s'%(sim.method)+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_age_%s'%(sim.save_string)+label_ext)
 
     fUR,axUR=plt.subplots(figsize=(8,6.5))
     axUR.set_title(sim.method,size=20)
@@ -377,4 +377,4 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axUR.legend(fontsize=13)
     axUR.set_ylim(-0.2,0.2)
-    plt.savefig(aura_dir+'figs/HR_vs_c_split_UR_%s'%(sim.method)+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_UR_%s'%(sim.save_string)+label_ext)
