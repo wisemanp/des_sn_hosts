@@ -40,7 +40,7 @@ class Sim(SN_Model):
             self.root_dir = os.environ.get(root_dir[1:])
         else:
             self.root_dir = root_dir
-        self.fig_dir = os.path.join(self.root_dir,'figs')
+        self.fig_dir = os.path.join(self.root_dir,'figs/')
         self.flux_df = self._load_flux_df(self.config['hostlib_fn'])
         self._calculate_absolute_rates()
         self._make_multi_index()
@@ -116,7 +116,7 @@ class Sim(SN_Model):
             self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
         if save_df:
             if savepath=='default':
-                savepath = self.root_dir +'/'+ self.save_string +'SN_sim.h5'
+                savepath = self.root_dir +'/'+ self.save_string +'_SN_sim.h5'
             self.savepath=savepath
             self.sim_df.to_hdf(self.savepath,key='sim')
 
