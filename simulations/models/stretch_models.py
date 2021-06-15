@@ -15,9 +15,9 @@ def x1_int_asymm(mu,sig_minus,sig_plus,n=1):
     '''
     x1s = []
     x1_grid = np.linspace(-5,5,1000)
-    for i in range(n):
-        x1s.append(asymmetric_gaussian(x1_grid,mu,sig_minus,sig_plus))
-    return np.array(x1s)
+    p = asymmetric_gaussian(x1_grid,mu,sig_minus,sig_plus)
+    x1s = np.random.choice(x1_grid,p=p/p.sum(),size=n)
+    return x1s
 
 def x1_twogauss_fix(mu_low,sig_low,mu_high,sig_high,frac_low=0.5,n=1):
     '''
