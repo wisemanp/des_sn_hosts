@@ -45,7 +45,7 @@ class SN_Model():
         return E_two_component(params['TauE_int'],params['Av_host'],params['Rv_host'],params['Av_sig_host'],params['Rv_sig_host'],n=args['n'])
 
     def x1_int_asymm(self,args,params):
-        args['x1'] = x1_int_asymm(['mu'],['sig_minus'],['sig_plus'],args['n'])
+        args['x1'] = x1_int_asymm(params['mu'],params['sig_minus'],params['sig_plus'],args['n'])
         return args
 
     def x1_twogauss_fix(self,args,params):
