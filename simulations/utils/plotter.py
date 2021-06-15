@@ -6,6 +6,7 @@ sns.set_color_codes(palette='colorblind')
 import itertools
 import os
 import pandas as pd
+from .HR_functions import calculate_step
 des5yr = pd.read_csv('/media/data3/wiseman/des/AURA/data/df_after_cuts_z0.6_UR1.csv')
 aura_dir = os.environ['AURA_DIR']
 
