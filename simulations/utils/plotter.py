@@ -11,7 +11,7 @@ from .HR_functions import calculate_step
 
 
 aura_dir = os.environ['AURA_DIR']
-des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv')
+des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))
 lisa_data = pickle.load(open(os.path.join(aura_dir,'data','des5yr_hosts.pkl'),'rb'))
 plt.style.use('default')
 sns.set_context('paper')
