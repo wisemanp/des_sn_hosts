@@ -124,6 +124,7 @@ class Sim(SN_Model):
         if n_samples == 0:
             return pd.DataFrame(columns=self.sim_df.columns)
         args = {}
+        args['n'] = n_samples
         args['distmod'] = self.cosmo.distmod(z).value
         z_df = self.multi_df.loc['%.2f' % z]
         z_df['N_total'].replace(0., np.NaN, inplace=True)
