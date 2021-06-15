@@ -235,7 +235,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logSN_age'],bins=np.linspace(-1.5,1,3))):
         print(n.mid)
         ax.errorbar(n.mid,g['mu_res'].median(),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='c',marker='s',markersize=20,ls='none')
-    step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mb_err'],sim.sim_df['logSN_age'],0.75)
+    step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mB_err'],sim.sim_df['logSN_age'],0.75)
     ax.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=ax.transAxes)
     ax.set_xlabel('$\log$ (SN Age (Gyr))',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
