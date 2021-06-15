@@ -76,7 +76,7 @@ def plot_galaxy_properties(sim):
                 )
 
     plt.tight_layout()
-    lisa_colours = pd.read_csv(aura_dir+'5yr-massUR.csv',index_col=0)
+    lisa_colours = pd.read_csv(os.path.join(aura_dir,'data','5yr-massUR.csv'),index_col=0)
 
     ax.errorbar(lisa_colours['Host Mass'],lisa_colours['Host U-R'],
                 xerr=lisa_colours['Host Mass error'],yerr=lisa_colours['Host U-R error'],
