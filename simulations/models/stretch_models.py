@@ -14,6 +14,7 @@ def x1_int_asymm(mu,sig_minus,sig_plus,n=1):
     :rtype: array
     '''
     x1s = []
+    x1_grid = np.linspace(-5,5,1000)
     for i in range(n):
         x1s.append(asymmetric_gaussian(x1_grid,mu,sig_minus,sig_plus))
     return np.array(x1s)
