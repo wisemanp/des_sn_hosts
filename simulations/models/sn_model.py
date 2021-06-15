@@ -12,16 +12,16 @@ class SN_Model():
 
 
     def age_rv_step(self,args,params):
-        return age_rv_step(args['age'], params['rv_young'], params['rv_old'], params['rv_sig_young'], params['rv_sig_old'], params['age_split'])
+        return age_rv_step(args['SN_age']/1000, params['rv_young'], params['rv_old'], params['rv_sig_young'], params['rv_sig_old'], params['age_split'])
 
     def mass_rv_step(self,args,params):
-        return mass_rv_step(args['mass'], params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_split'])
+        return mass_rv_step(np.log10(args['mass']), params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_split'])
 
     def mass_rv_linear(self,args,params ):
-        return mass_rv_linear(args['mass'], params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_fix_low'], params['mass_fix_high'])
+        return mass_rv_linear(np.log10(args['mass']), params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_fix_low'], params['mass_fix_high'])
 
     def age_rv_linear(self,args,params):
-        return age_rv_linear(args['age'], params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['age_fix_low'], params['age_fix_high'])
+        return age_rv_linear(args['SN_age']/1000, params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['age_fix_low'], params['age_fix_high'])
 
     def E_exp(self,args,params):
         return E_exp(params['TauE'],args['n'])
