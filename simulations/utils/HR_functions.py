@@ -90,5 +90,5 @@ def calculate_step(mu_res,mu_res_err,host_val,split):
     errors_right = mu_res_err[host_val>=split]
 
     step = np.average(data_left,weights=1/errors_left**2) - np.average(data_right,weights=1/errors_right**2)
-    sig = step/np.sqrt((np.std(errors_left)/np.sqrt(len(errors_left)))+(np.std(errors_right)/np.sqrt(len(errors_right))))
+    sig = np.abs(step/np.sqrt((np.std(errors_left)/np.sqrt(len(errors_left)))+(np.std(errors_right)/np.sqrt(len(errors_right)))))
     return step, sig
