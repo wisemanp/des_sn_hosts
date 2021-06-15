@@ -1,3 +1,4 @@
+import numpy as np
 from .dust_models import age_rv_step, mass_rv_step, age_rv_linear, mass_rv_linear, E_exp, E_exp_mass, E_exp_age, random_rv, E_calc, E_from_host_random, E_two_component
 from .colour_models import c_int_asymm, c_int_gauss, c_int_plus_dust
 from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix
