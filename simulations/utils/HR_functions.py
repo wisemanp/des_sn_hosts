@@ -15,11 +15,11 @@ def fit_mass_step(logM,mag=0.1,loc=10):
 def chisq_mu_res_nostep(x0,args):
     df,params,cosmo = args[0],args[1],args[2]
     fa,fb=params['fix_alpha'],params['fix_beta']
-    if fa=='False':
+    if fa==False:
         alpha=x0[0]
     else:
         alpha=fa
-    if fb=='False':
+    if fb==False:
         beta=x0[1]
     else:
         beta=fb
