@@ -166,7 +166,7 @@ def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
         sim.plot_hosts(plot_df)
 def plot_mu_res(sim,obs=True,label_ext=''):
     f,ax=plt.subplots(figsize=(8,6.5))
-    ax.set_title(sim.method,size=20)
+    ax.set_title(sim.save_string,size=20)
     g1 = sim.sim_df[sim.sim_df['mass']>1E+10]
     g2 = sim.sim_df[sim.sim_df['mass']<=1E+10]
 
@@ -180,13 +180,13 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     ax.legend(fontsize=16)
 
     f,ax=plt.subplots(figsize=(8,6.5))
-    ax.set_title(sim.method,size=20)
+    ax.set_title(sim.save_string,size=20)
     ax.hist(sim.sim_df['mu_res'],bins=100)
     ax.set_xlabel('$\mu_{\mathrm{res}}$',size=20)
 
     plt.savefig(sim.fig_dir +'HR_hist_%s'%(sim.save_string)+label_ext)
     f,ax=plt.subplots(figsize=(8,6.5))
-    ax.set_title(sim.method,size=20)
+    ax.set_title(sim.save_string,size=20)
     cb=ax.scatter(sim.sim_df['U-R'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
     plt.colorbar(cb)
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['U-R'],bins=np.linspace(-0.5,2.5,30))):
@@ -200,7 +200,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     ax.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=ax.transAxes)
     ax.set_xlabel('$U-R$',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
-    ax.set_title(sim.method,size=20)
+    ax.set_title(sim.save_string,size=20)
     ax.set_ylim(-0.3,0.3)
     ax.set_xlim(0,2.5)
 
@@ -221,7 +221,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     ax.set_xlim(7.5,12)
     ax.set_ylim(-0.3,0.3)
-    ax.set_title(sim.method,size=20)
+    ax.set_title(sim.save_string,size=20)
 
     plt.savefig(sim.fig_dir +'HR_vs_mass_scatter_%s'%(sim.save_string)+label_ext)
     f,ax=plt.subplots(figsize=(8,6.5))
@@ -238,7 +238,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     ax.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=ax.transAxes)
     ax.set_xlabel('$\log$ (SN Age (Gyr))',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
-    ax.set_title(sim.method,size=20)
+    ax.set_title(sim.save_string,size=20)
     ax.set_ylim(-0.3,0.3)
 
     plt.savefig(sim.fig_dir +'/HR_vs_age_scatter_%s'%(sim.save_string)+label_ext)
@@ -274,12 +274,12 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     axMASS.set_xlabel('$c$',size=20)
     axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axMASS.legend(fontsize=13)
-    axMASS.set_title(sim.method,size=20)
+    axMASS.set_title(sim.save_string,size=20)
     axMASS.set_ylim(-0.2,0.2)
 
     plt.savefig(sim.fig_dir +'HR_vs_c_split_mass_%s'%(sim.save_string)+label_ext)
     fAGE,axAGE=plt.subplots(figsize=(8,6.5))
-    axAGE.set_title(sim.method,size=20)
+    axAGE.set_title(sim.save_string,size=20)
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
 
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
@@ -311,7 +311,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
 
 
     fmeanAGE,axmeanAGE=plt.subplots(figsize=(8,6.5))
-    axmeanAGE.set_title(sim.method,size=20)
+    axmeanAGE.set_title(sim.save_string,size=20)
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
 
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
@@ -343,7 +343,7 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     plt.savefig(sim.fig_dir +'HR_vs_c_split_age_%s'%(sim.save_string)+label_ext)
 
     fUR,axUR=plt.subplots(figsize=(8,6.5))
-    axUR.set_title(sim.method,size=20)
+    axUR.set_title(sim.save_string,size=20)
 
 
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
