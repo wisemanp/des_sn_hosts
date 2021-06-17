@@ -40,7 +40,7 @@ def choose_Av_SN_E_Rv_norm(Av_grid,Es,Rv_mu,Rv_sig,Av_sig):
     avs = np.array([np.random.choice(Av_grid,p=p_array[:,i]/np.sum(p_array[:,i])) for i in range(p_array.shape[1])])
     return avs
 
-def choose_Av_SN_E_Rv_step(Av_grid,Es,mass,Rv_mu_low,Rv_mu_high,Rv_sig_low,Rv_sig_high,Av_sig):
+def choose_Av_SN_E_Rv_step(Av_grid,Es,mass,Rv_mu_low,Rv_mu_high,Rv_sig_low,Rv_sig_high,Av_sig,mass_split):
     '''
 
     :param Rv_mu:
@@ -59,8 +59,8 @@ def choose_Av_SN_E_Rv_step(Av_grid,Es,mass,Rv_mu_low,Rv_mu_high,Rv_sig_low,Rv_si
 
     norm_low = norm(Rv_mu_low, Rv_sig_low)
     norm_high = norm(Rv_mu_high, Rv_sig_high)
-    Rv = (norm_low.rvs(size=len(mass)) * (mass < mass_split)) + (
-            norm_high.rvs(size=len(mass)) * (mass > mass_split))
+    Rv = (norm_low.rvs(size=len(mass)) * (mass < 10**mass_split)) + (
+            norm_high.rvs(size=len(mass)) * (mass > 10**mass_split))
     p_array = norm(Es/Rv,Av_sig).pdf(np.array(len(Es)*[Av_grid,]).T)
     avs = np.array([np.random.choice(Av_grid,p=p_array[:,i]/np.sum(p_array[:,i])) for i in range(p_array.shape[1])])
     return avs

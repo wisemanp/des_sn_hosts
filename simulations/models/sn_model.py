@@ -64,7 +64,7 @@ class SN_Model():
         return choose_Av_SN_E_Rv_norm(args['Av_grid'],args['E'],params['Rv_mu'],params['Rv_sig'],params['Av_sig'])
 
     def choose_Av_SN_E_Rv_step(self,args,params):
-        return choose_Av_SN_E_Rv_step(args['Av_grid'],args['E'],args['mass'],params['Rv_mu_low'],params['Rv_mu_high'],params['Rv_sig_low'],params['Rv_sig_high'],params['Av_sig'])
+        return choose_Av_SN_E_Rv_step(args['Av_grid'],args['E'],args['mass'],params['Rv_mu_low'],params['Rv_mu_high'],params['Rv_sig_low'],params['Rv_sig_high'],params['Av_sig'],params['mass_split'])
 
     def choose_Av_custom(self,args,params):
         return choose_Av_custom(args['Av_grid'],params['dist'],args['n'])
