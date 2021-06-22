@@ -215,8 +215,9 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     cb=ax.scatter(sim.sim_df['logmass'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
     plt.colorbar(cb)
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logmass'],bins=np.linspace(8,12,30))):
-        ax.scatter(n.mid,g['mu_res'].median(),c='r',marker='D',s=100)
-        ax.errorbar(n.mid,g['mu_res'].median(),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='r',marker=None,ls='none')
+        if len(g)>0:
+            ax.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),c='r',marker='D',s=100)
+            ax.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='r',marker=None,ls='none')
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logmass'],bins=np.linspace(8,12,3))):
         print(n.mid)
         ax.errorbar(n.mid,g['mu_res'].median(),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='c',marker='s',markersize=20,)
@@ -234,8 +235,9 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     cb=ax.scatter(sim.sim_df['logSN_age'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
     plt.colorbar(cb)
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logSN_age'],bins=np.linspace(-1.5,1,30))):
-        ax.scatter(n.mid,g['mu_res'].median(),c='r',marker='D',s=100)
-        ax.errorbar(n.mid,g['mu_res'].median(),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='r',marker=None,ls='none')
+        if len(g)>0:
+            ax.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),c='r',marker='D',s=100)
+            ax.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='r',marker=None,ls='none')
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logSN_age'],bins=np.linspace(-1.5,1,3))):
         print(n.mid)
         ax.errorbar(n.mid,g['mu_res'].median(),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='c',marker='s',markersize=20,ls='none')
