@@ -13,7 +13,7 @@ class SN_Model():
 
 
     def age_rv_step(self,args,params):
-        return age_rv_step(args['SN_age']/1000, params['rv_young'], params['rv_old'], params['rv_sig_young'], params['rv_sig_old'], params['age_split'])
+        return age_rv_step(args['mean_ages']/1000, params['rv_young'], params['rv_old'], params['rv_sig_young'], params['rv_sig_old'], params['age_split'])
 
     def mass_rv_step(self,args,params):
         return mass_rv_step(np.log10(args['mass']), params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_split'])
