@@ -233,7 +233,7 @@ class SynSpec():
 
         #model_fluxes = sfh_coeffs*ssp_fluxes
         model_fluxes = np.array(
-            np.matrix(sfh_coeffs)*np.matrix([s.flux() for s in self.template_obj_list]))
+            np.matrix(sfh_coeffs)*np.matrix([s.flux() for s in self.template_obj_list]),dtype='object')
 
         return model_fluxes
 
