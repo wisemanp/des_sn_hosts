@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from dust_extinction.parameter_averages import F19
-from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH,interpolate_SFH_pegase
-from synspec import SynSpec, phi_t_pl
+from .spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH,interpolate_SFH_pegase
+from .synspec import SynSpec, phi_t_pl
 import argparse
 from astropy.cosmology import FlatLambdaCDM
 cosmo = FlatLambdaCDM(70,0.3)
