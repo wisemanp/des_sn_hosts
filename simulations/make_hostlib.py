@@ -22,7 +22,7 @@ def parser():
     parser.add_argument('-z','--z',help='Redshift',default=0.5,type=str)
     parser.add_argument('-al','--av_lo',help='Lowest Av',default=0,type=float)
     parser.add_argument('-ah','--av_hi',help='Highest Av',default=1,type=float)
-    parser.add_argument('-na','--n_av',help='Av step',default=20,type=float)
+    parser.add_argument('-na','--n_av',help='Av step',default=20,type=int)
     parser.add_argument('-at','--av_step_type',help='Av step type (lin or log)',default='lin')
     parser.add_argument('-u','--logU',help='Ionisation parameter',default=-2,type=float)
     parser.add_argument('-tr','--time_res',help='SFH time resolution',default=5,type=int)
