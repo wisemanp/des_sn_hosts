@@ -211,7 +211,7 @@ class SynSpec():
         if law=='CCM89':
             ext_model = CCM89(Rv=Rv)
             #print(len(wave))
-            wave_inv_microns = 1/(wave/1E+4) /u.micron
+            wave_inv_microns = 1/(wave.values/1E+4) /u.micron
             print(wave_inv_microns)
             #print(len(wave_inv_microns))
             text_model = CCM89()
