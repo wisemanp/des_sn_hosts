@@ -13,11 +13,11 @@ def phi_t_pl(t,tp,s,norm):
 
 
 class SynSpec():
-    def __init__(self,root_dir=aura_dir,template_obj_list =None,neb=False):
+    def __init__(self,root_dir=aura_dir,template_obj_list =None,neb=False,library='BC03',template_dir=None):
         self.root_dir = root_dir
         # something
         if not template_obj_list:
-            self.template_obj_list = self._get_templates()
+            self.template_obj_list = self._get_templates(library=library,template_dir=template_dir)
         else:
             self.template_obj_list = template_obj_list
         self.ntemplates=len(self.template_obj_list)
@@ -27,14 +27,30 @@ class SynSpec():
         if neb:
             self._prep_neb()
 
-    def _get_templates(self,template_dir='/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'):
+    def _get_templates(self,library,template_dir='/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/',ntemp=None,logt_list=None):
         #bc03_dir = '/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'
         template_obj_list = []
 
-        for i in range(ntemp):
-            bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (template_dir, bc03_logt_list[i])
-            new_template_spec =  load_spectrum(bc03_fn)
-            template_obj_list.append(new_template_spec)
+        if library == 'BC03':
+            for i in range(ntemp):
+                bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (template_dir, logt_list[i])
+                new_template_spec = load_spectrum(bc03_fn)
+                template_obj_list.append(new_template_spec)
+        elif library == 'PEGASE':
+            templates = pd.read_hdf(template_dir + 'templates.h5')
+            templates.drop(
+                ['m_gal', 'm_star', 'm_wd', 'm_nsbh', 'm_substellar', 'm_gas', 'z_ism', 'z_stars_mass', 'z_stars_bl',
+                 'l_bol', 'od_v', 'l_dust_l_bol',
+                 'sfr', 'phot_lyman', 'rate_snii', 'rate_snia', 'age_star_mass', 'age_star_lbol'],
+                axis=1, inplace=True)
+            templates.set_index('time', drop=True, inplace=True)
+            templates.columns = templates.columns.astype(float)
+            templates = templates.T
+            templates.sort_index(inplace=True)
+            templates = templates.T
+            for i in templates.index:
+                template_obj_list.append(
+                    Spectrum(wave=templates.columns, flux=templates.loc[i].values, var=np.ones_like(templates.loc[i])))
         return template_obj_list
 
     def _get_filters(self,):

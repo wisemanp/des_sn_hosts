@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from dust_extinction.parameter_averages import F19
-from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH
+from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH,interpolate_SFH_pegase
 from synspec import SynSpec, phi_t_pl
 import argparse
 from astropy.cosmology import FlatLambdaCDM
@@ -26,7 +26,7 @@ def parser():
     parser.add_argument('-at','--av_step_type',help='Av step type (lin or log)',default='lin')
     parser.add_argument('-u','--logU',help='Ionisation parameter',default=-2,type=float)
     parser.add_argument('-tr','--time_res',help='SFH time resolution',default=5,type=int)
-
+    parser.add_argument('-t','--templates',help='Template library to use [BC03, PEGASE]',default='BC03',type=str)
     args = parser.parse_args()
     return args
 
@@ -47,20 +47,24 @@ def run(args):
     #------------------------------------------------------------------------
     # BC03 SSPs as mc_spec Spectrum objects
     f1 = open(aura_dir+'/bc03_logt_list.dat')
-    bc03_logt_list = [x.strip() for x in f1.readlines()]
-    f1.close()
-    bc03_logt_array = np.array(bc03_logt_list)
-    ntemp = len(bc03_logt_array)
-    bc03_logt_float_array =np.array([float(x) for x in (bc03_logt_array)])
-    bc03_dir = '/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'
-    template_obj_list = []
-    nLy_list = []
-    for i in range(ntemp):
-        bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (bc03_dir, bc03_logt_list[i])
-        new_template_spec =  load_spectrum(bc03_fn)
-        template_obj_list.append(new_template_spec)
+    if args.templates =='BC03':
+        bc03_logt_list = [x.strip() for x in f1.readlines()]
+        f1.close()
+        bc03_logt_array = np.array(bc03_logt_list)
+        ntemp = len(bc03_logt_array)
+        bc03_logt_float_array =np.array([float(x) for x in (bc03_logt_array)])
+        bc03_dir = '/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'
+        template_obj_list = []
+        nLy_list = []
+        for i in range(ntemp):
+            bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (bc03_dir, bc03_logt_list[i])
+            new_template_spec =  load_spectrum(bc03_fn)
+            template_obj_list.append(new_template_spec)
 
-    s = SynSpec(template_obj_list = template_obj_list,neb=True)
+        s = SynSpec(template_obj_list = template_obj_list,neb=True)
+    elif args.templates=='PEGASE':
+        s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=False)
+        templates = pd.read_hdf(template_dir+'templates.h5')
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
     results = []
@@ -88,7 +92,10 @@ def run(args):
                 pred_rate_total = np.sum(SN_age_dist)
                 ages = sfh_df['stellar_age']/1000
                 mwsa = np.average(sfh_df['stellar_age'],weights=sfh_df['m_formed']/mtot)
-                sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
+                if args.template == 'BC03':
+                    sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
+                elif args.template == 'PEGASE':
+                    sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_df,templates['time'],mtot)
                 if mtot>1E+10:
                     mu_Rv = 2.6
                     #avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
