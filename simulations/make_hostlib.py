@@ -92,9 +92,9 @@ def run(args):
                 pred_rate_total = np.sum(SN_age_dist)
                 ages = sfh_df['stellar_age']/1000
                 mwsa = np.average(sfh_df['stellar_age'],weights=sfh_df['m_formed']/mtot)
-                if args.template == 'BC03':
+                if args.templates == 'BC03':
                     sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
-                elif args.template == 'PEGASE':
+                elif args.templates == 'PEGASE':
                     sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_df,templates['time'],mtot)
                 if mtot>1E+10:
                     mu_Rv = 2.6
