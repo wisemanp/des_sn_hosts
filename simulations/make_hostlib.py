@@ -62,9 +62,11 @@ def run(args):
             template_obj_list.append(new_template_spec)
 
         s = SynSpec(template_obj_list = template_obj_list,neb=True)
+        neb=True
     elif args.templates=='PEGASE':
         s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=False)
         templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5')
+        neb=False
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
     results = []
@@ -105,7 +107,7 @@ def run(args):
                 for Av in av_arr:
                     Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
                     delta='None'
-                    U_R,fluxes= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},neb=True,logU=args.logU)
+                    U_R,fluxes= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},neb=neb,logU=args.logU)
                     obs_flux = mtot*fluxes/(distance_factor*bc03_flux_conv_factor)
                     results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0]]))
 
