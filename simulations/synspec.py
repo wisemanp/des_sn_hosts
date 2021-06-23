@@ -209,7 +209,7 @@ class SynSpec():
             text_model = CCM89()
             lims =( wave_inv_microns>text_model.x_range[0]/u.micron)&( wave_inv_microns<text_model.x_range[1]/u.micron)
 
-            ext_CCM89 = ext_model(wave_inv_microns[lims])
+            ext_CCM89 = ext_model(wave_inv_microns[lims]/u.micron)
             #print(len(wave_inv_microns),len(ext_CCM89),len(lims),len(flux))
             return wave[lims],flux[lims]*10**(-0.4*ext_CCM89*Av)
         elif law=='SBL18':
