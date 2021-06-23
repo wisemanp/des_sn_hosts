@@ -6,6 +6,13 @@ from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,inte
 from synspec import SynSpec, phi_t_pl
 import argparse
 from astropy.cosmology import FlatLambdaCDM
+import warnings
+from astropy.utils.exceptions import AstropyWarning
+
+np.seterr(all='ignore')
+warnings.simplefilter('ignore', category=AstropyWarning)
+
+warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 cosmo = FlatLambdaCDM(70,0.3)
 bc03_flux_conv_factor = 3.12e7
 
