@@ -234,9 +234,17 @@ class SynSpec():
 
         fluxes = self.get_spec_fluxes(spec_list,z=0,filters=[filter1,filter2])
         #print('Got fluxes for each band: ',fluxes)
-        return -2.5*np.log10(fluxes[:,0]/fluxes[:,1])
 
-    def synphot_model_spectra_pw(self,sfh_coeffs,):
+        vega_zps = {
+            'UX': 417.5e-11,
+            'RJ': 217.7e-11
+        }
+        mag_1 = -2.5 * np.log10(fluxes[:, 0] / vega_zps[flt1])
+        mag_2 = -2.5 * np.log10(fluxes[:, 1] / vega_zps[flt2])
+        return mag_1 - mag_2
+
+
+def synphot_model_spectra_pw(self,sfh_coeffs,):
 
 
         #model_fluxes = sfh_coeffs*ssp_fluxes
