@@ -241,7 +241,7 @@ class SynSpec():
         mag_2 = -2.5 * np.log10(fluxes[:, 1] / vega_zps[flt2])
         return mag_1 - mag_2
 
-def synphot_model_spectra_pw(self,sfh_coeffs,):
+    def synphot_model_spectra_pw(self,sfh_coeffs,):
 
 
         #model_fluxes = sfh_coeffs*ssp_fluxes
