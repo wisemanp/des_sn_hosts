@@ -231,10 +231,8 @@ class SynSpec():
         filter1 = load_spectrum(self.filt_dir+'%s_B90.dat'%flt1)
         filter2 = load_spectrum(self.filt_dir+'%s.dat'%flt2)
         #print('Loaded filters')
-
         fluxes = self.get_spec_fluxes(spec_list,z=0,filters=[filter1,filter2])
         #print('Got fluxes for each band: ',fluxes)
-
         vega_zps = {
             'UX': 417.5e-11,
             'RJ': 217.7e-11
@@ -242,7 +240,6 @@ class SynSpec():
         mag_1 = -2.5 * np.log10(fluxes[:, 0] / vega_zps[flt1])
         mag_2 = -2.5 * np.log10(fluxes[:, 1] / vega_zps[flt2])
         return mag_1 - mag_2
-
 
 def synphot_model_spectra_pw(self,sfh_coeffs,):
 
