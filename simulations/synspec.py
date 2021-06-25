@@ -309,7 +309,7 @@ class SynSpec():
             try:
                 wave,flux = self.redden_a_combined_spec(model_spec.wave(),model_spec.flux(),law=dust['law'],Av=dust['Av'],Rv=dust['Rv'],delta=dust['delta'])
             except:
-                wave, flux = self.redden_a_combined_spec(model_spec.wave()*u.AA, model_spec.flux(), law=dust['law'],
+                wave, flux = self.redden_a_combined_spec(model_spec.wave(), model_spec.flux(), law=dust['law'],
                                                          Av=dust['Av'], Rv=dust['Rv'], delta=dust['delta'])
 
             var = np.ones_like(wave)
