@@ -354,6 +354,7 @@ class SynSpec():
         #print('Going go calculate observed flux with this',model_spec_reddened)
         des_fluxes = self.get_spec_fluxes([model_spec_reddened],z)/(1+z) #extra 1+z for flux densities
         if savespec:
+            print('saving')
             spec_arr = np.zeros((len(model_spec_reddened), 2))
             spec_arr[:, 0] = model_spec_reddened.wave()
             spec_arr[:, 1] = model_spec_reddened.flux()
