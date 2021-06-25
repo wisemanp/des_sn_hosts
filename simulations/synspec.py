@@ -32,6 +32,7 @@ class SynSpec():
         self.filt_dir = self.root_dir+'filters/'
         self.filt_obj_list = self._get_filters()
         self.nfilt=len(self.filt_obj_list)
+        self.library = library
         if neb:
             self._prep_neb()
 
@@ -284,7 +285,7 @@ class SynSpec():
 
         return em_waves,em_lums[:,0]/3.826e27
 
-    def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2):
+    def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2,mtot=1E+10):
         #print('Combining the weighted SSPs for this SFH')
         model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
         wave = self.template_obj_list[0].wave()
@@ -320,6 +321,13 @@ class SynSpec():
         #ax.step(model_spec_reddened.wave(),model_spec_reddened.flux())
         #ax.set_xlim(2500,12000)
         #print('Going go calculate restframe colour')
+        if self.library =='BC03':
+            bc03_flux_conv_factor =  3.12e7
+        else:
+            bc03_flux_conv_factor = 1
+        model_spec_reddened =Spectrum(wave=model_spec_reddened.wave(),
+                                      flux=model_spec_reddened.flux()*mtot/(3.828E+33*bc03_conv_factor),
+                                      var=np.ones_like(wave))
         colour = self.calculate_colour_wtf([model_spec_reddened])
         #print('Here is the colour: ',colour)
         #print('Going go calculate observed flux with this',model_spec_reddened)

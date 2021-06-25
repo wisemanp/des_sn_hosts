@@ -115,11 +115,10 @@ def run(args):
                 for Av in av_arr:
                     Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
                     delta='None'
-                    U_R,fluxes= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},neb=neb,logU=args.logU)
-                    if args.templates == 'BC03':
-                        obs_flux = mtot*fluxes/(distance_factor*bc03_flux_conv_factor)
-                    elif args.templates =='PEGASE':
-                        obs_flux = mtot * fluxes / (distance_factor*3.828E+33)
+                    U_R,fluxes= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
+                                                            neb=neb,logU=args.logU,mtot=mtot)
+                    obs_flux =fluxes/distance_factor
+
                     results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0]]))
 
     flux_df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi','pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total','f_g','f_r','f_i','f_z'])
