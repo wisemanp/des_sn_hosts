@@ -303,7 +303,7 @@ class SynSpec():
 
         return em_waves,em_lums[:,0]/3.826e27
 
-    def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2,mtot=1E+10):
+    def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True):
         #print('Combining the weighted SSPs for this SFH')
         model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
         print(np.log10(np.max(model_spec)))
@@ -353,4 +353,10 @@ class SynSpec():
         #print('Here is the colour: ',colour)
         #print('Going go calculate observed flux with this',model_spec_reddened)
         des_fluxes = self.get_spec_fluxes([model_spec_reddened],z)/(1+z) #extra 1+z for flux densities
+        if savespec:
+            spec_arr = np.zeros((len(model_spec_reddened), 2))
+            spec_arr[:, 0] = model_spec_reddened.wave()
+            spec_arr[:, 1] = model_spec_reddened.flux()
+            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s.txt' % (
+            z, np.log10(mtot), dust['Av'],self.library), spec_arr)
         return colour, des_fluxes, colours
