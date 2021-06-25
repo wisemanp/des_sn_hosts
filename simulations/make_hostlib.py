@@ -34,6 +34,7 @@ def parser():
     parser.add_argument('-u','--logU',help='Ionisation parameter',default=-2,type=float)
     parser.add_argument('-tr','--time_res',help='SFH time resolution',default=5,type=int)
     parser.add_argument('-t','--templates',help='Template library to use [BC03, PEGASE]',default='BC03',type=str)
+    parser.add_argument('-ne','--neb',action='store_true')
     args = parser.parse_args()
     return args
 
@@ -68,10 +69,10 @@ def run(args):
             new_template_spec =  load_spectrum(bc03_fn)
             template_obj_list.append(new_template_spec)
 
-        s = SynSpec(template_obj_list = template_obj_list,neb=True)
+        s = SynSpec(template_obj_list = template_obj_list,neb=args.neb)
         neb=True
     elif args.templates=='PEGASE':
-        s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=False)
+        s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=args.neb)
         templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5')
         neb=False
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
