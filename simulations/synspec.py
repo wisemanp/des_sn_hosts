@@ -285,7 +285,7 @@ class SynSpec():
     def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2):
         #print('Combining the weighted SSPs for this SFH')
         model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
-        wave = self.template_obj_list[0].wave()*u.AA
+        wave = self.template_obj_list[0].wave()
         model_spec = Spectrum(wave=wave,
                     flux=model_spec,
                     var=np.ones_like(model_spec))
@@ -294,7 +294,7 @@ class SynSpec():
             model_neb_wave,model_neb_flux= self.synphot_model_emlines(sfh_coeffs,logU=logU)
             #print(model_neb_wave)
 
-            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave*10,model_neb_flux/10,model_spec.wave())
+            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave*10,model_neb_flux/10,model_spec.wave().value)
             #self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
             model_spec = Spectrum(wave=model_spec.wave(),flux = model_spec.flux() + model_neb_flux_rebinned,var = model_spec.var())
         #print('Going to redden my model spectrum')
