@@ -267,9 +267,9 @@ class SynSpec():
             colours[f] =[]
             filter = load_spectrum(self.filt_dir+'%s.dat'%f)
             if ftype=='Vega':
-                wtf_filter =wtf.Band_Vega(filter.wave(), filter.flux() * u.erg / u.s / u.AA))
+                wtf_filter =wtf.Band_Vega(filter.wave(), filter.flux() * u.erg / u.s / u.AA)
             elif ftype=='AB':
-                wtf_filter =wtf.Band_AB(filter.wave(), filter.flux() * u.erg / u.s / u.AA))
+                wtf_filter =wtf.Band_AB(filter.wave(), filter.flux() * u.erg / u.s / u.AA)
             for s in spec_list:
                 try:
                     spec = wtf.Spectrum(s.wave().values * u.AA, s.flux() * u.erg / u.AA / u.s / u.cm / u.cm)
