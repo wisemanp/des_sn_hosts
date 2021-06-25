@@ -304,6 +304,7 @@ class SynSpec():
     def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2,mtot=1E+10):
         #print('Combining the weighted SSPs for this SFH')
         model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
+        print(np.log10(np.max(model_spec)))
         wave = self.template_obj_list[0].wave()
         model_spec = Spectrum(wave=wave,
                     flux=model_spec,
