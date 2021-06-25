@@ -121,7 +121,9 @@ def run(args):
                     U,B,V,R,I = (colours[i] for i in colours.keys())
                     results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],U,B,V,R,I]))
 
-    flux_df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi','pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total','f_g','f_r','f_i','f_z','U','B','V','R','I'])
+    flux_df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
+                                            'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
+                                            'f_g','f_r','f_i','f_z','U','B','V','R','I'])
     zp_fluxes = np.array([2.207601113629584299e-06,1.880824499994395390e-06,1.475307638780991749e-06,1.014740352137762549e-06])
     default_des_syserrs = np.array([0.03, 0.02, 0.02, 0.03])
     mags,fuJys=convert_escma_fluxes_to_griz_mags(flux_df[['f_g','f_r','f_i','f_z']],zp_fluxes)
