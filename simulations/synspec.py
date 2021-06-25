@@ -215,7 +215,7 @@ class SynSpec():
             try:
                 wave_inv_microns = 1/(wave.values/1E+4) /u.micron
             except:
-                wave_inv_microns = 1/(wave.value/1E+4)/u.micron
+                wave_inv_microns = 1/(wave/1E+4)/u.micron
             #print(len(wave_inv_microns))
             text_model = CCM89()
             lims =( wave_inv_microns>text_model.x_range[0]/u.micron)&( wave_inv_microns<text_model.x_range[1]/u.micron)
