@@ -344,6 +344,7 @@ class SynSpec():
         model_spec_reddened =Spectrum(wave=model_spec_reddened.wave(),
                                       flux=model_spec_reddened.flux()*mtot/(3.828E+33*bc03_flux_conv_factor),
                                       var=np.ones_like(model_spec_reddened.wave()))
+        print(np.log10(mtot),np.max(model_spec_reddened.flux()),np.mean(model_spec_reddened.flux()))
         colour = self.calculate_colour_wtf([model_spec_reddened])
         colours = self.get_bands_wtf([model_spec_reddened],band_dict={'Bessell%s'%b:'Vega' for b in ['U','B','V','R','I']})
         #print('Here is the colour: ',colour)
