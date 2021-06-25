@@ -327,7 +327,7 @@ class SynSpec():
             bc03_flux_conv_factor = 1
         model_spec_reddened =Spectrum(wave=model_spec_reddened.wave(),
                                       flux=model_spec_reddened.flux()*mtot/(3.828E+33*bc03_flux_conv_factor),
-                                      var=np.ones_like(wave))
+                                      var=np.ones_like(model_spec_reddened.wave()))
         colour = self.calculate_colour_wtf([model_spec_reddened])
         #print('Here is the colour: ',colour)
         #print('Going go calculate observed flux with this',model_spec_reddened)
