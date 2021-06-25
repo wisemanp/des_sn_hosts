@@ -58,7 +58,7 @@ class SynSpec():
             templates = templates.T
             for i in templates.index:
                 template_obj_list.append(
-                    Spectrum(wave=templates.columns, flux=templates.loc[i].values*templates.columns, var=np.ones_like(templates.loc[i])))
+                    Spectrum(wave=templates.columns, flux=templates.loc[i].values, var=np.ones_like(templates.loc[i])))
         return template_obj_list
 
     def _get_filters(self,):
