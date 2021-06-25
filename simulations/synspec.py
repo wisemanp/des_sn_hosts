@@ -1,4 +1,5 @@
 from spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
+from what_the_flux import what_the_flux as wtf
 import numpy as np
 import pandas as pd
 import os
@@ -241,6 +242,22 @@ class SynSpec():
         mag_2 = -2.5 * np.log10(fluxes[:, 1] / vega_zps[flt2])
         return mag_1 - mag_2
 
+    def calculate_colour_wtf(self, spec_list, flt1='UX', flt2='RJ'):
+        filter1 = load_spectrum(filt_dir + '%s_B90.dat' % flt1)
+        filter2 = load_spectrum(filt_dir + '%s.dat' % flt2)
+        band1 = wtf.Band_Vega(filter1.wave(), filter1.flux() * u.erg / u.s / u.AA)
+        band2 = wtf.Band_Vega(filter2.wave(), filter2.flux() * u.erg / u.s / u.AA)
+        colours = []
+        for s in spec_list:
+            try:
+                spec = wtf.Spectrum(s.wave().values * u.AA, s.flux() * u.erg / u.AA / u.s / u.cm / u.cm)
+            except:
+                spec = wtf.Spectrum(s.wave() * u.AA, s.flux() * u.erg / u.AA / u.s / u.cm / u.cm)
+            mag1 = -2.5 * np.log10(spec.bandflux(band1).value / band1.zpFlux().value)
+            mag2 = -2.5 * np.log10(spec.bandflux(band2).value / band2.zpFlux().value)
+            colours.append(mag1 - mag2)
+        return colours
+
     def synphot_model_spectra_pw(self,sfh_coeffs,):
 
 
@@ -296,7 +313,7 @@ class SynSpec():
         #ax.step(model_spec_reddened.wave(),model_spec_reddened.flux())
         #ax.set_xlim(2500,12000)
         #print('Going go calculate restframe colour')
-        colour = self.calculate_colour([model_spec_reddened])
+        colour = self.calculate_colour_wtf([model_spec_reddened])
         #print('Here is the colour: ',colour)
         #print('Going go calculate observed flux with this',model_spec_reddened)
         des_fluxes = self.get_spec_fluxes([model_spec_reddened],z)/(1+z) #extra 1+z for flux densities
