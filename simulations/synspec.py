@@ -248,14 +248,15 @@ class SynSpec():
     def calculate_colour_wtf(self, spec_list, flt1='U', flt2='R'):
         filter1 = load_spectrum(self.filt_dir + 'Bessell%s.dat' % flt1)
         filter2 = load_spectrum(self.filt_dir + 'Bessell%s.dat' % flt2)
+        absmag_corr = 1 / ((10 * u.pc.to(u.cm)) ** 2)
         band1 = wtf.Band_Vega(filter1.wave(), filter1.flux() * u.erg / u.s / u.AA)
         band2 = wtf.Band_Vega(filter2.wave(), filter2.flux() * u.erg / u.s / u.AA)
         colours = []
         for s in spec_list:
             try:
-                spec = wtf.Spectrum(s.wave().values * u.AA, s.flux() * u.erg / u.AA / u.s / u.cm / u.cm)
+                spec = wtf.Spectrum(s.wave().values * u.AA, s.flux()*absmag_corr * u.erg / u.AA / u.s)
             except:
-                spec = wtf.Spectrum(s.wave() * u.AA, s.flux() * u.erg / u.AA / u.s / u.cm / u.cm)
+                spec = wtf.Spectrum(s.wave() * u.AA, s.flux()*absmag_corr * u.erg / u.AA / u.s)
             mag1 = -2.5 * np.log10(spec.bandflux(band1).value / band1.zpFlux().value)
             mag2 = -2.5 * np.log10(spec.bandflux(band2).value / band2.zpFlux().value)
             colours.append(mag1 - mag2)
