@@ -304,7 +304,12 @@ class SynSpec():
             model_spec_reddened = model_spec
         else:
             #print('Reddening with this dust: ',dust)
-            wave,flux = self.redden_a_combined_spec(model_spec.wave(),model_spec.flux(),law=dust['law'],Av=dust['Av'],Rv=dust['Rv'],delta=dust['delta'])
+            try:
+                wave,flux = self.redden_a_combined_spec(model_spec.wave(),model_spec.flux(),law=dust['law'],Av=dust['Av'],Rv=dust['Rv'],delta=dust['delta'])
+            except:
+                wave, flux = self.redden_a_combined_spec(model_spec.wave()*u.AA, model_spec.flux(), law=dust['law'],
+                                                         Av=dust['Av'], Rv=dust['Rv'], delta=dust['delta'])
+
             var = np.ones_like(wave)
             model_spec_reddened=Spectrum(wave=wave,flux=flux,var=var)
         self.model_spec = model_spec
