@@ -243,8 +243,8 @@ class SynSpec():
         return mag_1 - mag_2
 
     def calculate_colour_wtf(self, spec_list, flt1='UX', flt2='RJ'):
-        filter1 = load_spectrum(filt_dir + '%s_B90.dat' % flt1)
-        filter2 = load_spectrum(filt_dir + '%s.dat' % flt2)
+        filter1 = load_spectrum(self.filt_dir + '%s_B90.dat' % flt1)
+        filter2 = load_spectrum(self.filt_dir + '%s.dat' % flt2)
         band1 = wtf.Band_Vega(filter1.wave(), filter1.flux() * u.erg / u.s / u.AA)
         band2 = wtf.Band_Vega(filter2.wave(), filter2.flux() * u.erg / u.s / u.AA)
         colours = []
