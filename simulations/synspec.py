@@ -273,7 +273,7 @@ class SynSpec():
             for s in spec_list:
                 try:
                     spec = wtf.Spectrum(s.wave().values * u.AA, s.flux() * u.erg / u.AA / u.s / u.cm / u.cm)
-                 except:
+                except:
                     spec = wtf.Spectrum(s.wave() * u.AA, s.flux() * u.erg / u.AA / u.s / u.cm / u.cm)
                 colours[f].append(-2.5*np.log10(spec.bandflux(wtf_filter).value/wtf_filter.zpFlux().value))
         return colours
