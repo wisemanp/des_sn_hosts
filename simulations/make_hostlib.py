@@ -123,13 +123,13 @@ def run(args):
 
     flux_df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
                                             'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
-                                            'f_g','f_r','f_i','f_z','U','B','V','R','I'])
-    zp_fluxes = np.array([2.207601113629584299e-06,1.880824499994395390e-06,1.475307638780991749e-06,1.014740352137762549e-06])
+                                            'm_g','m_r','m_i','m_z','U','B','V','R','I'])
+    #zp_fluxes = np.array([2.207601113629584299e-06,1.880824499994395390e-06,1.475307638780991749e-06,1.014740352137762549e-06])
     default_des_syserrs = np.array([0.03, 0.02, 0.02, 0.03])
-    mags,fuJys=convert_escma_fluxes_to_griz_mags(flux_df[['f_g','f_r','f_i','f_z']],zp_fluxes)
-    flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
-    flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
-    flux_df['g_r'] = flux_df['mag_g'] - flux_df['mag_r']
+    #mags,fuJys=convert_escma_fluxes_to_griz_mags(flux_df[['f_g','f_r','f_i','f_z']],zp_fluxes)
+    #flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
+    #flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
+    flux_df['g_r'] = flux_df['m_g'] - flux_df['m_r']
     flux_df.to_hdf('/media/data3/wiseman/des/AURA/all_model_params_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i.h5'%(args.templates,z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res),key='main')
     print("Done!")
 if __name__=="__main__":
