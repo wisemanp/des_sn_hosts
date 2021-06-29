@@ -262,22 +262,22 @@ class SynSpec():
             colours.append(mag1 - mag2)
         return colours
 
-    def get_bands_wtf(self,spec_list,band_dict):
-        colours ={}
-        absmag_corr = 1/((10*u.pc.to(u.cm))**2)
-        for f,ftype in band_dict.items():
-            colours[f] =[]
-            filter = load_spectrum(self.filt_dir+'%s.dat'%f)
-            if ftype=='Vega':
-                wtf_filter =wtf.Band_Vega(filter.wave(), filter.flux() )
-            elif ftype=='AB':
-                wtf_filter =wtf.Band_AB(filter.wave(), filter.flux() )
+    def get_bands_wtf(self, spec_list, band_dict, z=0):
+        colours = {}
+        absmag_corr = 1 / ((4 * np.pi * 10 * u.pc.to(u.cm)) ** 2)
+        for f, ftype in band_dict.items():
+            colours[f] = []
+            filter = load_spectrum(self.filt_dir + '%s.dat' % f)
+            if ftype == 'Vega':
+                wtf_filter = wtf.Band_Vega(filter.wave(), filter.flux())
+            elif ftype == 'AB':
+                wtf_filter = wtf.Band_AB(filter.wave(), filter.flux())
             for s in spec_list:
                 try:
-                    spec = wtf.Spectrum(s.wave().values * u.AA, s.flux()*absmag_corr * u.erg / u.AA / u.s )
+                    spec = wtf.Spectrum((1 + z) * s.wave().values * u.AA, s.flux() * absmag_corr / (1 + z))
                 except:
-                    spec = wtf.Spectrum(s.wave() * u.AA, s.flux()*absmag_corr * u.erg / u.AA / u.s )
-                colours[f].append(-2.5*np.log10(spec.bandflux(wtf_filter).value/wtf_filter.zpFlux().value))
+                    spec = wtf.Spectrum((1 + z) * s.wave() * u.AA, s.flux() * absmag_corr / (1 + z))
+                colours[f].append(-2.5 * np.log10(spec.bandflux(wtf_filter).value / wtf_filter.zpFlux().value))
         return colours
     def synphot_model_spectra_pw(self,sfh_coeffs,):
 
@@ -306,7 +306,6 @@ class SynSpec():
     def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True):
         #print('Combining the weighted SSPs for this SFH')
         model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
-        print(np.log10(np.max(model_spec)))
         wave = self.template_obj_list[0].wave()
         model_spec = Spectrum(wave=wave,
                     flux=model_spec,
@@ -340,21 +339,21 @@ class SynSpec():
         #ax.step(model_spec_reddened.wave(),model_spec_reddened.flux())
         #ax.set_xlim(2500,12000)
         #print('Going go calculate restframe colour')
-        if self.library =='BC03':
-            bc03_flux_conv_factor =  3.12e7
+        if self.library == 'BC03':
+            flux_conv_factor = 1 * u.Lsun.to(u.erg / u.s) * (u.erg / u.s) / u.AA
+
         else:
-            bc03_flux_conv_factor = 1
+            flux_conv_factor = 1 * (u.erg / u.s) / u.AA
+
         model_spec_reddened =Spectrum(wave=model_spec_reddened.wave(),
                                       flux=model_spec_reddened.flux()*mtot/(bc03_flux_conv_factor),
                                       var=np.ones_like(model_spec_reddened.wave()))
-        print(np.log10(mtot),np.log10(np.max(model_spec_reddened.flux())),np.log10(np.mean(model_spec_reddened.flux())))
         colour = self.calculate_colour_wtf([model_spec_reddened])
         colours = self.get_bands_wtf([model_spec_reddened],band_dict={'Bessell%s'%b:'Vega' for b in ['U','B','V','R','I']})
         #print('Here is the colour: ',colour)
         #print('Going go calculate observed flux with this',model_spec_reddened)
-        des_fluxes = self.get_spec_fluxes([model_spec_reddened],z)/(1+z) #extra 1+z for flux densities
+        des_fluxes = self.get_bands_wtf([model_spec_reddened],band_dict={'DES_%s'%b:'AB' for b in ['g','r','i','z']},z=z) #extra 1+z for flux densities
         if savespec:
-            print('saving')
             spec_arr = np.zeros((len(model_spec_reddened), 2))
             spec_arr[:, 0] = model_spec_reddened.wave()
             spec_arr[:, 1] = model_spec_reddened.flux()
