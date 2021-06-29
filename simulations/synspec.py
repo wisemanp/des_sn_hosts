@@ -354,7 +354,7 @@ class SynSpec():
         #print('Going go calculate observed flux with this',model_spec_reddened)
         des_fluxes = self.get_bands_wtf([model_spec_reddened],band_dict={'DES_%s'%b:'AB' for b in ['g','r','i','z']},z=z) #extra 1+z for flux densities
         if savespec:
-            spec_arr = np.zeros((len(model_spec_reddened), 2))
+            spec_arr = np.zeros((len(model_spec_reddened.wave()), 2))
             spec_arr[:, 0] = model_spec_reddened.wave()
             spec_arr[:, 1] = model_spec_reddened.flux()
             np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s.txt' % (
