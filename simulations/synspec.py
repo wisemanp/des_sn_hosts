@@ -344,11 +344,13 @@ class SynSpec():
         #ax.step(model_spec_reddened.wave(),model_spec_reddened.flux())
         #ax.set_xlim(2500,12000)
         #print('Going go calculate restframe colour')
+        # mass to light ratio
+        mtol = 3
         if self.library == 'BC03':
-            flux_conv_factor = 1 * u.Lsun.to(u.erg / u.s) * (u.erg / u.s) / u.AA
+            flux_conv_factor = 1 * u.Lsun.to(u.erg / u.s) * (u.erg / u.s) / u.AA/mtol
 
         else:
-            flux_conv_factor = 1 * (u.erg / u.s) / u.AA
+            flux_conv_factor = 1 * (u.erg / u.s) / u.AA/mtol
 
         model_spec_reddened =Spectrum(wave=model_spec_reddened.wave(),
                                       flux=model_spec_reddened.flux()*mtot*flux_conv_factor,
