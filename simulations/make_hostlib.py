@@ -73,7 +73,7 @@ def run(args):
         neb=args.neb
     elif args.templates=='PEGASE':
         s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=args.neb)
-        if neb:
+        if args.neb:
             templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5')
         else:
             templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_noneb.h5')
