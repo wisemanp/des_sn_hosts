@@ -347,10 +347,10 @@ class SynSpec():
         # mass to light ratio
         mtol = 3
         if self.library == 'BC03':
-            flux_conv_factor = mtol * u.Lsun.to(u.erg / u.s) * (u.erg / u.s) / u.AA
+            flux_conv_factor = 1 * u.Lsun.to(u.erg / u.s) * (u.erg / u.s) / u.AA
 
         else:
-            flux_conv_factor = mtol * (u.erg / u.s) / u.AA
+            flux_conv_factor = 1 * (u.erg / u.s) / u.AA
 
         model_spec_reddened =Spectrum(wave=model_spec_reddened.wave(),
                                       flux=model_spec_reddened.flux()*mtot*flux_conv_factor,
