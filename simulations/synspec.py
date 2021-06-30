@@ -9,6 +9,7 @@ from scipy.stats import norm
 from dust_extinction.parameter_averages import CCM89, F19
 import warnings
 from astropy.utils.exceptions import AstropyWarning
+from astropy.cosmology import FlatLambdaCDM
 
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
