@@ -35,6 +35,7 @@ class SynSpec():
         self.library = library
         if neb:
             self._prep_neb()
+        self.cosmo = FlatLambdaCDM(70,0.3)
 
     def _get_templates(self,library,template_dir='/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/',ntemp=None,logt_list=None):
         #bc03_dir = '/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'
@@ -267,7 +268,7 @@ class SynSpec():
         if z==0:
             mag_corr = 1 / ((4 * np.pi * 10 * u.pc.to(u.cm)) ** 2)
         else:
-            mag_corr = 1/((4*np.pi*(cosmo.luminosity_distance(z).to(u.cm))**2))
+            mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
         for f, ftype in band_dict.items():
             colours[f] = []
             filter = load_spectrum(self.filt_dir + '%s.dat' % f)
