@@ -73,7 +73,10 @@ def run(args):
         neb=args.neb
     elif args.templates=='PEGASE':
         s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=args.neb)
-        templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5')
+        if neb:
+            templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5')
+        else:
+            templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_noneb.h5')
         neb=args.neb
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
