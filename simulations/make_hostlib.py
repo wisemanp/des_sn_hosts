@@ -117,7 +117,7 @@ def run(args):
                     delta='None'
                     U_R,fluxes,colours= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
                                                             neb=neb,logU=args.logU,mtot=mtot)
-                    obs_flux  = list(fluxes.values())+cosmo.distmod(z).value
+                    obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
                     U,B,V,R,I = (colours[i] for i in colours.keys())
                     results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
 

@@ -267,7 +267,7 @@ class SynSpec():
         if z==0:
             mag_corr = 1 / ((4 * np.pi * 10 * u.pc.to(u.cm)) ** 2)
         else:
-            mag_corr = 1/((4*np.pi*(cosmo.luminosity_distance(z).to(u.cm))**2)
+            mag_corr = 1/((4*np.pi*(cosmo.luminosity_distance(z).to(u.cm))**2))
         for f, ftype in band_dict.items():
             colours[f] = []
             filter = load_spectrum(self.filt_dir + '%s.dat' % f)
