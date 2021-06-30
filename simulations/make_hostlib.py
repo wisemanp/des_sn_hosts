@@ -107,10 +107,10 @@ def run(args):
                 elif args.templates == 'PEGASE':
                     sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_df,templates['time'],mtot,templates['m_star'])
                 if mtot>1E+10:
-                    mu_Rv = 2.6
+                    mu_Rv = 2.2
                     #avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 else:
-                    mu_Rv = 3.1
+                    mu_Rv = 3.5
                     #avs_SBL = np.clip(np.random.normal(av_means_mlo,av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 for Av in av_arr:
                     Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
