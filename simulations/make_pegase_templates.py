@@ -20,7 +20,7 @@ def peg_worker(age):
                                      metallicity_evolution=True, substellar_fraction=0, neb_emission=True,
                                      extinction=Extinction.NO_EXTINCTION)])
     peg.generate()
-    peg.save_to_file('/media/data3/wiseman/des/AURA/templates/%i.dat'%age)
+    peg.save_to_file('/media/data3/wiseman/des/AURA/PEGASE/templates/%i.dat'%age)
 
 
 def main(args):
