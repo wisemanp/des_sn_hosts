@@ -2,10 +2,17 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from dust_extinction.parameter_averages import F19
-from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH
+from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH,interpolate_SFH_pegase
 from synspec import SynSpec, phi_t_pl
 import argparse
 from astropy.cosmology import FlatLambdaCDM
+import warnings
+from astropy.utils.exceptions import AstropyWarning
+
+np.seterr(all='ignore')
+warnings.simplefilter('ignore', category=AstropyWarning)
+
+warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 cosmo = FlatLambdaCDM(70,0.3)
 bc03_flux_conv_factor = 3.12e7
 
@@ -22,11 +29,12 @@ def parser():
     parser.add_argument('-z','--z',help='Redshift',default=0.5,type=str)
     parser.add_argument('-al','--av_lo',help='Lowest Av',default=0,type=float)
     parser.add_argument('-ah','--av_hi',help='Highest Av',default=1,type=float)
-    parser.add_argument('-na','--n_av',help='Av step',default=20,type=float)
+    parser.add_argument('-na','--n_av',help='Av step',default=20,type=int)
     parser.add_argument('-at','--av_step_type',help='Av step type (lin or log)',default='lin')
     parser.add_argument('-u','--logU',help='Ionisation parameter',default=-2,type=float)
     parser.add_argument('-tr','--time_res',help='SFH time resolution',default=5,type=int)
-
+    parser.add_argument('-t','--templates',help='Template library to use [BC03, PEGASE]',default='BC03',type=str)
+    parser.add_argument('-ne','--neb',action='store_true')
     args = parser.parse_args()
     return args
 
@@ -47,20 +55,31 @@ def run(args):
     #------------------------------------------------------------------------
     # BC03 SSPs as mc_spec Spectrum objects
     f1 = open(aura_dir+'/bc03_logt_list.dat')
-    bc03_logt_list = [x.strip() for x in f1.readlines()]
-    f1.close()
-    bc03_logt_array = np.array(bc03_logt_list)
-    ntemp = len(bc03_logt_array)
-    bc03_logt_float_array =np.array([float(x) for x in (bc03_logt_array)])
-    bc03_dir = '/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'
-    template_obj_list = []
-    nLy_list = []
-    for i in range(ntemp):
-        bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (bc03_dir, bc03_logt_list[i])
-        new_template_spec =  load_spectrum(bc03_fn)
-        template_obj_list.append(new_template_spec)
+    if args.templates =='BC03':
+        bc03_logt_list = [x.strip() for x in f1.readlines()]
+        f1.close()
+        bc03_logt_array = np.array(bc03_logt_list)
+        ntemp = len(bc03_logt_array)
+        bc03_logt_float_array =np.array([float(x) for x in (bc03_logt_array)])
+        bc03_dir = '/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'
+        template_obj_list = []
+        nLy_list = []
+        for i in range(ntemp):
+            bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (bc03_dir, bc03_logt_list[i])
+            new_template_spec =  load_spectrum(bc03_fn)
+            template_obj_list.append(new_template_spec)
 
-    s = SynSpec(template_obj_list = template_obj_list,neb=True)
+        s = SynSpec(template_obj_list = template_obj_list,neb=args.neb)
+        neb=args.neb
+    elif args.templates=='PEGASE':
+        s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=args.neb)
+        if args.neb:
+            print('reading /media/data3/wiseman/des/AURA/PEGASE/templates.h5')
+            templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5')
+        else:
+            print('reading /media/data3/wiseman/des/AURA/PEGASE/templates_noneb.h5')
+            templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_noneb.h5')
+        neb=args.neb
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
     results = []
@@ -88,28 +107,35 @@ def run(args):
                 pred_rate_total = np.sum(SN_age_dist)
                 ages = sfh_df['stellar_age']/1000
                 mwsa = np.average(sfh_df['stellar_age'],weights=sfh_df['m_formed']/mtot)
-                sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
+                if args.templates == 'BC03':
+                    sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
+                elif args.templates == 'PEGASE':
+                    sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_df,templates['time'],mtot,np.ones_like(templates['time']))
                 if mtot>1E+10:
-                    mu_Rv = 2.6
+                    mu_Rv = 2.2
                     #avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 else:
-                    mu_Rv = 3.1
+                    mu_Rv = 3.5
                     #avs_SBL = np.clip(np.random.normal(av_means_mlo,av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 for Av in av_arr:
                     Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
                     delta='None'
-                    U_R,fluxes= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},neb=True,logU=args.logU)
-                    obs_flux = mtot*fluxes/(distance_factor*bc03_flux_conv_factor)
-                    results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0]]))
+                    U_R,fluxes,colours= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
+                                                            neb=neb,logU=args.logU,mtot=mtot)
+                    obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
+                    U,B,V,R,I = (colours[i] for i in colours.keys())
+                    results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
 
-    flux_df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi','pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total','f_g','f_r','f_i','f_z'])
-    zp_fluxes = np.array([2.207601113629584299e-06,1.880824499994395390e-06,1.475307638780991749e-06,1.014740352137762549e-06])
+    flux_df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
+                                            'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
+                                            'm_g','m_r','m_i','m_z','U','B','V','R','I'])
+    #zp_fluxes = np.array([2.207601113629584299e-06,1.880824499994395390e-06,1.475307638780991749e-06,1.014740352137762549e-06])
     default_des_syserrs = np.array([0.03, 0.02, 0.02, 0.03])
-    mags,fuJys=convert_escma_fluxes_to_griz_mags(flux_df[['f_g','f_r','f_i','f_z']],zp_fluxes)
-    flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
-    flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
-    flux_df['g_r'] = flux_df['mag_g'] - flux_df['mag_r']
-    flux_df.to_hdf('/media/data3/wiseman/des/AURA/all_model_params_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i.h5'%(z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res),key='main')
+    #mags,fuJys=convert_escma_fluxes_to_griz_mags(flux_df[['f_g','f_r','f_i','f_z']],zp_fluxes)
+    #flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
+    #flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
+    flux_df['g_r'] = flux_df['m_g'] - flux_df['m_r']
+    flux_df.to_hdf('/media/data3/wiseman/des/AURA/all_model_params_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i.h5'%(args.templates,z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res),key='main')
     print("Done!")
 if __name__=="__main__":
     args = parser()

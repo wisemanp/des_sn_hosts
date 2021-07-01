@@ -1,4 +1,5 @@
 from spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
+from what_the_flux import what_the_flux as wtf
 import numpy as np
 import pandas as pd
 import os
@@ -6,6 +7,14 @@ from astropy.table import Table
 import astropy.units as u
 from scipy.stats import norm
 from dust_extinction.parameter_averages import CCM89, F19
+import warnings
+from astropy.utils.exceptions import AstropyWarning
+from astropy.cosmology import FlatLambdaCDM
+
+np.seterr(all='ignore')
+warnings.simplefilter('ignore', category=AstropyWarning)
+
+warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 aura_dir = '/media/data3/wiseman/des/AURA/'
 def phi_t_pl(t,tp,s,norm):
             '''Functional form of the delay time distribution'''
@@ -13,28 +22,46 @@ def phi_t_pl(t,tp,s,norm):
 
 
 class SynSpec():
-    def __init__(self,root_dir=aura_dir,template_obj_list =None,neb=False):
+    def __init__(self,root_dir=aura_dir,template_obj_list =None,neb=False,library='BC03',template_dir=None):
         self.root_dir = root_dir
         # something
         if not template_obj_list:
-            self.template_obj_list = self._get_templates()
+            self.template_obj_list = self._get_templates(library=library,template_dir=template_dir)
         else:
             self.template_obj_list = template_obj_list
         self.ntemplates=len(self.template_obj_list)
         self.filt_dir = self.root_dir+'filters/'
         self.filt_obj_list = self._get_filters()
         self.nfilt=len(self.filt_obj_list)
+        self.library = library
         if neb:
             self._prep_neb()
+        self.cosmo = FlatLambdaCDM(70,0.3)
 
-    def _get_templates(self,template_dir='/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'):
+    def _get_templates(self,library,template_dir='/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/',ntemp=None,logt_list=None):
         #bc03_dir = '/media/data1/childress/des/galaxy_sfh_fitting/bc03_ssp_templates/'
         template_obj_list = []
 
-        for i in range(ntemp):
-            bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (template_dir, bc03_logt_list[i])
-            new_template_spec =  load_spectrum(bc03_fn)
-            template_obj_list.append(new_template_spec)
+        if library == 'BC03':
+            for i in range(ntemp):
+                bc03_fn = '%sbc03_chabrier_z02_%s.spec' % (template_dir, logt_list[i])
+                new_template_spec = load_spectrum(bc03_fn)
+                template_obj_list.append(new_template_spec)
+        elif library == 'PEGASE':
+            templates = pd.read_hdf(template_dir + 'templates.h5')
+            templates.drop(
+                ['m_gal', 'm_star', 'm_wd', 'm_nsbh', 'm_substellar', 'm_gas', 'z_ism', 'z_stars_mass', 'z_stars_bl',
+                 'l_bol', 'od_v', 'l_dust_l_bol',
+                 'sfr', 'phot_lyman', 'rate_snii', 'rate_snia', 'age_star_mass', 'age_star_lbol'],
+                axis=1, inplace=True)
+            templates.set_index('time', drop=True, inplace=True)
+            templates.columns = templates.columns.astype(float)
+            templates = templates.T
+            templates.sort_index(inplace=True)
+            templates = templates.T
+            for i in templates.index:
+                template_obj_list.append(
+                    Spectrum(wave=templates.columns, flux=templates.loc[i].values, var=np.ones_like(templates.loc[i])))
         return template_obj_list
 
     def _get_filters(self,):
@@ -188,7 +215,10 @@ class SynSpec():
         if law=='CCM89':
             ext_model = CCM89(Rv=Rv)
             #print(len(wave))
-            wave_inv_microns = 1/(wave/1E+4) /u.micron
+            try:
+                wave_inv_microns = 1/(wave.values/1E+4) /u.micron
+            except:
+                wave_inv_microns = 1/(wave/1E+4)/u.micron
             #print(len(wave_inv_microns))
             text_model = CCM89()
             lims =( wave_inv_microns>text_model.x_range[0]/u.micron)&( wave_inv_microns<text_model.x_range[1]/u.micron)
@@ -207,17 +237,59 @@ class SynSpec():
         filter1 = load_spectrum(self.filt_dir+'%s_B90.dat'%flt1)
         filter2 = load_spectrum(self.filt_dir+'%s.dat'%flt2)
         #print('Loaded filters')
-
         fluxes = self.get_spec_fluxes(spec_list,z=0,filters=[filter1,filter2])
         #print('Got fluxes for each band: ',fluxes)
-        return -2.5*np.log10(fluxes[:,0]/fluxes[:,1])
+        vega_zps = {
+            'UX': 417.5e-11,
+            'RJ': 217.7e-11
+        }
+        mag_1 = -2.5 * np.log10(fluxes[:, 0] / vega_zps[flt1])
+        mag_2 = -2.5 * np.log10(fluxes[:, 1] / vega_zps[flt2])
+        return mag_1 - mag_2
 
+    def calculate_colour_wtf(self, spec_list, flt1='U', flt2='R'):
+        filter1 = load_spectrum(self.filt_dir + 'Bessell%s.dat' % flt1)
+        filter2 = load_spectrum(self.filt_dir + 'Bessell%s.dat' % flt2)
+        absmag_corr = 1 / ((10 * u.pc.to(u.cm)) ** 2)
+        band1 = wtf.Band_Vega(filter1.wave(), filter1.flux() * u.erg / u.s / u.AA)
+        band2 = wtf.Band_Vega(filter2.wave(), filter2.flux() * u.erg / u.s / u.AA)
+        colours = []
+        for s in spec_list:
+            try:
+                spec = wtf.Spectrum(s.wave().values * u.AA, s.flux()*absmag_corr * u.erg / u.AA / u.s)
+            except:
+                spec = wtf.Spectrum(s.wave() * u.AA, s.flux()*absmag_corr * u.erg / u.AA / u.s)
+            mag1 = -2.5 * np.log10(spec.bandflux(band1).value / band1.zpFlux().value)
+            mag2 = -2.5 * np.log10(spec.bandflux(band2).value / band2.zpFlux().value)
+            colours.append(mag1 - mag2)
+        return colours
+
+    def get_bands_wtf(self, spec_list, band_dict, z=0):
+        colours = {}
+        if z==0:
+            mag_corr = 1 / ((4 * np.pi * 10 * u.pc.to(u.cm)) ** 2)
+        else:
+            mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
+        for f, ftype in band_dict.items():
+            colours[f] = []
+            filter = load_spectrum(self.filt_dir + '%s.dat' % f)
+            if ftype == 'Vega':
+                wtf_filter = wtf.Band_Vega(filter.wave(), filter.flux())
+            elif ftype == 'AB':
+                wtf_filter = wtf.Band_AB(filter.wave(), filter.flux())
+            for s in spec_list:
+                try:
+                    spec = wtf.Spectrum((1 + z) * s.wave().values * u.AA, s.flux() * mag_corr / (1 + z))
+                except:
+                    spec = wtf.Spectrum((1 + z) * s.wave() * u.AA, s.flux() * mag_corr / (1 + z))
+                colours[f].append(-2.5 * np.log10(spec.bandflux(wtf_filter).value / wtf_filter.zpFlux().value))
+        return colours
     def synphot_model_spectra_pw(self,sfh_coeffs,):
 
 
         #model_fluxes = sfh_coeffs*ssp_fluxes
         model_fluxes = np.array(
-            np.matrix(sfh_coeffs)*np.matrix([s.flux() for s in self.template_obj_list]))
+            np.matrix(sfh_coeffs)*np.matrix([s.flux() for s in self.template_obj_list]),dtype='object')
 
         return model_fluxes
 
@@ -236,7 +308,7 @@ class SynSpec():
 
         return em_waves,em_lums[:,0]/3.826e27
 
-    def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2):
+    def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True):
         #print('Combining the weighted SSPs for this SFH')
         model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
         wave = self.template_obj_list[0].wave()
@@ -258,7 +330,12 @@ class SynSpec():
             model_spec_reddened = model_spec
         else:
             #print('Reddening with this dust: ',dust)
-            wave,flux = self.redden_a_combined_spec(model_spec.wave(),model_spec.flux(),law=dust['law'],Av=dust['Av'],Rv=dust['Rv'],delta=dust['delta'])
+            try:
+                wave,flux = self.redden_a_combined_spec(model_spec.wave(),model_spec.flux(),law=dust['law'],Av=dust['Av'],Rv=dust['Rv'],delta=dust['delta'])
+            except:
+                wave, flux = self.redden_a_combined_spec(model_spec.wave(), model_spec.flux(), law=dust['law'],
+                                                         Av=dust['Av'], Rv=dust['Rv'], delta=dust['delta'])
+
             var = np.ones_like(wave)
             model_spec_reddened=Spectrum(wave=wave,flux=flux,var=var)
         self.model_spec = model_spec
@@ -267,8 +344,26 @@ class SynSpec():
         #ax.step(model_spec_reddened.wave(),model_spec_reddened.flux())
         #ax.set_xlim(2500,12000)
         #print('Going go calculate restframe colour')
-        colour = self.calculate_colour([model_spec_reddened])
+        # mass to light ratio
+        mtol = 3
+        if self.library == 'BC03':
+            flux_conv_factor = 1 * u.Lsun.to(u.erg / u.s) * (u.erg / u.s) / u.AA
+
+        else:
+            flux_conv_factor = 1 * (u.erg / u.s) / u.AA
+
+        model_spec_reddened =Spectrum(wave=model_spec_reddened.wave(),
+                                      flux=model_spec_reddened.flux()*mtot*flux_conv_factor,
+                                      var=np.ones_like(model_spec_reddened.wave()))
+        colour = self.calculate_colour_wtf([model_spec_reddened])
+        colours = self.get_bands_wtf([model_spec_reddened],band_dict={'Bessell%s'%b:'Vega' for b in ['U','B','V','R','I']})
         #print('Here is the colour: ',colour)
         #print('Going go calculate observed flux with this',model_spec_reddened)
-        des_fluxes = self.get_spec_fluxes([model_spec_reddened],z)/(1+z) #extra 1+z for flux densities
-        return colour, des_fluxes
+        des_fluxes = self.get_bands_wtf([model_spec_reddened],band_dict={'DES_%s'%b:'AB' for b in ['g','r','i','z']},z=z) #extra 1+z for flux densities
+        if savespec:
+            spec_arr = np.zeros((len(model_spec_reddened.wave()), 2))
+            spec_arr[:, 0] = model_spec_reddened.wave()
+            spec_arr[:, 1] = model_spec_reddened.flux()
+            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s.txt' % (
+            z, np.log10(mtot), dust['Av'],self.library), spec_arr)
+        return colour, des_fluxes, colours
