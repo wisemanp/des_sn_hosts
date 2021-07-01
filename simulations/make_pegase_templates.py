@@ -1,4 +1,4 @@
-from pypegase import *
+from pypegase.pypegase import *
 import pandas as pd
 import argparse
 import multiprocessing
