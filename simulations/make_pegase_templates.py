@@ -3,6 +3,8 @@ import pandas as pd
 import argparse
 import multiprocessing
 from tqdm import tqdm
+import numpy as np
+
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-z','--z',help='Redshift',default=0.0,type=str)
