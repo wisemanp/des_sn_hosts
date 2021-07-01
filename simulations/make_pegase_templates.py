@@ -12,30 +12,30 @@ def parser():
     args = parser.parse_args()
     return args
 
-def peg_worker(age):
-    peg = PEGASE('noneb', ssps=SSP(IMF(IMF.IMF_Kroupa), ejecta=SNII_ejecta.MODEL_B, galactic_winds=True),
-                 scenarios=[Scenario(binaries_fraction=0.04, metallicity_ism_0=0, infall=False,
-                                     sfr=SFR(SFR.FILE_SFR, p1=1000, p2=1,
-                                             filename='/media/data3/wiseman/des/AURA/PEGASE/SFHs/sfh_%i.dat'%age),
-                                     metallicity_evolution=True, substellar_fraction=0, neb_emission=True,
-                                     extinction=Extinction.NO_EXTINCTION)])
-    peg.generate()
-    peg.save_to_file('/media/data3/wiseman/des/AURA/PEGASE/templates/%i.dat'%age)
-
+def generate_scenario(age):
+    s = Scenario(binaries_fraction=0.04, metallicity_ism_0=0, infall=False,
+             sfr=SFR(SFR.FILE_SFR, p1=1000, p2=1,
+                     filename='/media/data3/wiseman/des/AURA/PEGASE/SFHs/sfh_%i.dat' % a),
+             metallicity_evolution=True, substellar_fraction=0, neb_emission=True,
+             extinction=Extinction.NO_EXTINCTION)
+    return s
 
 def main(args):
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5', 'r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
-    pool_size = 10
-    results = []
-    pool = multiprocessing.Pool(processes=pool_size,maxtasksperchild=1)
+    scenario_list = [generate_scenario(a) for a in ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]]
+    peg = PEGASE('neb', ssps=SSP(IMF(IMF.IMF_Kroupa), ejecta=SNII_ejecta.MODEL_B, galactic_winds=True),
+                 scenarios=scenario_list)
+    peg.generate()
+    counter=1
+    for tf in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]):
 
-    for _ in tqdm (pool.imap_unordered(peg_worker,ordered_keys)):
-        results.append(_)
-    pool.close()
-    pool.join()
-    pool.close()
-    return results
+        spec = peg.spectra(scenario=counter,time_lower=tf-500,time_upper =tf+500)
+        counter+=1
+        templates = spec.to_pandas()
+        templates.to_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_%i.h5'%age, key='main')
+
+    return
 
 if __name__=="__main__":
     args = parser()
