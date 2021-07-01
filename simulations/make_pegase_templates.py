@@ -9,21 +9,22 @@ def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-z','--z',help='Redshift',default=0.0,type=str)
     parser.add_argument('-ne','--neb',action='store_true')
+    parser.add_argument('-tr','--time_res',help='Time resolution',default=5,type=int)
     args = parser.parse_args()
     return args
 
-def generate_scenario(age):
+def generate_scenario(age,args):
     s = Scenario(binaries_fraction=0.04, metallicity_ism_0=0, infall=False,
              sfr=SFR(SFR.FILE_SFR, p1=1000, p2=1,
                      filename='/media/data3/wiseman/des/AURA/PEGASE/SFHs/sfh_%i.dat' % a),
-             metallicity_evolution=True, substellar_fraction=0, neb_emission=True,
+             metallicity_evolution=True, substellar_fraction=0, neb_emission=args.neb,
              extinction=Extinction.NO_EXTINCTION)
     return s
 
 def main(args):
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5', 'r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
-    scenario_list = [generate_scenario(a) for a in ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]]
+    scenario_list = [generate_scenario(a,args) for a in ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]]
     peg = PEGASE('neb', ssps=SSP(IMF(IMF.IMF_Kroupa), ejecta=SNII_ejecta.MODEL_B, galactic_winds=True),
                  scenarios=scenario_list)
     peg.generate()
