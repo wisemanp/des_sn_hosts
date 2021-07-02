@@ -95,6 +95,7 @@ def run(args):
             sfh_df = sfh_df[sfh_df['z']>z]
             if len(sfh_df)>0:
                 mtot=sfh_df['m_tot'].iloc[-1]
+                age = sfh_df['age'].iloc[-1]
                 ssfr = np.sum(sfh_df['m_formed'].iloc[-500:])/((250*1E+6)*mtot)
                 sfr = ssfr*mtot
                 sfh_df['stellar_age'] = sfh_df.age.values[::-1]
@@ -107,21 +108,23 @@ def run(args):
                 pred_rate_total = np.sum(SN_age_dist)
                 ages = sfh_df['stellar_age']/1000
                 mwsa = np.average(sfh_df['stellar_age'],weights=sfh_df['m_formed']/mtot)
-                if args.templates == 'BC03':
-                    sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
-                elif args.templates == 'PEGASE':
-                    sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_df,templates['time'],mtot,np.ones_like(templates['time']))
                 if mtot>1E+10:
                     mu_Rv = 2.2
                     #avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 else:
                     mu_Rv = 3.5
                     #avs_SBL = np.clip(np.random.normal(av_means_mlo,av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
+                if args.templates == 'BC03':
+                    sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
+                    template=None
+                else:
+                    sfh_coeffs_PW21 = None
+                    template = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_%i.h5'%tf,key='main')
                 for Av in av_arr:
                     Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
                     delta='None'
                     U_R,fluxes,colours= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
-                                                            neb=neb,logU=args.logU,mtot=mtot)
+                                                            neb=neb,logU=args.logU,mtot=mtot,age=age,template=template)
                     obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
                     U,B,V,R,I = (colours[i] for i in colours.keys())
                     results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))

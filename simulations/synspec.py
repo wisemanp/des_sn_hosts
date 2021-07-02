@@ -308,21 +308,45 @@ class SynSpec():
 
         return em_waves,em_lums[:,0]/3.826e27
 
-    def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True):
+    def get_pegase_tempalte(self,df,age):
+        df.drop(['m_gal', 'm_star', 'm_wd', 'm_nsbh', 'm_substellar', 'm_gas', 'z_ism', 'z_stars_mass', 'z_stars_bl',
+                 'l_bol', 'od_v', 'l_dust_l_bol', 'sfr', 'phot_lyman', 'rate_snii', 'rate_snia', 'age_star_mass',
+                 'age_star_lbol'],
+                axis=1, inplace=True)
+        df.set_index('time', drop=True, inplace=True)
+        df.columns = df.columns.astype(float)
+        df = df.T
+        df.sort_index(inplace=True)
+        df = df.T
+        row_high = df.loc[df.index > age].iloc[0]
+        row_low = df.loc[df.index < age].iloc[-1]
+        t_high = row_high.name
+        t_low = row_low.name
+        tfrac = (age - t_low) / (t_high - t_low)
+        flux_interp = row_low + tfrac * (row_high - row_low)
+        s = Spectrum(wave=row_high.index, flux=flux_interp.values, var=np.ones_like(df.loc[i]))
+        return s
+
+    def calculate_model_fluxes_pw(self,z,sfh_coeffs=None,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True,age=None,template=None):
         #print('Combining the weighted SSPs for this SFH')
-        model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
-        wave = self.template_obj_list[0].wave()
-        model_spec = Spectrum(wave=wave,
-                    flux=model_spec,
-                    var=np.ones_like(model_spec))
+        if self.library == 'BC03':
+            model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
+            wave = self.template_obj_list[0].wave()
+            model_spec = Spectrum(wave=wave,
+                                  flux=model_spec,
+                                  var=np.ones_like(model_spec))
+            if neb:
+                model_neb_wave, model_neb_flux = self.synphot_model_emlines(sfh_coeffs, logU=logU)
+                # print(model_neb_wave)
 
-        if neb:
-            model_neb_wave,model_neb_flux= self.synphot_model_emlines(sfh_coeffs,logU=logU)
-            #print(model_neb_wave)
+                model_neb_flux_rebinned = rebin_a_spec(model_neb_wave * 10, model_neb_flux / 10, model_spec.wave())
+                # self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
+                model_spec = Spectrum(wave=model_spec.wave(), flux=model_spec.flux() + model_neb_flux_rebinned,
+                                      var=model_spec.var())
 
-            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave*10,model_neb_flux/10,model_spec.wave())
-            #self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
-            model_spec = Spectrum(wave=model_spec.wave(),flux = model_spec.flux() + model_neb_flux_rebinned,var = model_spec.var())
+        elif self.library =='PEGASE':
+            model_spec = self.get_pegase_template(template,age)
+
         #print('Going to redden my model spectrum')
         #self.model_spec = model_spec
         if not dust:
