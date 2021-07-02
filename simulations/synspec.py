@@ -309,7 +309,6 @@ class SynSpec():
         return em_waves,em_lums[:,0]/3.826e27
 
     def get_pegase_template(self,df,age):
-        print(df)
         df.drop(['m_gal', 'm_star', 'm_wd', 'm_nsbh', 'm_substellar', 'm_gas', 'z_ism', 'z_stars_mass', 'z_stars_bl',
                  'l_bol', 'od_v', 'l_dust_l_bol', 'sfr', 'phot_lyman', 'rate_snii', 'rate_snia', 'age_star_mass',
                  'age_star_lbol'],
