@@ -31,7 +31,7 @@ def main(args):
     counter=1
     for tf in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]):
 
-        spec = peg.spectra(scenario=counter,time_lower=tf-500,time_upper =tf+500)
+        spec = peg.spectra(scenario=counter)
         counter+=1
         templates = spec.to_pandas()
         templates.to_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_%i.h5'%tf, key='main')
