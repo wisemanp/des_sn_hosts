@@ -324,7 +324,7 @@ class SynSpec():
         t_low = row_low.name
         tfrac = (age - t_low) / (t_high - t_low)
         flux_interp = row_low + tfrac * (row_high - row_low)
-        s = Spectrum(wave=row_high.index, flux=flux_interp.values, var=np.ones_like(df.loc[i]))
+        s = Spectrum(wave=row_high.index, flux=flux_interp.values, var=np.ones_like(df.loc[0]))
         return s
 
     def calculate_model_fluxes_pw(self,z,sfh_coeffs=None,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True,age=None,template=None):
