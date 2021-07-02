@@ -123,7 +123,7 @@ def run(args):
                 for Av in av_arr:
                     Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
                     delta='None'
-                    U_R,fluxes,colours= s.calculate_model_fluxes_pw(sfh_coeffs_PW21,z=z,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
+                    U_R,fluxes,colours= s.calculate_model_fluxes_pw(z=z,sfh_coeffs_PW21,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
                                                             neb=neb,logU=args.logU,mtot=mtot,age=age,template=template)
                     obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
                     U,B,V,R,I = (colours[i] for i in colours.keys())
