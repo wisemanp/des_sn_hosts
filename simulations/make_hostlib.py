@@ -73,12 +73,7 @@ def run(args):
         neb=args.neb
     elif args.templates=='PEGASE':
         s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=args.neb)
-        if args.neb:
-            print('reading /media/data3/wiseman/des/AURA/PEGASE/templates.h5')
-            templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5')
-        else:
-            print('reading /media/data3/wiseman/des/AURA/PEGASE/templates_noneb.h5')
-            templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_noneb.h5')
+
         neb=args.neb
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
@@ -96,6 +91,7 @@ def run(args):
             if len(sfh_df)>0:
                 mtot=sfh_df['m_tot'].iloc[-1]
                 age = sfh_df['age'].iloc[-1]
+                print('Mass: ',np.log10(mtot),'age: ',age)
                 ssfr = np.sum(sfh_df['m_formed'].iloc[-500:])/((250*1E+6)*mtot)
                 sfr = ssfr*mtot
                 sfh_df['stellar_age'] = sfh_df.age.values[::-1]
