@@ -35,7 +35,7 @@ def main(args):
         spec = peg.spectra(scenario=counter)
         counter+=1
         templates = spec.to_pandas()
-        templates.to_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_%i.h5'%(args.savename,tf), key='main')
+        templates.to_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_%s_%i.h5'%(args.savename,tf), key='main')
 
     return
 
