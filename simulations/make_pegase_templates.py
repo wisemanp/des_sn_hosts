@@ -17,7 +17,7 @@ def parser():
 def generate_scenario(age,args):
     s = Scenario(binaries_fraction=0.04, metallicity_ism_0=0, infall=False,
              sfr=SFR(SFR.FILE_SFR, p1=1000, p2=1,
-                     filename='/media/data3/wiseman/des/AURA/PEGASE/SFHs/sfh_alt_%i.dat' % age),
+                     filename='/media/data3/wiseman/des/AURA/PEGASE/SFHs/sfh_%i.dat' % age),
              metallicity_evolution=True, substellar_fraction=0, neb_emission=args.neb,
              extinction=Extinction.NO_EXTINCTION)
     return s
@@ -35,7 +35,7 @@ def main(args):
         spec = peg.spectra(scenario=counter)
         counter+=1
         templates = spec.to_pandas()
-        templates.to_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_%s_%i.h5'%(args.savename,tf), key='main')
+        templates.to_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_%i.h5'%(args.savename,tf), key='main')
 
     return
 
