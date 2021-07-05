@@ -8,7 +8,7 @@ import numpy as np
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-z','--z',help='Redshift',default=0.0,type=str)
-    parser.add_argument('-ne','--neb',action='store_true')s
+    parser.add_argument('-ne','--neb',action='store_true')
     parser.add_argument('-tr','--time_res',help='Time resolution',default=5,type=int)
     parser.add_argument('-s','--savename',help='Save name',default='new')
     args = parser.parse_args()
