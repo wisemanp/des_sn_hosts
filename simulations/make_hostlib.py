@@ -119,7 +119,7 @@ def run(args):
                     delta='None'
                     if args.templates =='PEGASE':
                         sfh_coeffs_PW21 = None
-                        template = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_alt_%i.h5' % tf,
+                        template = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_orig_%i.h5' % tf,
                                                key='main')
                     U_R,fluxes,colours= s.calculate_model_fluxes_pw(z,sfh_coeffs_PW21,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
                                                             neb=neb,logU=args.logU,mtot=mtot,age=age,template=template)
