@@ -284,6 +284,28 @@ class SynSpec():
                     spec = wtf.Spectrum((1 + z) * s.wave() * u.AA, s.flux() * mag_corr / (1 + z))
                 colours[f].append(-2.5 * np.log10(spec.bandflux(wtf_filter).value / wtf_filter.zpFlux().value))
         return colours
+
+    def get_bands_wtf(self, spec_list, band_dict, z=0):
+        colours = {}
+        if z==0:
+            mag_corr = 1 / (4 * np.pi * (10 * u.pc.to(u.cm)) ** 2)
+        else:
+            mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
+        for f, ftype in band_dict.items():
+            colours[f] = []
+            filter = load_spectrum(self.filt_dir + '%s.dat' % f)
+            if ftype == 'Vega':
+                wtf_filter = wtf.Band_Vega(filter.wave(), filter.flux())
+            elif ftype == 'AB':
+                wtf_filter = wtf.Band_AB(filter.wave(), filter.flux())
+            for s in spec_list:
+                try:
+                    spec = wtf.Spectrum((1 + z) * s.wave().values * u.AA, s.flux() * mag_corr / (1 + z))
+                except:
+                    spec = wtf.Spectrum((1 + z) * s.wave() * u.AA, s.flux() * mag_corr / (1 + z))
+                colours[f].append(-2.5 * np.log10(spec.bandflux(wtf_filter).value / wtf_filter.zpFlux().value))
+        return colours
+
     def synphot_model_spectra_pw(self,sfh_coeffs,):
 
 
