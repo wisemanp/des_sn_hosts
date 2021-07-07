@@ -365,23 +365,20 @@ class SynSpec():
 
     def calculate_model_fluxes_pw(self,z,sfh_coeffs=None,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True,age=None,template=None):
         #print('Combining the weighted SSPs for this SFH')
-        if self.library == 'BC03':
-            model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
-            wave = self.template_obj_list[0].wave()
-            model_spec = Spectrum(wave=wave,
-                                  flux=model_spec,
-                                  var=np.ones_like(model_spec))
-            if neb:
-                model_neb_wave, model_neb_flux = self.synphot_model_emlines(sfh_coeffs, logU=logU)
-                # print(model_neb_wave)
 
-                model_neb_flux_rebinned = rebin_a_spec(model_neb_wave * 10, model_neb_flux / 10, model_spec.wave())
-                # self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
-                model_spec = Spectrum(wave=model_spec.wave(), flux=model_spec.flux() + model_neb_flux_rebinned,
-                                      var=model_spec.var())
+        model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
+        wave = self.template_obj_list[0].wave()
+        model_spec = Spectrum(wave=wave,
+                              flux=model_spec,
+                              var=np.ones_like(model_spec))
+        if self.library=='BC03' and neb==True:
+            model_neb_wave, model_neb_flux = self.synphot_model_emlines(sfh_coeffs, logU=logU)
+            # print(model_neb_wave)
 
-        elif self.library =='PEGASE':
-            model_spec = self.get_pegase_template(template,age)
+            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave * 10, model_neb_flux / 10, model_spec.wave())
+            # self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
+            model_spec = Spectrum(wave=model_spec.wave(), flux=model_spec.flux() + model_neb_flux_rebinned,
+                                  var=model_spec.var())
 
         #print('Going to redden my model spectrum')
         #self.model_spec = model_spec
