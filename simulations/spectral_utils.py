@@ -504,4 +504,4 @@ def interpolate_SFH_pegase(sfh, ages, mtot,marr):
     sfh['stellar_age'] = sfh.age.values[::-1]
     gb = sfh.groupby(pd.cut(sfh['stellar_age'], bins=np.concatenate([ages, [20001]]))).agg(sum)
 
-    return gb['m_formed'].values / (mtot*marr)
+    return gb['m_formed'].values / (mtot)
