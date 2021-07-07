@@ -73,7 +73,7 @@ def run(args):
         s = SynSpec(template_obj_list = template_obj_list,neb=args.neb)
         neb=args.neb
     elif args.templates=='PEGASE':
-        s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/',neb=args.neb)
+        s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/templates/',neb=args.neb)
 
         neb=args.neb
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
