@@ -34,6 +34,7 @@ def parser():
     parser.add_argument('-u','--logU',help='Ionisation parameter',default=-2,type=float)
     parser.add_argument('-tr','--time_res',help='SFH time resolution',default=5,type=int)
     parser.add_argument('-t','--templates',help='Template library to use [BC03, PEGASE]',default='BC03',type=str)
+    parser.add_argument('-tf','--template_fn',help='Filename of templates',type=str,default='None')
     parser.add_argument('-ne','--neb',action='store_true')
     args = parser.parse_args()
     return args
@@ -114,7 +115,10 @@ def run(args):
                     sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
                     template=None
                 elif args.templates =='PEGASE':
-                    templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5',key='main')
+                    if args.templates_fn !='None':
+                        templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5',key='main')
+                    else:   
+                        templates = pd.read_hdf(args.templates_fn,key='main')
                     sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_df,templates['time'],mtot,templates['m_star'])
 
                 for Av in av_arr:

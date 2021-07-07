@@ -15,7 +15,7 @@ def parser():
     return args
 
 def generate_scenario(age,args):
-    s = Scenario(binaries_fraction=0.04, metallicity_ism_0=0, infall=False,
+    s = Scenario(binaries_fraction=0.04, metallicity_ism_0=0, infall=True,
              sfr=SFR(SFR.FILE_SFR, p1=1000, p2=1,
                      filename='/media/data3/wiseman/des/AURA/PEGASE/SFHs/sfh_%i.dat' % age),
              metallicity_evolution=True, substellar_fraction=0, neb_emission=args.neb,
