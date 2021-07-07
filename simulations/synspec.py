@@ -48,7 +48,7 @@ class SynSpec():
                 new_template_spec = load_spectrum(bc03_fn)
                 template_obj_list.append(new_template_spec)
         elif library == 'PEGASE':
-            templates = pd.read_hdf(template_dir + 'test_infall_noneb.h5')
+            templates = pd.read_hdf(template_dir + 'test_infall.h5')
             templates.drop(
                 ['m_gal', 'm_star', 'm_wd', 'm_nsbh', 'm_substellar', 'm_gas', 'z_ism', 'z_stars_mass', 'z_stars_bl',
                  'l_bol', 'od_v', 'l_dust_l_bol',
