@@ -115,7 +115,7 @@ def run(args):
                     sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
                     template=None
                 elif args.templates =='PEGASE':
-                    if args.templates_fn !='None':
+                    if args.templates_fn =='None':
                         templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5',key='main')
                     else:
                         templates = pd.read_hdf(args.templates_fn,key='main')
