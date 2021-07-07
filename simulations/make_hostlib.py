@@ -115,7 +115,7 @@ def run(args):
                     template=None
                 elif args.templates =='PEGASE':
                     templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5',key='main')
-                    sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_df,templates['time'],mtot)/templates['m_star']
+                    sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_df,templates['time'],mtot,templates['m_star'])
 
                 for Av in av_arr:
                     Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
