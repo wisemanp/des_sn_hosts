@@ -116,7 +116,7 @@ class Sim(SN_Model):
             self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
         if save_df:
             if savepath=='default':
-                savepath = self.root_dir +'/sims/'+ self.save_string +'_SN_sim.h5'
+                savepath = self.root_dir +'/sims/SNe/'+ self.save_string +'_SN_sim.h5'
             self.savepath=savepath
             self.sim_df.to_hdf(self.savepath,key='sim')
 
