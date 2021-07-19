@@ -168,7 +168,7 @@ def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
         sim.plot_cs(plot_df)
     if hosts:
         sim.plot_hosts(plot_df)
-def plot_mu_res(sim,obs=True,label_ext=''):
+def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string,size=20)
     g1 = sim.sim_df[sim.sim_df['mass']>1E+10]
@@ -253,13 +253,13 @@ def plot_mu_res(sim,obs=True,label_ext=''):
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
         try:
-            g1 = g[g['mass']>1E+10]
+            g1 = g[g['mass']>mass_split]
 
 
             model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
             model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
             model_c_mids_hi.append(n.mid)
-            g2 = g[g['mass']<=1E+10]
+            g2 = g[g['mass']<=mass_split]
 
             model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
             model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
@@ -357,12 +357,12 @@ def plot_mu_res(sim,obs=True,label_ext=''):
 
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
         try:
-            g1 = g[g['U-R']>1.]
+            g1 = g[g['U-R']>colour_split]
 
             model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
             model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
             model_c_mids_hi.append(n.mid)
-            g2 = g[g['U-R']<=1.]
+            g2 = g[g['U-R']<=colour_split]
 
             model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
             model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
