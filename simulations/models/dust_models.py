@@ -18,8 +18,8 @@ def age_rv_step(age, rv_young=3.0, rv_old=2.0, rv_sig_young=0.5, rv_sig_old=0.5,
     """
     norm_young = norm(rv_young, rv_sig_young)
     norm_old = norm(rv_old, rv_sig_old)
-    return (norm_young.rvs(size=len(age)) * (age < age_split)) + (
-                norm_old.rvs(size=len(age)) * (age > age_split))
+    return np.clip((norm_young.rvs(size=len(age)) * (age < age_split)) + (
+                norm_old.rvs(size=len(age)) * (age > age_split)),a_min=1.2,a_max=None)
 
 
 def mass_rv_step(mass, rv_low=3.0, rv_high=2.0, rv_sig_low=0.5, rv_sig_high=0.5, mass_split=10):
@@ -36,8 +36,8 @@ def mass_rv_step(mass, rv_low=3.0, rv_high=2.0, rv_sig_low=0.5, rv_sig_high=0.5,
     """
     norm_low = norm(rv_low, rv_sig_low)
     norm_high = norm(rv_high, rv_sig_high)
-    return (norm_low.rvs(size=len(mass)) * (mass < mass_split)) + (
-                norm_high.rvs(size=len(mass)) * (mass > mass_split))
+    return np.clip((norm_low.rvs(size=len(mass)) * (mass < mass_split)) + (
+                norm_high.rvs(size=len(mass)) * (mass > mass_split)),a_min=1.2,a_max=None)
 
 
 def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, mass_fix_low=8, mass_fix_high=12):
@@ -59,7 +59,7 @@ def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1,
     Rvs = []
     for Rv_mu,Rv_sig in zip(Rv_mus,Rv_sigs):
         Rvs.append(np.random.normal(Rv_mu,Rv_sig))
-    return np.array(Rvs)
+    return np.clip(np.array(Rvs),a_min=1.2,a_max=None)
 
 def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, age_fix_low=0.1, age_fix_high=12):
     '''
@@ -80,7 +80,7 @@ def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, a
     Rvs = []
     for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
         Rvs.append(np.random.normal(Rv_mu,Rv_sig))
-    return np.array(Rvs)
+    return np.clip(np.array(Rvs),a_min=1.2,a_max=None)
 
 def E_exp(TauE,n=1):
     '''
