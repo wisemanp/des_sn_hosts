@@ -59,7 +59,7 @@ def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1,
     Rvs = []
     for Rv_mu,Rv_sig in zip(Rv_mus,Rv_sigs):
         Rvs.append(np.random.normal(Rv_mu,Rv_sig))
-    return Rvs
+    return np.array(Rvs)
 
 def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, age_fix_low=0.1, age_fix_high=12):
     '''
@@ -80,7 +80,7 @@ def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, a
     Rvs = []
     for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
         Rvs.append(np.random.normal(Rv_mu,Rv_sig))
-    return Rvs
+    return np.array(Rvs)
 
 def E_exp(TauE,n=1):
     '''
