@@ -57,7 +57,7 @@ def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1,
     Rv_mus = Rv_low +((mass-mass_fix_low) *Rv_slope)
     Rv_sigs = Rv_sig_low+((mass - mass_fix_low)*sig_slope)
     Rvs = []
-    for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
+    for Rv_mu,Rv_sig in zip(Rv_mus,Rv_sigs):
         Rvs.append(np.random.normal(Rv_mu,Rv_sig))
     return Rvs
 
@@ -188,4 +188,3 @@ def E_two_component(TauE_int, Av_host,Rv_host,Av_sig_host,Rv_sig_host,n=1):
     E_int = E_exp(TauE_int,n)
     E_host = E_from_host_random(Av_host,Av_sig_host,Rv_host,Rv_sig_host)
     return E_int + E_host
-

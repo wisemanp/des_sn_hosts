@@ -22,7 +22,7 @@ class SN_Model():
         return mass_rv_linear(np.log10(args['mass']), params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_fix_low'], params['mass_fix_high'])
 
     def age_rv_linear(self,args,params):
-        return age_rv_linear(args['SN_age']/1000, params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['age_fix_low'], params['age_fix_high'])
+        return age_rv_linear(args['SN_age'], params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['age_fix_low'], params['age_fix_high'])
 
     def E_exp(self,args,params):
         return E_exp(params['TauE'],args['n'])
@@ -93,5 +93,3 @@ class SN_Model():
     def tripp_rv_two_beta_popns_age(self,args,params):
         return tripp_rv_two_beta_popns_age(params['alpha'], params['beta_young'],params['sig_beta_young'], params['beta_old'], params['sig_beta_old'], params['M0'],
                                      params['sigma_int'], params['mass_step'], params['age_step'], args)
-
-
