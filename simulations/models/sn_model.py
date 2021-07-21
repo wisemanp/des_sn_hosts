@@ -31,7 +31,7 @@ class SN_Model():
         return E_exp_mass(args['mass'],params['Tau_low'],params['Tau_high'],params['mass_split'])
 
     def E_exp_age(self,args,params):
-        return E_exp_age(args['age'],params['Tau_low'],params['Tau_high'],params['age_split'])
+        return E_exp_age(args['mean_ages']/1000,params['Tau_low'],params['Tau_high'],params['age_split'])
 
     def random_rv(self,args,params):
         return random_rv(params['Rv_mu'],params['Rv_sig'],args['n'])
