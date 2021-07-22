@@ -1,6 +1,6 @@
 import numpy as np
 from astropy.cosmology import FlatLambdaCDM
-
+from scipy.interpolate import interp1d
 def add_mass_step(logM,mag=0.1,loc=10):
     return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
 
