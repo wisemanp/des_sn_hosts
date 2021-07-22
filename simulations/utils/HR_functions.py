@@ -92,3 +92,9 @@ def calculate_step(mu_res,mu_res_err,host_val,split):
     step = np.average(data_left,weights=1/errors_left**2) - np.average(data_right,weights=1/errors_right**2)
     sig = np.abs(step/np.sqrt((np.std(errors_left)/np.sqrt(len(errors_left)))+(np.std(errors_right)/np.sqrt(len(errors_right)))))
     return step, sig
+
+def get_red_chisq(obs,mod,err):
+    interp_data = interp1d(mod[0],mod[1])
+    mod_interp = interp_data(obs[0])
+    chisq = np.sum((obs[1]**2 - mod_interp**2)/err[1]**2)
+    return chisq/len(obs[0])
