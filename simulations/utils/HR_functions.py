@@ -96,5 +96,5 @@ def calculate_step(mu_res,mu_res_err,host_val,split):
 def get_red_chisq(obs,mod,err):
     interp_data = interp1d(mod[0],mod[1])
     mod_interp = interp_data(obs[0])
-    chisq = np.nansum((obs[1]**2 - mod_interp**2)/err[1]**2)
-    return chisq/len(obs[0])
+    chisq = np.nansum((obs[1] - mod_interp)**2/err[1]**2)
+    return chisq/len(obs[~np.isnan(obs)])

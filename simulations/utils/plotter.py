@@ -7,7 +7,7 @@ import itertools
 import os
 import pandas as pd
 import pickle
-from .HR_functions import calculate_step
+from .HR_functions import calculate_step, get_red_chisq
 
 
 aura_dir = os.environ['AURA_DIR']
@@ -278,6 +278,8 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
         high=lisa_data['global_mass']['high']
         axMASS.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr=low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
         axMASS.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr=high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
+        chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
+        axMASS.text(-0.2,-0.05,'$\chi^2_{\nu}=%.2f$'%chisq)
     axMASS.set_xlabel('$c$',size=20)
     axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axMASS.legend(fontsize=13)
@@ -378,8 +380,10 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
     if obs:
         low =lisa_data['global_U-R']['low']
         high=lisa_data['global_U-R']['high']
+        chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
         axUR.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr =low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
         axUR.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr =high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')
+        axUR.text(-0.2,-0.05,'$\chi^2_{\nu}=%.2f$'%chisq)
     axUR.set_xlabel('$c$',size=20)
     axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axUR.legend(fontsize=13)
