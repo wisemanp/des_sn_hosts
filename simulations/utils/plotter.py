@@ -7,7 +7,7 @@ import itertools
 import os
 import pandas as pd
 import pickle
-from .HR_functions import calculate_step, get_red_chisq
+from .HR_functions import calculate_step, get_red_chisq_interp
 
 
 aura_dir = os.environ['AURA_DIR']
