@@ -92,9 +92,18 @@ def calculate_step(mu_res,mu_res_err,host_val,split):
     step = np.average(data_left,weights=1/errors_left**2) - np.average(data_right,weights=1/errors_right**2)
     sig = np.abs(step/np.sqrt((np.std(errors_left)/np.sqrt(len(errors_left)))+(np.std(errors_right)/np.sqrt(len(errors_right)))))
     return step, sig
+def get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi):
+    interp_lo = interp1d(np.array(model_c_mids_lo),np.array(model_hr_mids_lo))
+    mod_lo = interp_lo(np.array(low['c']))
+    interp_hi = interp1d(np.array(model_c_mids_hi),np.array(model_hr_mids_hi))
+    mod_hi = interp_hi(np.array(high['c']))
 
+    obs = np.concatenate([np.array(low['hr']),np.array(high['hr'])])
+    err = np.concatenate([np.array(low['hr_err']),np.array(high['hr_err'])])
+    mod_interp = np.concatenate([mod_lo,mod_hi])
+    redchisq = get_red_chisq(obs,mod_interp,err)
+    return redchisq
 def get_red_chisq(obs,mod,err):
-    interp_data = interp1d(mod[0],mod[1])
-    mod_interp = interp_data(obs[0])
-    chisq = np.nansum((obs[1] - mod_interp)**2/err[1]**2)
-    return chisq/len(obs[~np.isnan(obs)])
+
+    chisq = np.nansum((obs - mod)**2/err**2)
+    return chisq/len(err[~np.isnan(err)])
