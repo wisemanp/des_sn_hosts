@@ -279,7 +279,7 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
         axMASS.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr=low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
         axMASS.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr=high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
         chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
-        axMASS.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq)
+        axMASS.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
     axMASS.set_xlabel('$c$',size=20)
     axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axMASS.legend(fontsize=13)
@@ -383,9 +383,171 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
         chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
         axUR.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr =low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
         axUR.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr =high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')
-        axUR.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq)
+        axUR.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
     axUR.set_xlabel('$c$',size=20)
     axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axUR.legend(fontsize=13)
     axUR.set_ylim(-0.2,0.2)
     plt.savefig(sim.fig_dir +'HR_vs_c_split_UR_%s'%(sim.save_string)+label_ext)
+
+def plot_rms(sim,label_ext='',colour_split=1,mass_split=1E+10):
+
+    # Mass
+    fMASSrms,(axMASSrms_all,axMASSrms)=plt.subplots(2,figsize=(8,6.5),sharex=True)
+    model_c_mids_all , model_rms_mids_all , model_rms_errs_all =[],[],[]
+    obs_c_mids_all , obs_rms_mids_all , obs_rms_errs_all =[],[],[]
+
+    model_c_mids_lo , model_rms_mids_lo , model_rms_errs_lo , model_c_mids_hi , model_rms_mids_hi ,  model_rms_errs_hi =[],[],[],[],[],[]
+    obs_c_mids_lo , obs_rms_mids_lo , obs_rms_errs_lo , obs_c_mids_hi , obs_rms_mids_hi ,  obs_rms_errs_hi =[],[],[],[],[],[]
+
+    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
+        #try:
+            obs = des5yr[(des5yr['c']>n.left)&(des5yr['c']<n.right)]
+
+            # All hosts
+            obs_rms_mids_all.append(np.sqrt(np.mean(obs['cal residual']**2)))
+            obs_rms_errs_all.append(obs['cal residual'].std()/np.sqrt(len(obs['cal residual'])))
+
+            model_rms_mids_all.append(np.sqrt(np.mean(g['mu_res']**2)))
+            model_rms_errs_all.append(g['mu_res'].std()/np.sqrt(len(g['mu_res'])))
+            model_c_mids_all.append(n.mid)
+            obs_c_mids_all.append(n.mid)
+
+            # High mass
+            obshi = obs[obs['Host Mass']>np.log10(mass_split)]
+            g1 = g[g['mass']>mass_split]
+            model_rms_mids_hi.append(np.sqrt(np.mean(g1['mu_res']**2)))
+            model_rms_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
+
+            obs_rms_mids_hi.append(np.sqrt(np.mean(obshi['cal residual']**2)))
+            obs_rms_errs_hi.append(obshi['cal residual'].std()/np.sqrt(len(obshi['cal residual'])))
+
+            model_c_mids_hi.append(n.mid)
+            obs_c_mids_hi.append(n.mid)
+
+
+            # Low mass
+
+            g2 = g[g['mass']<=mass_split]
+            model_rms_mids_lo.append(np.sqrt(np.mean(g2['mu_res']**2)))
+            model_rms_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
+
+            obslo = obs[obs['Host Mass']<np.log10(mass_split)]
+            obs_rms_mids_lo.append(np.sqrt(np.mean(obslo['cal residual']**2)))
+            obs_rms_errs_lo.append(obslo['cal residual'].std()/np.sqrt(len(obslo['cal residual'])))
+
+            model_c_mids_lo.append(n.mid)
+            obs_c_mids_lo.append(n.mid)
+        #except:
+           #pass
+    axMASSrms_all.plot(model_c_mids_all ,model_rms_mids_all,c='g',lw=3,label='Model All')
+    axMASSrms_all.fill_between(model_c_mids_all ,np.array(model_rms_mids_all)-np.array(model_rms_errs_all),np.array(model_rms_mids_all)+np.array(model_rms_errs_all),color='g',lw=0.5,ls=':',alpha=0.3)
+    axMASSrms_all.errorbar(obs_c_mids_all ,obs_rms_mids_all,yerr=obs_rms_errs_all,marker='D',color='k',linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR')
+
+
+    axMASSrms.plot(model_c_mids_lo ,model_rms_mids_lo,c=split_colour_1,lw=3,label='Model Low Mass')
+    axMASSrms.fill_between(model_c_mids_lo ,np.array(model_rms_mids_lo)-np.array(model_rms_errs_lo),np.array(model_rms_mids_lo)+np.array(model_rms_errs_lo),color=split_colour_1,lw=0.5,ls=':',alpha=0.3)
+
+    axMASSrms.plot(model_c_mids_hi ,model_rms_mids_hi,c=split_colour_2,lw=3,label='Model High Mass',ls='--')
+    axMASSrms.fill_between(model_c_mids_hi ,np.array(model_rms_mids_hi)-np.array(model_rms_errs_hi),np.array(model_rms_mids_hi)+np.array(model_rms_errs_hi),color=split_colour_2,lw=0.5,ls=':',alpha=0.3)
+    #axMASS.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
+
+    axMASSrms.errorbar(obs_c_mids_lo ,obs_rms_mids_lo,yerr=obs_rms_errs_lo,marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
+    axMASSrms.errorbar(obs_c_mids_hi ,obs_rms_mids_hi,yerr=obs_rms_errs_hi,marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
+    #chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_rms_mids_lo,model_c_mids_hi,model_rms_mids_hi)
+    #axMASSrms.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+    plt.subplots_adjust(hspace=0,wspace=0)
+    axMASSrms_all.xaxis.set_minor_locator(ticker.MultipleLocator(0.05))
+    axMASSrms_all.tick_params(right=True,top=True,direction='in',labelsize=14)
+    axMASSrms_all.set_ylim(0,0.4)
+
+    axMASSrms_all.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axMASSrms_all.legend(fontsize=13)
+    axMASSrms.xaxis.set_minor_locator(ticker.MultipleLocator(0.05))
+    axMASSrms.tick_params(right=True,top=True,direction='in',labelsize=14)
+    axMASSrms.set_xlabel('$c$',size=20)
+    axMASSrms.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axMASSrms.legend(fontsize=13)
+    axMASSrms_all.set_title(sim.save_string,size=20)
+    axMASSrms.set_ylim(0,0.4)
+    plt.savefig(sim.fig_dir +'HR_rms_c_split_mass_%s'%(sim.save_string)+label_ext)
+
+    # U-R
+    fURrms,(axURrms_all,axURrms)=plt.subplots(2,figsize=(8,6.5),sharex=True)
+    model_c_mids_all , model_rms_mids_all , model_rms_errs_all =[],[],[]
+    obs_c_mids_all , obs_rms_mids_all , obs_rms_errs_all =[],[],[]
+
+    model_c_mids_lo , model_rms_mids_lo , model_rms_errs_lo , model_c_mids_hi , model_rms_mids_hi ,  model_rms_errs_hi =[],[],[],[],[],[]
+    obs_c_mids_lo , obs_rms_mids_lo , obs_rms_errs_lo , obs_c_mids_hi , obs_rms_mids_hi ,  obs_rms_errs_hi =[],[],[],[],[],[]
+
+    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
+        #try:
+            obs = des5yr[(des5yr['c']>n.left)&(des5yr['c']<n.right)]
+
+            # All hosts
+            obs_rms_mids_all.append(np.sqrt(np.mean(obs['cal residual']**2)))
+            obs_rms_errs_all.append(obs['cal residual'].std()/np.sqrt(len(obs['cal residual'])))
+
+            model_rms_mids_all.append(np.sqrt(np.mean(g['mu_res']**2)))
+            model_rms_errs_all.append(g['mu_res'].std()/np.sqrt(len(g['mu_res'])))
+            model_c_mids_all.append(n.mid)
+            obs_c_mids_all.append(n.mid)
+
+            # High mass
+            obshi = obs[obs['Host U-R']>colour_split]
+            g1 = g[g['U-R']>colour_split]
+            model_rms_mids_hi.append(np.sqrt(np.mean(g1['mu_res']**2)))
+            model_rms_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
+
+            obs_rms_mids_hi.append(np.sqrt(np.mean(obshi['cal residual']**2)))
+            obs_rms_errs_hi.append(obshi['cal residual'].std()/np.sqrt(len(obshi['cal residual'])))
+
+            model_c_mids_hi.append(n.mid)
+            obs_c_mids_hi.append(n.mid)
+
+
+            # Low mass
+
+            g2 = g[g['U-R']<=colour_split]
+            model_rms_mids_lo.append(np.sqrt(np.mean(g2['mu_res']**2)))
+            model_rms_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
+
+            obslo = obs[obs['Host U-R']<colour_split]
+            obs_rms_mids_lo.append(np.sqrt(np.mean(obslo['cal residual']**2)))
+            obs_rms_errs_lo.append(obslo['cal residual'].std()/np.sqrt(len(obslo['cal residual'])))
+
+            model_c_mids_lo.append(n.mid)
+            obs_c_mids_lo.append(n.mid)
+        #except:
+           #pass
+    axURrms_all.plot(model_c_mids_all ,model_rms_mids_all,c='g',lw=3,label='Model All')
+    axURrms_all.fill_between(model_c_mids_all ,np.array(model_rms_mids_all)-np.array(model_rms_errs_all),np.array(model_rms_mids_all)+np.array(model_rms_errs_all),color='g',lw=0.5,ls=':',alpha=0.3)
+    axURrms_all.errorbar(obs_c_mids_all ,obs_rms_mids_all,yerr=obs_rms_errs_all,marker='D',color='k',linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR')
+
+
+    axURrms.plot(model_c_mids_lo ,model_rms_mids_lo,c=split_colour_1,lw=3,label='Model Low Mass')
+    axURrms.fill_between(model_c_mids_lo ,np.array(model_rms_mids_lo)-np.array(model_rms_errs_lo),np.array(model_rms_mids_lo)+np.array(model_rms_errs_lo),color=split_colour_1,lw=0.5,ls=':',alpha=0.3)
+
+    axURrms.plot(model_c_mids_hi ,model_rms_mids_hi,c=split_colour_2,lw=3,label='Model High Mass',ls='--')
+    axURrms.fill_between(model_c_mids_hi ,np.array(model_rms_mids_hi)-np.array(model_rms_errs_hi),np.array(model_rms_mids_hi)+np.array(model_rms_errs_hi),color=split_colour_2,lw=0.5,ls=':',alpha=0.3)
+    #axMASS.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
+
+    axURrms.errorbar(obs_c_mids_lo ,obs_rms_mids_lo,yerr=obs_rms_errs_lo,marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
+    axURrms.errorbar(obs_c_mids_hi ,obs_rms_mids_hi,yerr=obs_rms_errs_hi,marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
+    #chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_rms_mids_lo,model_c_mids_hi,model_rms_mids_hi)
+    #axMASSrms.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+    plt.subplots_adjust(hspace=0,wspace=0)
+    axURrms_all.xaxis.set_minor_locator(ticker.MultipleLocator(0.05))
+    axURrms_all.tick_params(right=True,top=True,direction='in',labelsize=14)
+    axURrms_all.set_ylim(0,0.4)
+
+    axURrms_all.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axURrms_all.legend(fontsize=13)
+    axURrms.xaxis.set_minor_locator(ticker.MultipleLocator(0.05))
+    axURrms.tick_params(right=True,top=True,direction='in',labelsize=14)
+    axURrms.set_xlabel('$c$',size=20)
+    axURrms.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axURrms.legend(fontsize=13)
+    axURrms_all.set_title(sim.save_string,size=20)
+    axURrms.set_ylim(0,0.4)
+    plt.savefig(sim.fig_dir +'HR_rms_c_split_UR_%s'%(sim.save_string)+label_ext)
