@@ -1,6 +1,7 @@
 '''A set of routines for plotting AURA simulations'''
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import seaborn as sns
 sns.set_color_codes(palette='colorblind')
 import itertools
@@ -532,8 +533,8 @@ def plot_rms(sim,label_ext='',colour_split=1,mass_split=1E+10):
     axURrms.fill_between(model_c_mids_hi ,np.array(model_rms_mids_hi)-np.array(model_rms_errs_hi),np.array(model_rms_mids_hi)+np.array(model_rms_errs_hi),color=split_colour_2,lw=0.5,ls=':',alpha=0.3)
     #axMASS.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
 
-    axURrms.errorbar(obs_c_mids_lo ,obs_rms_mids_lo,yerr=obs_rms_errs_lo,marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
-    axURrms.errorbar(obs_c_mids_hi ,obs_rms_mids_hi,yerr=obs_rms_errs_hi,marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
+    axURrms.errorbar(obs_c_mids_lo ,obs_rms_mids_lo,yerr=obs_rms_errs_lo,marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
+    axURrms.errorbar(obs_c_mids_hi ,obs_rms_mids_hi,yerr=obs_rms_errs_hi,marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')
     #chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_rms_mids_lo,model_c_mids_hi,model_rms_mids_hi)
     #axMASSrms.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
     plt.subplots_adjust(hspace=0,wspace=0)
@@ -541,7 +542,7 @@ def plot_rms(sim,label_ext='',colour_split=1,mass_split=1E+10):
     axURrms_all.tick_params(right=True,top=True,direction='in',labelsize=14)
     axURrms_all.set_ylim(0,0.4)
 
-        
+
     axURrms_all.set_ylabel('RMS ($\mu_{\mathrm{res}}$)',size=20,)
     axURrms_all.legend(fontsize=13)
     axURrms.xaxis.set_minor_locator(ticker.MultipleLocator(0.05))
