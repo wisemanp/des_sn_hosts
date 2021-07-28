@@ -194,11 +194,11 @@ def plot_hosts_v_SNe(sim,df):
 def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     plot_df=sim.sim_df[(sim.sim_df['z']>zmin)&(sim.sim_df['z']<zmax)]
     if x1:
-        sim.plot_x1s(plot_df)
+        plot_x1s(sim,plot_df)
     if c:
-        sim.plot_cs(plot_df)
+        plot_cs(sim,plot_df)
     if hosts:
-        sim.plot_hosts_v_SNe(plot_df)
+        plot_hosts_v_SNe(sim,plot_df)
 def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string,size=20)
