@@ -161,7 +161,7 @@ def plot_hosts_v_SNe(sim,df):
     # c vs U-R
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string,size=20)
-    cb=ax.scatter(np.log10(sim.sim_df['U_R']),sim.sim_df['c'],alpha=0.3,c=sim.sim_df['mu_res'],cmap='rainbow')
+    cb=ax.scatter(sim.sim_df['U-R'],sim.sim_df['c'],alpha=0.3,c=sim.sim_df['mu_res'],cmap='rainbow')
     plt.colorbar(cb)
     ax.set_xlabel('$U-R$',size=20)
     ax.set_ylabel('$c$',size=20,)
@@ -183,7 +183,7 @@ def plot_hosts_v_SNe(sim,df):
     # x1 vs UR
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string,size=20)
-    cb=ax.scatter(np.log10(sim.sim_df['U_R']),sim.sim_df['x1'],alpha=0.3,c=sim.sim_df['mu_res'],cmap='rainbow')
+    cb=ax.scatter(sim.sim_df['U-R'],sim.sim_df['x1'],alpha=0.3,c=sim.sim_df['mu_res'],cmap='rainbow')
     plt.colorbar(cb)
     ax.set_xlabel('$U-R$',size=20)
     ax.set_ylabel('$c$',size=20,)
