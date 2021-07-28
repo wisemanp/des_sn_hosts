@@ -144,23 +144,53 @@ def plot_cs(sim,df):
     ax.legend()
     ax.set_xlabel('c',size=20)
     plt.savefig(sim.fig_dir +'SN_c_hist_%s'%sim.save_string)
-def plot_hosts(sim,df):
-    f,ax=plt.subplots(figsize=(8,6.5))
-    ax.scatter(df['mass'],df['host_Av'],alpha=0.1,c='c',edgecolor='w')
-    ax.set_xscale('log')
-    ax.set_xlabel('Stellar Mass',size=20)
-    ax.set_ylabel('$A_V$',size=20)
-    f,ax=plt.subplots(figsize=(8,6.5))
-    ax.scatter(df['mass'],df['Rv'],alpha=0.1,c='c',edgecolor='w')
-    ax.set_xscale('log')
-    ax.set_xlabel('Stellar Mass',size=20)
-    ax.set_ylabel('$R_V$',size=20)
-    ax.set_ylim(1,6)
-    f,ax=plt.subplots(figsize=(8,6.5))
-    ax.scatter(df['host_Av'],df['x1'],alpha=0.1,c='c',edgecolor='w')
 
-    ax.set_ylabel('$x_1$',size=20)
-    ax.set_xlabel('$A_V$',size=20)
+def plot_hosts_v_SNe(sim,df):
+    # c vs mass
+    f,ax=plt.subplots(figsize=(8,6.5))
+    ax.set_title(sim.save_string,size=20)
+    cb=ax.scatter(np.log10(sim.sim_df['mass']),sim.sim_df['c'],alpha=0.3,c=sim.sim_df['mu_res'],cmap='rainbow')
+    plt.colorbar(cb)
+    ax.set_xlabel('$\log(M/M_{\odot})$',size=20)
+    ax.set_ylabel('$c$',size=20,)
+    ax.set_ylim(-3,3)
+    ax.set_xlim(7.5,12)
+
+    plt.savefig(sim.fig_dir +'c_vs_mass_%s'%(sim.save_string)+label_ext)
+
+    # c vs U-R
+    f,ax=plt.subplots(figsize=(8,6.5))
+    ax.set_title(sim.save_string,size=20)
+    cb=ax.scatter(np.log10(sim.sim_df['U_R']),sim.sim_df['c'],alpha=0.3,c=sim.sim_df['mu_res'],cmap='rainbow')
+    plt.colorbar(cb)
+    ax.set_xlabel('$U-R$',size=20)
+    ax.set_ylabel('$c$',size=20,)
+    ax.set_ylim(-0.3,0.3)
+    ax.set_xlim(-0.5,2.5)
+    plt.savefig(sim.fig_dir +'c_vs_UR_%s'%(sim.save_string)+label_ext)
+
+    # x1 vs mass
+    f,ax=plt.subplots(figsize=(8,6.5))
+    ax.set_title(sim.save_string,size=20)
+    cb=ax.scatter(np.log10(sim.sim_df['mass']),sim.sim_df['x1'],alpha=0.3,c=sim.sim_df['mu_res'],cmap='rainbow')
+    plt.colorbar(cb)
+    ax.set_xlabel('$\log(M/M_{\odot})$',size=20)
+    ax.set_ylabel('$x_1$',size=20,)
+    ax.set_ylim(-3,3)
+    ax.set_xlim(7.5,12)
+    plt.savefig(sim.fig_dir +'x1_vs_mass_%s'%(sim.save_string)+label_ext)
+
+    # x1 vs UR
+    f,ax=plt.subplots(figsize=(8,6.5))
+    ax.set_title(sim.save_string,size=20)
+    cb=ax.scatter(np.log10(sim.sim_df['U_R']),sim.sim_df['x1'],alpha=0.3,c=sim.sim_df['mu_res'],cmap='rainbow')
+    plt.colorbar(cb)
+    ax.set_xlabel('$U-R$',size=20)
+    ax.set_ylabel('$c$',size=20,)
+    ax.set_ylim(-0.3,0.3)
+    ax.set_xlim(-0.5,2.5)
+    plt.savefig(sim.fig_dir +'x1_vs_UR_%s'%(sim.save_string)+label_ext)
+
 def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     plot_df=sim.sim_df[(sim.sim_df['z']>zmin)&(sim.sim_df['z']<zmax)]
     if x1:
@@ -168,7 +198,7 @@ def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     if c:
         sim.plot_cs(plot_df)
     if hosts:
-        sim.plot_hosts(plot_df)
+        sim.plot_hosts_v_SNe(plot_df)
 def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string,size=20)
@@ -208,7 +238,7 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     ax.set_title(sim.save_string,size=20)
     ax.set_ylim(-0.3,0.3)
-    ax.set_xlim(0,2.5)
+    ax.set_xlim(-0.5,2.5)
 
     plt.savefig(sim.fig_dir +'HR_vs_UR_scatter_%s'%(sim.save_string)+label_ext)
     f,ax=plt.subplots(figsize=(8,6.5))
