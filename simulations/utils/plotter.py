@@ -91,60 +91,130 @@ def plot_galaxy_properties(sim):
     plt.savefig(sim.fig_dir +'U-R_vs_data')
 
 
-def plot_x1s(sim,df):
-    f,(ax1,ax2,ax3)=plt.subplots(1,3,figsize=(16,5),sharey=True)
-    ax1.scatter(df['mass'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-    ax1.set_xscale('log')
-    cm=ax2.scatter(df['U-R'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-    ax3.scatter(df['SN_age'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-    ax3.set_xscale('log')
-    plt.tight_layout()
-    plt.subplots_adjust(wspace=0)
-    cb=plt.colorbar(cm,orientation='vertical',ax=ax3)#shrink=0.7)
-    ax1.set_ylabel('$x_1$',size=20)
-    cb.set_label('$A_V$',size=20,
-                )
-    for ax in [ax1,ax2]:
-        ax.tick_params(which='both',direction='in',top=True,right=True)
-    ax1.set_xlabel('Stellar Mass',size=20)
-    ax2.set_xlabel('$U-R$',size=20)
-    ax3.set_xlabel('SN age (Gyr)',size=20)
-    ax2.set_xlim(0,2.5)
-    plt.savefig(sim.fig_dir +'SN_x1_hosts_%s'%sim.save_string)
-    f,ax=plt.subplots(figsize=(8,6.5))
-    hist=ax.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3)
-    ax.set_xlabel('$x_1$',size=20)
-    ax.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES 5yr')
-    #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
-    ax.legend()
-    plt.savefig(sim.fig_dir +'SN_x1_hist_%s'%sim.save_string)
 def plot_cs(sim,df):
-    f,(ax1,ax2,ax3)=plt.subplots(1,3,figsize=(14,5),sharey=True)
-    ax1.scatter(df['mass'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-    ax1.set_xscale('log')
-    cm=ax2.scatter(df['U-R'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-    ax3.scatter(df['SN_age'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-    ax3.set_xscale('log')
+    f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+    df['logmass'] = np.log10(df['mass'])
+    ax1.scatter(df['logmass'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis',label='Sim')
+
+    for counter, (n,g) in enumerate(df.groupby(pd.cut(df['logmass'],bins=np.linspace(8,12,30)))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label = 'Sim Mean'
+            ax1.scatter(n.mid,g['c'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
+            ax1.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='c',marker=None,ls='none')
+    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30)))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label = 'DES5YR Mean'
+            ax1.scatter(n.mid,g['c'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
+            ax1.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='m',marker=None,ls='none')
+
+    ax1.legend()
+    cm=ax2.scatter(df['U-R'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis',label='Sim')
+
+    for counter, (n,g) in enumerate(df.groupby(pd.cut(df['U-R'],bins=np.linspace(-0.5,2.5,30)))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label = 'Sim Mean'
+            ax2.scatter(n.mid,g['c'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
+            ax2.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='c',marker=None,ls='none')
+    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label = 'DES5YR Mean'
+            ax2.scatter(n.mid,g['c'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
+            ax2.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='m',marker=None,ls='none')
+    ax2.legend()
+
     plt.tight_layout()
     plt.subplots_adjust(wspace=0)
-    cb=plt.colorbar(cm,orientation='vertical',ax=ax3)#shrink=0.7)
+    cb=plt.colorbar(cm,orientation='vertical',ax=ax2)#shrink=0.7)
     ax1.set_ylabel('$c$',size=20)
     cb.set_label('$A_V$',size=20)
     for ax in [ax1,ax2]:
         ax.tick_params(which='both',direction='in',top=True,right=True)
     ax1.set_xlabel('Stellar Mass',size=20)
     ax2.set_xlabel('$U-R$',size=20)
-    ax3.set_xlabel('SN age (Gyr)',size=20)
     ax2.set_xlim(0,2)
-    ax1.set_ylim(-0.32,0.4)
+    ax1.set_xlim(7.8,11.8)
+    ax1.set_ylim(-0.3,0.3)
     plt.savefig(sim.fig_dir +'SN_c_hosts_%s'%sim.save_string)
     f,ax=plt.subplots(figsize=(8,6.5))
-    ax.hist(df['c'],bins=np.linspace(-0.3,0.3,25),histtype='step',density=True,label='Sim',lw=3)
-    ax.hist(des5yr['c'],density=True,bins=25,histtype='step',color=split_colour_1,label='Obs DES',lw=3)
+    ax.hist(df['c'],bins=np.linspace(-0.3,0.3,25),histtype='step',density=True,label='Sim',lw=3,color='c')
+    ax.hist(des5yr['c'],density=True,bins=25,histtype='step',label='DES5YR',lw=3,color='m')
     #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
     ax.legend()
     ax.set_xlabel('c',size=20)
     plt.savefig(sim.fig_dir +'SN_c_hist_%s'%sim.save_string)
+
+def plot_x1s(sim,df):
+    f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+    df['logmass'] = np.log10(df['mass'])
+    ax1.scatter(df['logmass'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
+
+    for counter, (n,g) in enumerate(df.groupby(pd.cut(df['logmass'],bins=np.linspace(8,12,30)))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label = 'Sim Mean'
+            ax1.scatter(n.mid,g['x1'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
+            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='c',marker=None,ls='none')
+    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30)))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label = 'DES5YR Mean'
+            ax1.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
+            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='m',marker=None,ls='none')
+
+    cm=ax2.scatter(df['U-R'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis',label='Sim')
+
+    for counter, (n,g) in enumerate(df.groupby(pd.cut(df['U-R'],bins=np.linspace(-0.5,2.5,30)))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label = 'Sim Mean'
+            ax2.scatter(n.mid,g['x1'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
+            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='c',marker=None,ls='none')
+    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label = 'DES5YR Mean'
+            ax2.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
+            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='m',marker=None,ls='none')
+    ax1.legend()
+
+    plt.tight_layout()
+    plt.subplots_adjust(wspace=0)
+    cb=plt.colorbar(cm,orientation='vertical',ax=ax2)#shrink=0.7)
+    ax1.set_ylabel('$x_1$',size=20)
+    cb.set_label('$A_V$',size=20,
+                )
+    ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
+    ax2.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
+
+    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
+    ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
+    for ax in [ax1,ax2]:
+        ax.tick_params(which='both',direction='in',top=True,right=True)
+    ax1.set_xlabel('Stellar Mass',size=20)
+    ax1.set_xlim(7.8,11.8)
+    ax1.set_ylim(-3,3)
+    ax2.set_xlabel('$U-R$',size=20)
+    ax2.set_xlim(0,2.5)
+    plt.savefig(sim.fig_dir +'SN_x1_hosts_%s'%sim.save_string)
+    f,ax=plt.subplots(figsize=(8,6.5))
+    hist=ax.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3)
+    ax.set_xlabel('$x_1$',size=20)
+    ax.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES5YR')
+    #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
+    ax.legend()
+    plt.savefig(sim.fig_dir +'SN_x1_hist_%s'%sim.save_string)
 
 
 
@@ -154,8 +224,7 @@ def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
         plot_x1s(sim,plot_df)
     if c:
         plot_cs(sim,plot_df)
-    if hosts:
-        plot_hosts_v_SNe(sim,plot_df)
+    
 def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string,size=20)
