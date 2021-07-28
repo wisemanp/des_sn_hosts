@@ -156,7 +156,7 @@ def plot_hosts_v_SNe(sim,df):
     ax.set_ylim(-3,3)
     ax.set_xlim(7.5,12)
 
-    plt.savefig(sim.fig_dir +'c_vs_mass_%s'%(sim.save_string)+label_ext)
+    plt.savefig(sim.fig_dir +'c_vs_mass_%s'%(sim.save_string))
 
     # c vs U-R
     f,ax=plt.subplots(figsize=(8,6.5))
@@ -167,7 +167,7 @@ def plot_hosts_v_SNe(sim,df):
     ax.set_ylabel('$c$',size=20,)
     ax.set_ylim(-0.3,0.3)
     ax.set_xlim(-0.5,2.5)
-    plt.savefig(sim.fig_dir +'c_vs_UR_%s'%(sim.save_string)+label_ext)
+    plt.savefig(sim.fig_dir +'c_vs_UR_%s'%(sim.save_string))
 
     # x1 vs mass
     f,ax=plt.subplots(figsize=(8,6.5))
@@ -178,7 +178,7 @@ def plot_hosts_v_SNe(sim,df):
     ax.set_ylabel('$x_1$',size=20,)
     ax.set_ylim(-3,3)
     ax.set_xlim(7.5,12)
-    plt.savefig(sim.fig_dir +'x1_vs_mass_%s'%(sim.save_string)+label_ext)
+    plt.savefig(sim.fig_dir +'x1_vs_mass_%s'%(sim.save_string))
 
     # x1 vs UR
     f,ax=plt.subplots(figsize=(8,6.5))
@@ -189,7 +189,7 @@ def plot_hosts_v_SNe(sim,df):
     ax.set_ylabel('$c$',size=20,)
     ax.set_ylim(-0.3,0.3)
     ax.set_xlim(-0.5,2.5)
-    plt.savefig(sim.fig_dir +'x1_vs_UR_%s'%(sim.save_string)+label_ext)
+    plt.savefig(sim.fig_dir +'x1_vs_UR_%s'%(sim.save_string))
 
 def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     plot_df=sim.sim_df[(sim.sim_df['z']>zmin)&(sim.sim_df['z']<zmax)]
