@@ -130,7 +130,7 @@ def plot_cs(sim,df):
             ax2.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='m',marker=None,ls='none')
     ax2.legend()
 
-    plt.tight_layout()
+    
     plt.subplots_adjust(wspace=0)
     cb=plt.colorbar(cm,orientation='vertical',ax=ax2)#shrink=0.7)
     ax1.set_ylabel('$c$',size=20)
@@ -189,7 +189,6 @@ def plot_x1s(sim,df):
             ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='m',marker=None,ls='none')
     ax1.legend()
 
-    plt.tight_layout()
     plt.subplots_adjust(wspace=0)
     cb=plt.colorbar(cm,orientation='vertical',ax=ax2)#shrink=0.7)
     ax1.set_ylabel('$x_1$',size=20)
@@ -224,7 +223,7 @@ def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
         plot_x1s(sim,plot_df)
     if c:
         plot_cs(sim,plot_df)
-    
+
 def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string,size=20)
