@@ -153,7 +153,7 @@ def plot_hosts_v_SNe(sim,df):
     plt.colorbar(cb)
     ax.set_xlabel('$\log(M/M_{\odot})$',size=20)
     ax.set_ylabel('$c$',size=20,)
-    ax.set_ylim(-3,3)
+    ax.set_ylim(-0.3,0.3)
     ax.set_xlim(7.5,12)
 
     plt.savefig(sim.fig_dir +'c_vs_mass_%s'%(sim.save_string))
@@ -187,7 +187,7 @@ def plot_hosts_v_SNe(sim,df):
     plt.colorbar(cb)
     ax.set_xlabel('$U-R$',size=20)
     ax.set_ylabel('$c$',size=20,)
-    ax.set_ylim(-0.3,0.3)
+    ax.set_ylim(-3,3)
     ax.set_xlim(-0.5,2.5)
     plt.savefig(sim.fig_dir +'x1_vs_UR_%s'%(sim.save_string))
 
