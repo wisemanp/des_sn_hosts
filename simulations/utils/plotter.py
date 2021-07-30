@@ -130,7 +130,7 @@ def plot_cs(sim,df):
             ax2.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='m',marker=None,ls='none')
     ax2.legend()
 
-    
+
     plt.subplots_adjust(wspace=0)
     cb=plt.colorbar(cm,orientation='vertical',ax=ax2)#shrink=0.7)
     ax1.set_ylabel('$c$',size=20)
@@ -144,14 +144,21 @@ def plot_cs(sim,df):
     ax1.set_ylim(-0.3,0.3)
     plt.savefig(sim.fig_dir +'SN_c_hosts_%s'%sim.save_string)
     f,ax=plt.subplots(figsize=(8,6.5))
-    ax.hist(df['c'],bins=np.linspace(-0.3,0.3,25),histtype='step',density=True,label='Sim',lw=3,color='c')
-    ax.hist(des5yr['c'],density=True,bins=25,histtype='step',label='DES5YR',lw=3,color='m')
+    ax.hist(df['c'],bins=np.linspace(-0.3,0.3,100),histtype='step',density=True,label='Sim',lw=3,color='c')
+    ax.hist(des5yr['c'],density=True,bins=20,histtype='step',label='DES5YR',lw=3,color='m')
     #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
     ax.legend()
     ax.set_xlabel('c',size=20)
     plt.savefig(sim.fig_dir +'SN_c_hist_%s'%sim.save_string)
-
-def plot_x1s(sim,df):
+    # get chi2
+    counts,bin_edges =np.histogram(des5yr['c'],bins=np.linspace(-3,3,20),density=False)
+    simcounts,simbins = np.histogram(sim.sim_df['c'],bins=np.linspace(-3,3,20),density=False)
+    simcounts = simcounts/(len(sim.sim_df)/len(des5yr))
+    intervals = poisson_conf_interval(counts,interval='root-n-0').T
+    yplus= intervals[:,1] -counts
+    chi2 = get_red_chisq(counts,simcounts,yplus)
+    return chi2
+def plot_x1s(sim,df,return_chi=True):
     f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['logmass'] = np.log10(df['mass'])
     ax1.scatter(df['logmass'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
@@ -214,9 +221,14 @@ def plot_x1s(sim,df):
     #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
     ax.legend()
     plt.savefig(sim.fig_dir +'SN_x1_hist_%s'%sim.save_string)
-
-
-
+    #calculate the reduced chi-squared
+    counts,bin_edges =np.histogram(des5yr['x1'],bins=np.linspace(-3,3,20),density=False)
+    simcounts,simbins = np.histogram(sim.sim_df['x1'],bins=np.linspace(-3,3,20),density=False)
+    simcounts = simcounts/(len(sim.sim_df)/len(des5yr))
+    intervals = poisson_conf_interval(counts,interval='root-n-0').T
+    yplus= intervals[:,1] -counts
+    chi2 = get_red_chisq(counts,simcounts,yplus)
+    return chi2
 def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     plot_df=sim.sim_df[(sim.sim_df['z']>zmin)&(sim.sim_df['z']<zmax)]
     if x1:
@@ -224,7 +236,7 @@ def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     if c:
         plot_cs(sim,plot_df)
 
-def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
+def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string,size=20)
     g1 = sim.sim_df[sim.sim_df['mass']>1E+10]
@@ -305,6 +317,7 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
     ax.set_ylim(-0.3,0.3)
 
     plt.savefig(sim.fig_dir +'/HR_vs_age_scatter_%s'%(sim.save_string)+label_ext)
+    chis = []
     fMASS,axMASS=plt.subplots(figsize=(8,6.5))
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
@@ -336,6 +349,7 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
         axMASS.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr=high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
         chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
         axMASS.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        chis.append(chisq)
     axMASS.set_xlabel('$c$',size=20)
     axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axMASS.legend(fontsize=13)
@@ -440,12 +454,13 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10):
         axUR.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr =low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
         axUR.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr =high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')
         axUR.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        chis.append(chisq)
     axUR.set_xlabel('$c$',size=20)
     axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axUR.legend(fontsize=13)
     axUR.set_ylim(-0.2,0.2)
     plt.savefig(sim.fig_dir +'HR_vs_c_split_UR_%s'%(sim.save_string)+label_ext)
-
+    return chis
 def plot_rms(sim,label_ext='',colour_split=1,mass_split=1E+10):
 
     # Mass
