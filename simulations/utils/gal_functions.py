@@ -8,6 +8,17 @@ def double_schechter(logM,logM_star,phi_star_1,alpha_1,phi_star_2,alpha_2):#logM
     return np.log(10)*((phi_star_1*(10**((logM - logM_star)*(1+alpha_1))))+(phi_star_2*(10**((logM - logM_star)*(1+alpha_2)))))*\
                 np.exp(-10**(logM-logM_star))
 
+
+def double_schechter_T14(logM,logM_star,phi_star_1,alpha_1,phi_star_2,alpha_2):#logM_star,phi_star_1,alpha_1,phi_star_2,alpha_2):
+    ''' Tomczak et al 2014 implementation of the double schechter function'''
+    if phi_star_1<0:
+        phi_star_1 = 10**phi_star_1
+    if phi_star_2<0:
+        phi_star_2 = 10**phi_star_2
+    return np.log(10)*np.exp(-10**(logM-logM_star))*10**(logM-logM_star)*\
+    ((phi_star_1*(10**((logM - logM_star)*(alpha_1))))+(phi_star_2*(10**((logM - logM_star)*(alpha_2)))))
+
+
 def single_schechter(logM,logM_star,phi_star,alpha,):
     return np.log(10)*((phi_star*(10**((logM - logM_star)*(1+alpha))))*\
                 np.exp(-10**(logM-logM_star)))
@@ -22,10 +33,10 @@ zfourge = {
 def schechter(z,logM):
     if z<0.5:
 
-        return double_schechter(logM,**zfourge[0.2])
+        return double_schechter_T14(logM,**zfourge[0.2])
     elif z>=0.5 and z<0.75:
-        return double_schechter(logM,**zfourge[0.5])
+        return double_schechter_T14(logM,**zfourge[0.5])
     elif z>0.75 and z<1:
-        return double_schechter(logM,**zfourge[0.75])
+        return double_schechter_T14(logM,**zfourge[0.75])
     elif z>1 and z<1.25:
-        return double_schechter(logM,**zfourge[1])
+        return double_schechter_T14(logM,**zfourge[1])
