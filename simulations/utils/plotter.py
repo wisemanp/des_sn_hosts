@@ -152,8 +152,8 @@ def plot_cs(sim,df):
     ax.set_xlabel('c',size=20)
     plt.savefig(sim.fig_dir +'SN_c_hist_%s'%sim.save_string)
     # get chi2
-    counts,bin_edges =np.histogram(des5yr['c'],bins=np.linspace(-3,3,20),density=False)
-    simcounts,simbins = np.histogram(sim.sim_df['c'],bins=np.linspace(-3,3,20),density=False)
+    counts,bin_edges =np.histogram(des5yr['c'],bins=np.linspace(-0.3,0.3,20),density=False)
+    simcounts,simbins = np.histogram(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20),density=False)
     simcounts = simcounts/(len(sim.sim_df)/len(des5yr))
     intervals = poisson_conf_interval(counts,interval='root-n-0').T
     yplus= intervals[:,1] -counts
