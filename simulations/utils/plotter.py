@@ -9,7 +9,7 @@ import os
 import pandas as pd
 import pickle
 from astropy.stats import poisson_conf_interval
-from .HR_functions import calculate_step, get_red_chisq_interp
+from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp
 
 
 aura_dir = os.environ['AURA_DIR']
