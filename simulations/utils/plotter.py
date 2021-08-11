@@ -29,28 +29,30 @@ split_colour_2 = '#8500f2'
 def plot_galaxy_properties(sim):
 
     f,(ax1,ax2,ax3)=plt.subplots(1,3,figsize=(10,4),sharey=True)
-    cm =ax1.scatter(sim.flux_df['mean_age']/1000,sim.flux_df['U']-sim.flux_df['R'],c=sim.flux_df['Av'],alpha=0.3)
-    ax1.set_xscale('log')
+    cm =ax1.scatter(np.log10(sim.flux_df['mean_age']/1000),sim.flux_df['U']-sim.flux_df['R'],c=sim.flux_df['Av'],alpha=0.3)
+
     #ax1.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
-    ax1.set_xlabel('Mean Stellar Age (Gyr)',size=20)
+    ax1.set_xlabel('$\log($ Mean Stellar Age (Gyr))',size=20)
     ax1.set_ylabel('U-R',size=20)
+    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     ax1.tick_params(which='both',labelsize=14,right=True,top=True)
     #cbaxes = f.add_axes([0.2, 0.95, 0.6, 0.02])
 
 
-    cm =ax2.scatter(sim.flux_df['ssfr'],sim.flux_df['U_R'],c=sim.flux_df['Av'],alpha=0.3)
-    ax2.set_xscale('log')
+    cm =ax2.scatter(np.log10(sim.flux_df['ssfr']),sim.flux_df['U']-sim.flux_df['R'],c=sim.flux_df['Av'],alpha=0.3)
+
     ax2.set_xlabel('$\log (sSFR)$ yr$^{-1}$',size=20)
     #ax2.set_ylabel('U-R',size=20)
+    ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     ax2.tick_params(which='both',labelsize=14,right=True,top=True)
 
     #ax3.set_xscale('log')
     ax3.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
-
+    ax3.xaxis.set_minor_locator(ticker.MultipleLocator(0.5))
     #ax3.set_ylabel('U-R',size=20)
     ax3.tick_params(which='both',labelsize=14,right=True,top=True)
     #cbaxes = f.add_axes([0.2, 0.95, 0.6, 0.02])
-    cm =ax3.scatter(np.log10(sim.flux_df['mass']),sim.flux_df['U_R'],c=sim.flux_df['Av'],alpha=0.3)
+    cm =ax3.scatter(np.log10(sim.flux_df['mass']),sim.flux_df['U']-sim.flux_df['R'],c=sim.flux_df['Av'],alpha=0.3)
     plt.tight_layout()
     plt.subplots_adjust(wspace=0)
     cb=plt.colorbar(cm,orientation='vertical',ax=ax3,#shrink=0.7
@@ -63,7 +65,7 @@ def plot_galaxy_properties(sim):
     f,ax=plt.subplots(figsize=(8,6.5))
     #ax3.set_xscale('log')
     ax.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
-
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     #ax3.set_ylabel('U-R',size=20)
     ax.tick_params(which='both',labelsize=14,right=True,top=True)
     #cbaxes = f.add_axes([0.2, 0.95, 0.6, 0.02])
@@ -82,7 +84,7 @@ def plot_galaxy_properties(sim):
 
     ax.errorbar(lisa_colours['Host Mass'],lisa_colours['Host U-R'],
                 xerr=lisa_colours['Host Mass error'],yerr=lisa_colours['Host U-R error'],
-                linestyle='none',marker='+',label='DES U-R global')
+                linestyle='none',marker='+',label='DES U-R global',color='r')
 
     #ax.scatter(lisa_colours['Host Mass'],lisa_colours['Host U-R']+0.58,
     #
