@@ -29,7 +29,7 @@ split_colour_2 = '#8500f2'
 def plot_galaxy_properties(sim):
 
     f,(ax1,ax2,ax3)=plt.subplots(1,3,figsize=(10,4),sharey=True)
-    cm =ax1.scatter(sim.flux_df['mean_age']/1000,sim.flux_df['U_R'],c=sim.flux_df['Av'],alpha=0.3)
+    cm =ax1.scatter(sim.flux_df['mean_age']/1000,sim.flux_df['U']-sim.flux_df['R'],c=sim.flux_df['Av'],alpha=0.3)
     ax1.set_xscale('log')
     #ax1.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
     ax1.set_xlabel('Mean Stellar Age (Gyr)',size=20)
@@ -68,7 +68,7 @@ def plot_galaxy_properties(sim):
     ax.tick_params(which='both',labelsize=14,right=True,top=True)
     #cbaxes = f.add_axes([0.2, 0.95, 0.6, 0.02])
     from matplotlib.colors import ListedColormap
-    cm =ax.scatter(np.log10(sim.flux_df['mass']),sim.flux_df['U_R'],c=sim.flux_df['Av'],alpha=0.3,
+    cm =ax.scatter(np.log10(sim.flux_df['mass']),sim.flux_df['U']-sim.flux_df['R'],c=sim.flux_df['Av'],alpha=0.3,
                    cmap=ListedColormap(sns.color_palette('viridis',n_colors=20).as_hex()))
     plt.tight_layout()
     plt.subplots_adjust(wspace=0)
