@@ -96,24 +96,24 @@ def plot_galaxy_properties(sim):
 
 
     f,ax=plt.subplots(figsize=(8,6.5))
-    ax.hist(sim.sim_df['U-R'],density=True,bins=np.linspace(-0.5,2.5,100),histtype='step',lw=3,color=sim_colour)
-    ax.hist(des5yr['Host U-R'],density=True,bins=np.linspace(-0.5,2.5,20),histtype='step',lw=3,color=data_colour)
+    ax.hist(sim.sim_df['U-R'],density=True,bins=np.linspace(-0.5,2.5,100),histtype='step',lw=3,color=sim_colour,label='Sim')
+    ax.hist(des5yr['Host U-R'],density=True,bins=np.linspace(-0.5,2.5,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
     ax.tick_params(right=True,top=True,which='both',labelsize=16)
     ax.set_xlabel('$U-R$',size=20)
     ax.set_ylabel('Normalized Frequency',size=20)
-
+    ax.legend(fontsize=14)
     f,ax=plt.subplots(figsize=(8,6.5))
 
-    ax.hist(np.log10(sim.sim_df['mass']),density=True,bins=np.linspace(7,12,100),histtype='step',lw=3,c=olorsim_colour)
-    ax.hist(des5yr['Host Mass'],density=True,bins=np.linspace(7,12,20),histtype='step',lw=3,color=data_colour)
+    ax.hist(np.log10(sim.sim_df['mass']),density=True,bins=np.linspace(7,12,100),histtype='step',lw=3,c=olorsim_colour,label='Sim')
+    ax.hist(des5yr['Host Mass'],density=True,bins=np.linspace(7,12,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
     ax.tick_params(right=True,top=True,which='both',labelsize=16)
     ax.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
     ax.set_ylabel('Normalized Frequency',size=20)
-
+    ax.legend(fontsize=14)
 def plot_cs(sim,df):
     f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['logmass'] = np.log10(df['mass'])
