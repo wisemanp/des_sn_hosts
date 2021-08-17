@@ -23,7 +23,8 @@ plt.rcParams.update({'xtick.direction':'in'})
 plt.rcParams.update({'ytick.direction':'in'})
 split_colour_1 = '#f28500'
 split_colour_2 = '#8500f2'
-
+sim_colour= 'c'
+data_colour = 'm'
 
 
 def plot_galaxy_properties(sim):
@@ -93,6 +94,25 @@ def plot_galaxy_properties(sim):
     ax.set_ylim(-0.5,3)
     plt.savefig(sim.fig_dir +'U-R_vs_data')
 
+
+    f,ax=plt.subplots(figsize=(8,6.5))
+    ax.hist(sim.sim_df['U-R'],density=True,bins=np.linspace(-0.5,2.5,100),histtype='step',lw=3,c=sim_colour)
+    ax.hist(des5yr['Host U-R'],density=True,bins=np.linspace(-0.5,2.5,20),histtype='step',lw=3,c=data_colour)
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
+    ax.tick_params(right=True,top=True,which='both',labelsize=16)
+    ax.set_xlabel('$U-R$',size=20)
+    ax.set_ylabel('Normalized Frequency',size=20)
+
+    f,ax=plt.subplots(figsize=(8,6.5))
+
+    ax.hist(np.log10(sim.sim_df['mass']),density=True,bins=np.linspace(7,12,100),histtype='step',lw=3,c=sim_colour)
+    ax.hist(des5yr['Host Mass'],density=True,bins=np.linspace(7,12,20),histtype='step',lw=3,c=data_colour)
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
+    ax.tick_params(right=True,top=True,which='both',labelsize=16)
+    ax.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
+    ax.set_ylabel('Normalized Frequency',size=20)
 
 def plot_cs(sim,df):
     f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
