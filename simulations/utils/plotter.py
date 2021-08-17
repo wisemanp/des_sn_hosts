@@ -133,13 +133,17 @@ def plot_cs(sim,df):
             ax2.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='m',marker=None,ls='none')
     ax2.legend()
 
+    ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
+    ax2.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
 
+    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
+    ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     plt.subplots_adjust(wspace=0)
     cb=plt.colorbar(cm,orientation='vertical',ax=ax2)#shrink=0.7)
     ax1.set_ylabel('$c$',size=20)
     cb.set_label('$A_V$',size=20)
     for ax in [ax1,ax2]:
-        ax.tick_params(which='both',direction='in',top=True,right=True)
+        ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     ax1.set_xlabel('Stellar Mass',size=20)
     ax2.set_xlabel('$U-R$',size=20)
     ax2.set_xlim(0,2)
@@ -152,6 +156,8 @@ def plot_cs(sim,df):
     #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
     ax.legend()
     ax.set_xlabel('c',size=20)
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.savefig(sim.fig_dir +'SN_c_hist_%s'%sim.save_string)
     # get chi2
     counts,bin_edges =np.histogram(des5yr['c'],bins=np.linspace(-0.3,0.3,20),density=False)
@@ -207,10 +213,10 @@ def plot_x1s(sim,df,return_chi=True):
     ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     ax2.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
 
-    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
-    ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
+    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
+    ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     for ax in [ax1,ax2]:
-        ax.tick_params(which='both',direction='in',top=True,right=True)
+        ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     ax1.set_xlabel('Stellar Mass',size=20)
     ax1.set_xlim(7.8,11.8)
     ax1.set_ylim(-3,3)
@@ -223,6 +229,8 @@ def plot_x1s(sim,df,return_chi=True):
     ax.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES5YR')
     #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
     ax.legend()
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.savefig(sim.fig_dir +'SN_x1_hist_%s'%sim.save_string)
     #calculate the reduced chi-squared
     counts,bin_edges =np.histogram(des5yr['x1'],bins=np.linspace(-3,3,20),density=False)
@@ -279,7 +287,9 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return
     #ax.set_title(sim.save_string,size=20)
     ax.set_ylim(-0.3,0.3)
     ax.set_xlim(-0.5,2.5)
-
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    ax.tick_params(right=True,top=True,which='both',labelsize=16)
     plt.savefig(sim.fig_dir +'HR_vs_UR_scatter_%s'%(sim.save_string)+label_ext)
     f,ax=plt.subplots(figsize=(8,6.5))
     sim.sim_df['logmass'] = np.log10(sim.sim_df['mass'])
@@ -298,6 +308,9 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     ax.set_xlim(7.5,12)
     ax.set_ylim(-0.3,0.3)
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    ax.tick_params(right=True,top=True,which='both',labelsize=16)
     #ax.set_title(sim.save_string,size=20)
 
     plt.savefig(sim.fig_dir +'HR_vs_mass_scatter_%s'%(sim.save_string)+label_ext)
@@ -358,76 +371,12 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return
     axMASS.legend(fontsize=13)
     #axMASS.set_title(sim.save_string,size=20)
     axMASS.set_ylim(-0.2,0.2)
-
+    axMASS.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axMASS.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
+    axMASS.tick_params(which='both',right=True,top=True,labelsize=16)
     plt.savefig(sim.fig_dir +'HR_vs_c_split_mass_%s'%(sim.save_string)+label_ext)
-    fAGE,axAGE=plt.subplots(figsize=(8,6.5))
-    #axAGE.set_title(sim.save_string,size=20)
-    model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
-
-    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
-        try:
-            g1 = g[g['SN_age']>0.8]
-            model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
-            model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
-            model_c_mids_hi.append(n.mid)
-            g2 = g[g['SN_age']<=0.8]
-
-            model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
-            model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
-            model_c_mids_lo.append(n.mid)
-        except:
-            pass
-
-    axAGE.plot(model_c_mids_lo ,model_hr_mids_lo,c=split_colour_1,lw=3,label='Model Young Progenitor')
-    axAGE.plot(model_c_mids_lo ,np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),c=split_colour_1,lw=0.5,ls=':')
-    axAGE.plot(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),c=split_colour_1,lw=0.5,ls=':')
-    axAGE.plot(model_c_mids_hi ,model_hr_mids_hi,c=split_colour_2,lw=3,label='Model Old Progenitor',ls='--')
-    axAGE.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
-    axAGE.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
-    axAGE.set_xlabel('$c$',size=20)
-    axAGE.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
-    axAGE.legend(fontsize=13)
-    axAGE.set_ylim(-0.2,0.2)
-
-    plt.savefig(sim.fig_dir +'HR_vs_c_split_SN_age_%s'%(sim.save_string)+label_ext)
-
-
-    fmeanAGE,axmeanAGE=plt.subplots(figsize=(8,6.5))
-    axmeanAGE.set_title(sim.save_string,size=20)
-    model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
-
-    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
-        try:
-            g1 = g[g['mean_age']>3000]
-
-
-            model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
-            model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
-            model_c_mids_hi.append(n.mid)
-            g2 = g[g['mean_age']<=3000]
-
-            model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
-            model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
-            model_c_mids_lo.append(n.mid)
-        except:
-            pass
-    axmeanAGE.plot(model_c_mids_lo ,model_hr_mids_lo,c=split_colour_1,lw=3,label='Model Young Host')
-    axmeanAGE.plot(model_c_mids_lo ,np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),c=split_colour_1,lw=0.5,ls=':')
-    axmeanAGE.plot(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),c=split_colour_1,lw=0.5,ls=':')
-    axmeanAGE.plot(model_c_mids_hi ,model_hr_mids_hi,c=split_colour_2,lw=3,label='Model Old Host',ls='--')
-    axmeanAGE.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
-    axmeanAGE.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
-    axmeanAGE.set_xlabel('$c$',size=20)
-    axmeanAGE.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
-    axmeanAGE.legend(fontsize=13)
-    axmeanAGE.set_ylim(-0.2,0.2)
-
-    plt.savefig(sim.fig_dir +'HR_vs_c_split_age_%s'%(sim.save_string)+label_ext)
-
     fUR,axUR=plt.subplots(figsize=(8,6.5))
     #axUR.set_title(sim.save_string,size=20)
-
-
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
 
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
@@ -462,6 +411,9 @@ def plot_mu_res(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return
     axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axUR.legend(fontsize=13)
     axUR.set_ylim(-0.2,0.2)
+    axUR.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axUR.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
+    axUR.tick_params(which='both',right=True,top=True,labelsize=16)
     plt.savefig(sim.fig_dir +'HR_vs_c_split_UR_%s'%(sim.save_string)+label_ext)
     return chis
 def plot_rms(sim,label_ext='',colour_split=1,mass_split=1E+10):
