@@ -115,7 +115,7 @@ def plot_galaxy_properties_paper(sim):
     ax.set_ylabel('Normalized Frequency',size=20)
     ax.legend(fontsize=14)
 def plot_cs_paper(sim,df):
-    f,(ax0,ax1,ax2)=plt.subplots(1,3,figsize=(14,6.5),sharey=True)
+    f,(ax0,ax1,ax2)=plt.subplots(1,3,figsize=(12,5))
 
     ax0.hist(df['c'],bins=np.linspace(-0.3,0.3,100),histtype='step',density=True,label='Sim',lw=3,color='c')
     ax0.hist(des5yr['c'],density=True,bins=20,histtype='step',label='DES5YR',lw=3,color='m')
@@ -178,16 +178,17 @@ def plot_cs_paper(sim,df):
     ax2.set_xlim(0,2)
     ax1.set_xlim(7.8,11.8)
     ax1.set_ylim(-0.3,0.3)
+    ax2.set_ylim(-0.3,0.3)
     plt.savefig(sim.fig_dir +'SN_c_all_%s'%sim.save_string + '_paper')
 
     # get chi2
 def plot_x1s_paper(sim,df,return_chi=True):
-    f,(ax0,ax1,ax2)=plt.subplots(1,3,figsize=(14,6.5),sharey=True)
+    f,(ax0,ax1,ax2)=plt.subplots(1,3,figsize=(12,5))
     df['logmass'] = np.log10(df['mass'])
 
-    hist=ax0.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3)
+    hist=ax0.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3,color=sim_colour)
     ax0.set_xlabel('$x_1$',size=20)
-    ax0.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES5YR')
+    ax0.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES5YR',color=data_colour)
     #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
     ax0.legend()
     ax0.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
@@ -245,9 +246,8 @@ def plot_x1s_paper(sim,df,return_chi=True):
     ax1.set_ylim(-3,3)
     ax2.set_xlabel('$U-R$',size=20)
     ax2.set_xlim(0,2.5)
+    ax2.set_ylim(-3,3)
     plt.savefig(sim.fig_dir +'SN_x1_all_%s'%sim.save_string + '_paper')
-
-    #calculate the reduced chi-squared
 
 def plot_samples_paper(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     plot_df=sim.sim_df[(sim.sim_df['z']>zmin)&(sim.sim_df['z']<zmax)]
@@ -343,7 +343,7 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
 
     plt.savefig(sim.fig_dir +'/HR_vs_age_scatter_%s'%(sim.save_string + '_paper')+label_ext)
     chis = []
-    fMASS,axMASS=plt.subplots(figsize=(8,6.5))
+    fMASSUR,(axMASS,axUR)=plt.subplots(1,2,figsize=(10,6.5),sharey=True)
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
         try:
@@ -383,8 +383,8 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
     axMASS.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     axMASS.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
     axMASS.tick_params(which='both',right=True,top=True,labelsize=16)
-    plt.savefig(sim.fig_dir +'HR_vs_c_split_mass_%s'%(sim.save_string + '_paper')+label_ext)
-    fUR,axUR=plt.subplots(figsize=(8,6.5))
+    #plt.savefig(sim.fig_dir +'HR_vs_c_split_mass_%s'%(sim.save_string + '_paper')+label_ext)
+    #fUR,axUR=plt.subplots(figsize=(8,6.5))
     #axUR.set_title(sim.save_string + '_paper',size=20)
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
 
@@ -417,13 +417,13 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
         axUR.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
         chis.append(chisq)
     axUR.set_xlabel('$c$',size=20)
-    axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    #axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axUR.legend(fontsize=13)
     axUR.set_ylim(-0.2,0.2)
     axUR.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     axUR.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
     axUR.tick_params(which='both',right=True,top=True,labelsize=16)
-    plt.savefig(sim.fig_dir +'HR_vs_c_split_UR_%s'%(sim.save_string + '_paper')+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext)
     return chis
 def plot_rms_paper(sim,label_ext='',colour_split=1,mass_split=1E+10):
 
