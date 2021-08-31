@@ -1,5 +1,6 @@
 '''A set of routines for plotting AURA simulations'''
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import seaborn as sns
@@ -9,6 +10,7 @@ import os
 import pandas as pd
 import pickle
 from astropy.stats import poisson_conf_interval
+from scipy.stats import halfnorm, skewnorm
 from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp
 
 
@@ -133,15 +135,15 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,
             res_adjusted = np.random.normal(detections[par].values,np.abs(detections[errcols[0]].values))
         if len(errcols) ==2:
 
-            a = stats.halfnorm(loc = np.zeros_like(detections[errcols[1]].values),
+            a = halfnorm(loc = np.zeros_like(detections[errcols[1]].values),
                                scale = np.abs(detections[errcols[1]].values-detections[par].values)).rvs(size=len(detections))
-            b = -1*stats.halfnorm(loc = np.zeros_like(detections[errcols[0]].values),
+            b = -1*halfnorm(loc = np.zeros_like(detections[errcols[0]].values),
                                scale = np.abs(detections[par].values-detections[errcols[0]].values)).rvs(size=len(detections))
 
             sample = a+b
             res_adjusted = detections[par].values+sample
         if lim_dist =='skewnorm':
-            res_lim_adjusted = stats.skewnorm.rvs(-7,loc=limits[par].values,
+            res_lim_adjusted = skewnorm.rvs(-7,loc=limits[par].values,
                                                   scale=0.25,size=limits[par].values.size)
         elif lim_dist =='uniform':
             res_lim_adjusted = np.random.uniform(low=np.zeros_like(limits[par].values),
