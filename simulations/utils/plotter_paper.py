@@ -170,7 +170,7 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,
     for i in range(len(bin_centers)):
         means.append(np.mean(count_arr[:,i]))
         stds.append(np.std(count_arr[:,i]))
-    return bin_centers,means,stds
+    return np.array(bin_centers),np.array(means),np.array(stds)
 def plot_sample_hists(sim):
     df = sim.sim_df
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
@@ -208,7 +208,7 @@ def plot_sample_hists(sim):
     simcounts_chi2,simbins_chi2 = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,50))
     sim_bins_chi2 = (simbins_chi2[:-1] + simbins_chi2[1:])/2
     simcounts_chi2 = simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2])
-    
+
     chi2x1 = get_red_chisq(means,simcounts_chi2,stds)
     axx1.step(sim_bins,simcounts,where='mid',color='c',lw=3)
     axx1.scatter(bin_centers,means,color='m',edgecolor='k',linewidth=0.8,zorder=6,s=50)
