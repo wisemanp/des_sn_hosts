@@ -208,6 +208,7 @@ def plot_sample_hists(sim):
     axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.subplots_adjust(wspace=0,hspace=0,)
+    plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
     return chi2x1,chi2c
 
 def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
