@@ -171,7 +171,7 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,
         means.append(np.mean(count_arr[:,i]))
         stds.append(np.std(count_arr[:,i]))
     return np.array(bin_centers),np.array(means),np.array(stds)
-def plot_sample_hists(sim):
+def plot_sample_hists(sim,label_ext=''):
     df = sim.sim_df
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['detections'] =True
