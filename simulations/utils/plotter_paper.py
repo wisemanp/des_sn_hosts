@@ -177,11 +177,16 @@ def plot_sample_hists(sim):
     df['detections'] =True
     bin_centers,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))
 
-
+    # First do the histogram for plotting
     simcounts,simbins = np.histogram(sim.sim_df['c'],density=False,bins=np.linspace(-0.3,0.3,50))
     sim_bins = (simbins[:-1] + simbins[1:])/2
     simcounts = simcounts * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins[-1]-simbins[-2])
-    chi2c = get_red_chisq(means,simcounts,stds)
+    # Now rebin the histogram to calculate the chi_squared
+    simcounts_chi2,simbins_chi2 = np.histogram(sim.sim_df['c'],density=False,bins=np.linspace(-0.3,0.3,20))
+    sim_bins_chi2 = (simbins_chi2[:-1] + simbins_chi2[1:])/2
+    simcounts_chi2 = np.array(simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2]))
+
+    chi2c = get_red_chisq(means,simcounts_chi2,stds)
     axc.step(sim_bins,simcounts,where='mid',color='c',label='Simulation',lw=3)
     axc.scatter(bin_centers,means,color='m',label='DES5YR',edgecolor='k',linewidth=0.8,zorder=6,s=50)
     axc.errorbar(bin_centers,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
@@ -199,7 +204,12 @@ def plot_sample_hists(sim):
     simcounts,simbins = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,50))
     sim_bins = (simbins[:-1] + simbins[1:])/2
     simcounts = simcounts * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins[-1]-simbins[-2])
-    chi2x1 = get_red_chisq(means,simcounts,stds)
+
+    simcounts_chi2,simbins_chi2 = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,50))
+    sim_bins_chi2 = (simbins_chi2[:-1] + simbins_chi2[1:])/2
+    simcounts_chi2 = simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2])
+    
+    chi2x1 = get_red_chisq(means,simcounts_chi2,stds)
     axx1.step(sim_bins,simcounts,where='mid',color='c',lw=3)
     axx1.scatter(bin_centers,means,color='m',edgecolor='k',linewidth=0.8,zorder=6,s=50)
     axx1.errorbar(bin_centers,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
