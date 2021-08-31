@@ -12,7 +12,8 @@ def add_age_step_choice(age,mag=0.1):
 def fit_mass_step(logM,mag=0.1,loc=10):
     return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
 
-def chisq_mu_res_nostep(x0,args):
+def chisq_mu_res_nostep_old(x0,args):
+    '''Deprecated. Use chisq_mu_res_nostep'''
     df,params,cosmo = args[0],args[1],args[2]
     fa,fb=params['fix_alpha'],params['fix_beta']
     if fa==False:
@@ -31,7 +32,7 @@ def chisq_mu_res_nostep(x0,args):
     return np.sum(((obs-mod)**2)/err**2)
 
 
-def chisq_mu_res_nostep_cov(x0,args):
+def chisq_mu_res_nostep(x0,args):
     df,params,cosmo = args[0],args[1],args[2]
     fa,fb=params['fix_alpha'],params['fix_beta']
     if fa==False:
