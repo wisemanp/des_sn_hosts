@@ -117,11 +117,12 @@ def plot_galaxy_properties_paper(sim):
     ax.set_ylabel('Normalized Frequency',size=20)
     ax.legend(fontsize=14)
 def get_hist_errs(df,par,errext = '_err',axhist=False,
-             linewidth=4.5,linestyle='-',lim_dist='skewnorm',label=None,**kwargs):
+             linewidth=4.5,linestyle='-',lim_dist='skewnorm',label=None,bins=None,n=100,**kwargs):
     df['detection'] =True
     sorted_vals = df[par].sort_values()
     sorted_vals = sorted_vals[pd.notna(sorted_vals)]
-    n=1000
+    n=n
+
     adjusted_df = pd.DataFrame()
     if type(errext)==str:
         errcols =[par+errext]
@@ -160,7 +161,7 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,
         adjusted_df[i] = ''
         adjusted_df[i] = sorted_res
         #print(sorted_res)
-        simcounts,simbins = np.histogram(sorted_res,density=False,bins=np.linspace(-0.3,0.3,20))
+        simcounts,simbins = np.histogram(sorted_res,density=False,bins=bins)
         count_arr.append(np.array(simcounts))
 
     bin_centers = (simbins [:-1] + simbins [1:])/2
@@ -171,7 +172,7 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,
         means.append(np.mean(count_arr[:,i]))
         stds.append(np.std(count_arr[:,i]))
     return np.array(bin_centers),np.array(means),np.array(stds)
-def plot_sample_hists(sim,label_ext=''):
+def plot_sample_hists(sim,label_ext='',):
     df = sim.sim_df
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['detections'] =True
