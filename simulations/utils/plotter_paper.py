@@ -205,7 +205,7 @@ def plot_sample_hists(sim):
     sim_bins = (simbins[:-1] + simbins[1:])/2
     simcounts = simcounts * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins[-1]-simbins[-2])
 
-    simcounts_chi2,simbins_chi2 = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,50))
+    simcounts_chi2,simbins_chi2 = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,20))
     sim_bins_chi2 = (simbins_chi2[:-1] + simbins_chi2[1:])/2
     simcounts_chi2 = simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2])
 
