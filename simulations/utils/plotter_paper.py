@@ -114,150 +114,104 @@ def plot_galaxy_properties_paper(sim):
     ax.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
     ax.set_ylabel('Normalized Frequency',size=20)
     ax.legend(fontsize=14)
-def plot_cs_paper(sim,df):
-    f,(ax0,ax1,ax2)=plt.subplots(1,3,figsize=(12,5))
+def get_hist_errs(df,par,errext = '_err',axhist=False,
+             linewidth=4.5,linestyle='-',lim_dist='skewnorm',label=None,**kwargs):
+    df['detection'] =True
+    sorted_vals = df[par].sort_values()
+    sorted_vals = sorted_vals[pd.notna(sorted_vals)]
+    n=1000
+    adjusted_df = pd.DataFrame()
+    if type(errext)==str:
+        errcols =[par+errext]
+    elif type(errext)==list:
+        errcols = [errext[0],errext[1]]
+    count_arr = []
+    for i in range(n):
+        detections = df[df['detection']==True]
+        limits = df[df['detection']==False]
+        if len(errcols)==1:
+            res_adjusted = np.random.normal(detections[par].values,np.abs(detections[errcols[0]].values))
+        if len(errcols) ==2:
 
-    ax0.hist(df['c'],bins=np.linspace(-0.3,0.3,100),histtype='step',density=True,label='Sim',lw=3,color='c')
-    ax0.hist(des5yr['c'],density=True,bins=20,histtype='step',label='DES5YR',lw=3,color='m')
+            a = stats.halfnorm(loc = np.zeros_like(detections[errcols[1]].values),
+                               scale = np.abs(detections[errcols[1]].values-detections[par].values)).rvs(size=len(detections))
+            b = -1*stats.halfnorm(loc = np.zeros_like(detections[errcols[0]].values),
+                               scale = np.abs(detections[par].values-detections[errcols[0]].values)).rvs(size=len(detections))
+
+            sample = a+b
+            res_adjusted = detections[par].values+sample
+        if lim_dist =='skewnorm':
+            res_lim_adjusted = stats.skewnorm.rvs(-7,loc=limits[par].values,
+                                                  scale=0.25,size=limits[par].values.size)
+        elif lim_dist =='uniform':
+            res_lim_adjusted = np.random.uniform(low=np.zeros_like(limits[par].values),
+                                                 high=limits[par].values)
+        elif lim_dist =='exp':
+            res_lim_adjusted = limits[par].values - np.random.exponential(0.5,size=limits[par].values.size)
+        elif lim_dist =='norm':
+            res_lim_adjusted = np.random.normal(limits[par].values,
+                                                np.ones_like(limits[par].values)*detections[errcol].mean())
+
+        res_adjusted = np.concatenate([res_adjusted,res_lim_adjusted])
+        sorted_res = np.sort(res_adjusted)
+        sorted_res = sorted_res[np.nonzero(sorted_res)[0]]
+        adjusted_df[i] = ''
+        adjusted_df[i] = sorted_res
+        #print(sorted_res)
+        simcounts,simbins = np.histogram(sorted_res,density=False,bins=np.linspace(-0.3,0.3,20))
+        count_arr.append(np.array(simcounts))
+
+    bin_centers = (simbins [:-1] + simbins [1:])/2
+
+    means,stds = [],[]
+    count_arr = np.array(count_arr)
+    for i in range(len(bin_centers)):
+        means.append(np.mean(count_arr[:,i]))
+        stds.append(np.std(count_arr[:,i]))
+    return bin_centers,means,stds
+def plot_sample_hists(sim):
+    df = sim.sim_df
+    f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+    df['detections'] =True
+    bin_centers,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))
+
+
+    simcounts,simbins = np.histogram(sim.sim_df['c'],density=False,bins=np.linspace(-0.3,0.3,50))
+    sim_bins = (simbins[:-1] + simbins[1:])/2
+    simcounts = simcounts * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins[-1]-simbins[-2])
+    chi2c = get_red_chisq(means,simcounts,stds)
+    axc.step(sim_bins,simcounts,where='mid',color='c',label='Simulation',lw=3)
+    axc.scatter(bin_centers,means,color='m',label='DES5YR',edgecolor='k',linewidth=0.8,zorder=6,s=50)
+    axc.errorbar(bin_centers,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
     #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
-    ax0.legend()
-    ax0.set_xlabel('c',size=20)
-    ax0.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
-    ax0.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+    axc.legend(fontsize=15)
+    axc.set_ylabel('N SNe',size=20)
+    axc.set_xlabel('c',size=20)
+    axc.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axc.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
 
     df['logmass'] = np.log10(df['mass'])
-    ax1.scatter(df['logmass'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis',label='Sim')
 
-    for counter, (n,g) in enumerate(df.groupby(pd.cut(df['logmass'],bins=np.linspace(8,12,30)))):
-        if len(g)>0:
-            label=None
-            if counter==0:
-                label = 'Sim Mean'
-            ax1.scatter(n.mid,g['c'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax1.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='c',marker=None,ls='none')
-    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30)))):
-        if len(g)>0:
-            label=None
-            if counter==0:
-                label = 'DES5YR Mean'
-            ax1.scatter(n.mid,g['c'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
-            ax1.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='m',marker=None,ls='none')
+    bin_centers,means,stds = get_hist_errs(des5yr,'x1',errext='ERR',n=100,bins=np.linspace(-3,3,20))
 
-    ax1.legend()
-    cm=ax2.scatter(df['U-R'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis',label='Sim')
+    simcounts,simbins = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,50))
+    sim_bins = (simbins[:-1] + simbins[1:])/2
+    simcounts = simcounts * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins[-1]-simbins[-2])
+    chi2x1 = get_red_chisq(means,simcounts,stds)
+    axx1.step(sim_bins,simcounts,where='mid',color='c',lw=3)
+    axx1.scatter(bin_centers,means,color='m',edgecolor='k',linewidth=0.8,zorder=6,s=50)
+    axx1.errorbar(bin_centers,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
+    axx1.set_xlabel('$x_1$',size=20)
 
-    for counter, (n,g) in enumerate(df.groupby(pd.cut(df['U-R'],bins=np.linspace(-0.5,2.5,30)))):
-        if len(g)>0:
-            label=None
-            if counter==0:
-                label = 'Sim Mean'
-            ax2.scatter(n.mid,g['c'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax2.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='c',marker=None,ls='none')
-    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
-        if len(g)>0:
-            label=None
-            if counter==0:
-                label = 'DES5YR Mean'
-            ax2.scatter(n.mid,g['c'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
-            ax2.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='m',marker=None,ls='none')
-    ax2.legend()
-
-    ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-    ax2.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-
-    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-    ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-    plt.subplots_adjust(wspace=0)
-    cb=plt.colorbar(cm,orientation='vertical',ax=ax2)#shrink=0.7)
-    ax1.set_ylabel('$c$',size=20)
-    cb.set_label('$A_V$',size=20)
-    for ax in [ax1,ax2]:
-        ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
-    ax1.set_xlabel('Stellar Mass',size=20)
-    ax2.set_xlabel('$U-R$',size=20)
-    ax2.set_xlim(0,2)
-    ax1.set_xlim(7.8,11.8)
-    ax1.set_ylim(-0.3,0.3)
-    ax2.set_ylim(-0.3,0.3)
-    plt.savefig(sim.fig_dir +'SN_c_all_%s'%sim.save_string + '_paper')
-
-    # get chi2
-def plot_x1s_paper(sim,df,return_chi=True):
-    f,(ax0,ax1,ax2)=plt.subplots(1,3,figsize=(12,5))
-    df['logmass'] = np.log10(df['mass'])
-
-    hist=ax0.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3,color=sim_colour)
-    ax0.set_xlabel('$x_1$',size=20)
-    ax0.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES5YR',color=data_colour)
     #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
-    ax0.legend()
-    ax0.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
-    ax0.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
-
-    ax1.scatter(df['logmass'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis')
-
-    for counter, (n,g) in enumerate(df.groupby(pd.cut(df['logmass'],bins=np.linspace(8,12,30)))):
-        if len(g)>0:
-            label=None
-            if counter==0:
-                label = 'Sim Mean'
-            ax1.scatter(n.mid,g['x1'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='c',marker=None,ls='none')
-    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30)))):
-        if len(g)>0:
-            label=None
-            if counter==0:
-                label = 'DES5YR Mean'
-            ax1.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
-            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='m',marker=None,ls='none')
-
-    cm=ax2.scatter(df['U-R'],df['x1'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis',label='Sim')
-
-    for counter, (n,g) in enumerate(df.groupby(pd.cut(df['U-R'],bins=np.linspace(-0.5,2.5,30)))):
-        if len(g)>0:
-            label=None
-            if counter==0:
-                label = 'Sim Mean'
-            ax2.scatter(n.mid,g['x1'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='c',marker=None,ls='none')
-    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
-        if len(g)>0:
-            label=None
-            if counter==0:
-                label = 'DES5YR Mean'
-            ax2.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
-            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='m',marker=None,ls='none')
-    ax1.legend()
-
-    plt.subplots_adjust(wspace=0)
-    cb=plt.colorbar(cm,orientation='vertical',ax=ax2)#shrink=0.7)
-    ax1.set_ylabel('$x_1$',size=20)
-    cb.set_label('$A_V$',size=20,
-                )
-    ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-    ax2.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-
-    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-    ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-    for ax in [ax1,ax2]:
-        ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
-    ax1.set_xlabel('Stellar Mass',size=20)
-    ax1.set_xlim(7.8,11.8)
-    ax1.set_ylim(-3,3)
-    ax2.set_xlabel('$U-R$',size=20)
-    ax2.set_xlim(0,2.5)
-    ax2.set_ylim(-3,3)
-    plt.savefig(sim.fig_dir +'SN_x1_all_%s'%sim.save_string + '_paper')
-
-def plot_samples_paper(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
-    plot_df=sim.sim_df[(sim.sim_df['z']>zmin)&(sim.sim_df['z']<zmax)]
-    if x1:
-        plot_x1s_paper(sim,plot_df)
-    if c:
-        plot_cs_paper(sim,plot_df)
+    #axx1.legend()
+    axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+    plt.subplots_adjust(wspace=0,hspace=0,)
+    return chi2x1,chi2c
 
 def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
-    f,ax=plt.subplots(figsize=(8,6.5))
+    '''f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string + '_paper',size=20)
     g1 = sim.sim_df[sim.sim_df['mass']>1E+10]
     g2 = sim.sim_df[sim.sim_df['mass']<=1E+10]
@@ -277,53 +231,79 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
     ax.set_xlabel('$\mu_{\mathrm{res}}$',size=20)
 
     plt.savefig(sim.fig_dir +'HR_hist_%s'%(sim.save_string + '_paper')+label_ext)
-    f,ax=plt.subplots(figsize=(8,6.5))
+    '''
+
+    f,(axMASS,axUR)=plt.subplots(1,2,figsize=(10,6),sharey=True)
     #ax.set_title(sim.save_string + '_paper',size=20)
-    cb=ax.scatter(sim.sim_df['U-R'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
-    plt.colorbar(cb)
+    cb=axUR.scatter(sim.sim_df['U-R'],sim.sim_df['mu_res'],alpha=0.3,c=sim_colour,label='Simulated data')#sim.sim_df['c'],cmap='rainbow')
+    #plt.colorbar(cb,orientation='horizontal')
+    counter=0
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['U-R'],bins=np.linspace(-0.5,2.5,30))):
         if len(g)>0:
-            ax.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),c='r',marker='D',s=100)
-            ax.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='r',marker=None,ls='none')
+            label=None
+            if counter==0:
+                label='Binned simulation'
+            else:
+                label=None
+            counter+=1
+            axUR.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),c='b',marker='D',s=100,label=label)
+            axUR.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='b',marker=None,ls='none')
+    counter=0
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['U-R'],bins=np.linspace(-0.5,2.5,3))):
         print(n.mid)
-        ax.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='c',marker='s',markersize=20,ls='none')
-
+        label=None
+        if counter==0:
+            label='Sim split at step'
+        else:
+            label=None
+        counter+=1
+        print(g['mu_res'].std()/np.sqrt(len(g['mu_res'])))
+        axUR.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),facecolor='none',
+                      edgecolor='purple',linewidth=4,marker='s',s=100,label=label)
+    leg =axUR.legend(loc='upper right',fontsize=15)
+    for lh in leg.legendHandles:
+        lh.set_alpha(1)
     step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mB_err'],sim.sim_df['U-R'],1)
-    ax.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=ax.transAxes)
-    ax.set_xlabel('$U-R$',size=20)
-    ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axUR.text(0.3,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=axUR.transAxes)
+    axUR.set_xlabel('$U-R$',size=20)
+    #axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     #ax.set_title(sim.save_string + '_paper',size=20)
-    ax.set_ylim(-0.3,0.3)
-    ax.set_xlim(-0.5,2.5)
-    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
-    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
-    ax.tick_params(right=True,top=True,which='both',labelsize=16)
-    plt.savefig(sim.fig_dir +'HR_vs_UR_scatter_%s'%(sim.save_string + '_paper')+label_ext)
-    f,ax=plt.subplots(figsize=(8,6.5))
+    axUR.set_ylim(-0.3,0.3)
+    axUR.set_xlim(-0.5,2.5)
+
+    plt.savefig('test')
+    l= axUR.get_xticklabels()
+
+    l[0]=matplotlib.text.Text(-0.5,0,' ')
+    axUR.set_xticklabels(l)
+    axUR.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
+    axUR.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axUR.tick_params(right=True,top=True,which='both',labelsize=16)
     sim.sim_df['logmass'] = np.log10(sim.sim_df['mass'])
-    cb=ax.scatter(sim.sim_df['logmass'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
-    plt.colorbar(cb)
+    cb=axMASS.scatter(sim.sim_df['logmass'],sim.sim_df['mu_res'],alpha=0.3,c=sim_colour)#c=sim.sim_df['c'],cmap='rainbow')
+    #plt.colorbar(cb)
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logmass'],bins=np.linspace(8,12,30))):
         if len(g)>0:
-            ax.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),c='r',marker='D',s=100)
-            ax.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='r',marker=None,ls='none')
+            axMASS.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),c='b',marker='D',s=100)
+            axMASS.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='b',marker=None,ls='none')
     for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logmass'],bins=np.linspace(8,12,3))):
         print(n.mid)
-        ax.errorbar(n.mid,g['mu_res'].median(),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='c',marker='s',markersize=20,)
+        axMASS.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),ecolor='b',markerfacecolor='none',markeredgecolor='purple',mew=4,marker='s',markersize=20,)
     step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mB_err'],sim.sim_df['logmass'],10)
-    ax.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=ax.transAxes)
-    ax.set_xlabel('$\log(M_*/M_{\odot})$',size=20)
-    ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
-    ax.set_xlim(7.5,12)
-    ax.set_ylim(-0.3,0.3)
-    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
-    ax.tick_params(right=True,top=True,which='both',labelsize=16)
+    axMASS.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=axMASS.transAxes)
+    axMASS.set_xlabel('$\log(M_*/M_{\odot})$',size=20)
+    axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axMASS.set_xlim(7.5,12)
+    axMASS.set_ylim(-0.3,0.3)
+    axMASS.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
+    axMASS.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axMASS.tick_params(right=True,top=True,which='both',labelsize=16)
     #ax.set_title(sim.save_string + '_paper',size=20)
+    plt.tight_layout()
+    plt.subplots_adjust(wspace=0,hspace=0)
 
-    plt.savefig(sim.fig_dir +'HR_vs_mass_scatter_%s'%(sim.save_string + '_paper')+label_ext)
-    f,ax=plt.subplots(figsize=(8,6.5))
+    plt.savefig(sim.fig_dir +'HR_vs_host_scatter_%s'%(sim.save_string + '_paper')+label_ext)
+    '''f,ax=plt.subplots(figsize=(8,6.5))
     sim.sim_df['logSN_age'] = np.log10(sim.sim_df['SN_age'])
     cb=ax.scatter(sim.sim_df['logSN_age'],sim.sim_df['mu_res'],alpha=0.3,c=sim.sim_df['c'],cmap='rainbow')
     plt.colorbar(cb)
@@ -341,9 +321,9 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
     #ax.set_title(sim.save_string + '_paper',size=20)
     ax.set_ylim(-0.3,0.3)
 
-    plt.savefig(sim.fig_dir +'/HR_vs_age_scatter_%s'%(sim.save_string + '_paper')+label_ext)
+    plt.savefig(sim.fig_dir +'/HR_vs_age_scatter_%s'%(sim.save_string + '_paper')+label_ext)'''
     chis = []
-    fMASSUR,(axMASS,axUR)=plt.subplots(1,2,figsize=(10,6.5),sharey=True)
+    fMASSUR,(axMASS,axUR)=plt.subplots(1,2,figsize=(10,6),sharey=True)
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
         try:
@@ -373,14 +353,15 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
         axMASS.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr=low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
         axMASS.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr=high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
         chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
-        axMASS.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        axMASS.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
         chis.append(chisq)
     axMASS.set_xlabel('$c$',size=20)
     axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axMASS.legend(fontsize=13)
     #axMASS.set_title(sim.save_string + '_paper',size=20)
     axMASS.set_ylim(-0.2,0.2)
-    axMASS.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axMASS.set_xlim(-0.19,0.3)
+    axMASS.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
     axMASS.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
     axMASS.tick_params(which='both',right=True,top=True,labelsize=16)
     #plt.savefig(sim.fig_dir +'HR_vs_c_split_mass_%s'%(sim.save_string + '_paper')+label_ext)
@@ -414,16 +395,26 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
         chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
         axUR.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr =low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
         axUR.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr =high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')
-        axUR.text(-0.2,-0.05,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        axUR.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
         chis.append(chisq)
     axUR.set_xlabel('$c$',size=20)
     #axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     axUR.legend(fontsize=13)
     axUR.set_ylim(-0.2,0.2)
-    axUR.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axUR.set_xlim(-0.19,0.3)
+    plt.savefig('test')
+    l= axUR.get_xticklabels()
+    print(l[0],l[1],l[2])
+    l[0]=matplotlib.text.Text(-0.2,0,' ')
+    axUR.set_xticklabels(l)
+    axUR.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
     axUR.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
-    axUR.tick_params(which='both',right=True,top=True,labelsize=16)
+    axUR.tick_params(right=True,top=True,which='both',labelsize=16)
+
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0,wspace=0)
     plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext)
+
     return chis
 def plot_rms_paper(sim,label_ext='',colour_split=1,mass_split=1E+10):
 

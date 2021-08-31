@@ -8,6 +8,7 @@ import itertools
 import os
 import pandas as pd
 import pickle
+import numpy as np
 from astropy.stats import poisson_conf_interval
 from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp
 
@@ -25,7 +26,6 @@ split_colour_1 = '#f28500'
 split_colour_2 = '#8500f2'
 sim_colour= 'c'
 data_colour = 'm'
-
 
 def plot_galaxy_properties(sim):
 
