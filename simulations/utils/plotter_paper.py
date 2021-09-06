@@ -274,7 +274,7 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
         print(g['mu_res'].std()/np.sqrt(len(g['mu_res'])))
         axUR.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),facecolor='none',
                       edgecolor='purple',linewidth=4,marker='s',s=100,label=label)
-    leg =axUR.legend(loc='lower left',fontsize=15)
+    leg =axUR.legend(loc='upper right',fontsize=15)
     for lh in leg.legendHandles:
         lh.set_alpha(1)
     step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mB_err'],sim.sim_df['U-R'],1)
@@ -413,7 +413,7 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
         chis.append(chisq)
     axUR.set_xlabel('$c$',size=20)
     #axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
-    axUR.legend(fontsize=13)
+    axUR.legend(fontsize=13,loc='lower left')
     axUR.set_ylim(-0.2,0.2)
     axUR.set_xlim(-0.19,0.3)
     plt.savefig('test')
