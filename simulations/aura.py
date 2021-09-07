@@ -147,6 +147,8 @@ class Sim(SN_Model):
 
         args['Av_grid'] = z_df.Av.unique()
         args['mass'] = z_df.loc[m_av0_samples].mass.values
+        args['ssfr'] = z_df.loc[m_av0_samples].ssfr.values
+        args['sfr'] = z_df.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
         args['mean_ages'] = z_df.loc[m_av0_samples].mean_age.values
         sn_ages = [np.random.choice(z_df.loc[i,'SN_ages'],p=z_df.loc[i,'SN_age_dist'].fillna(0)/z_df.loc[i,'SN_age_dist'].fillna(0).sum()) for i in m_av0_samples]
         args['SN_age'] = np.array(sn_ages)
