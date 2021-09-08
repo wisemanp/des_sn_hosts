@@ -14,7 +14,7 @@ from scipy.optimize import minimize
 from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, single_schechter, double_schechter
 from .utils.plotter import *
-from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step
+from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
 
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
@@ -198,6 +198,12 @@ class Sim(SN_Model):
     def fit_mu_res_nostep(self,params):
         x0 =[0.1,3.1,-19.5]
         res =minimize(chisq_mu_res_nostep,x0,args=[self.sim_df,params,self.cosmo])
+        self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
+        self.res = res
+
+    def fit_mu_res_nostep_old(self,params):
+        x0 =[0.1,3.1,-19.5]
+        res =minimize(chisq_mu_res_nostep_old,x0,args=[self.sim_df,params,self.cosmo])
         self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
         self.res = res
 
