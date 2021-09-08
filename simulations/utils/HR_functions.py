@@ -44,12 +44,12 @@ def chisq_mu_res_nostep(x0,args):
     else:
         beta=fb
     M0 =x0[2]
-    sigint = x0[3]
+
     mod = cosmo.distmod(df['z']).value
 
     obs = df['mB'] +alpha*df['x1'] - beta*df['c'] -M0
-    var =  df['mB_err']**2 + alpha**2*df['x1_err']**2 + beta**2*df['c_err']**2 + sigint**2
-    return np.abs((np.sum(((obs-mod)**2)/var)/(len(df)-4)) -1)
+    var =  df['mB_err']**2 + alpha**2*df['x1_err']**2 + beta**2*df['c_err']**2
+    returnnp.sum(((obs-mod)**2)/var)
 
 def get_mu_res_nostep(x0,df,params,cosmo):
 
