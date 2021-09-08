@@ -196,7 +196,7 @@ class Sim(SN_Model):
         self.getter = getattr(self,self.config['mu_res_fitter']['fitter'].replace('fit','get'))
         self.getter(self.res['x'],self.config['mu_res_fitter']['params'])
     def fit_mu_res_nostep(self,params):
-        x0 =[0.1,3.1,-19.5]
+        x0 =[0.1,3.1,-19.5,0.1]
         res =minimize(chisq_mu_res_nostep,x0,args=[self.sim_df,params,self.cosmo])
         self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
         self.res = res
