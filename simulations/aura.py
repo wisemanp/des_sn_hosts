@@ -169,7 +169,7 @@ class Sim(SN_Model):
         args['mean_ages'] = gal_df['mean_age'].values
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
         args = self.x1_func(args,self.config['x1_model']['params'])
-        args['mB'] = self.mb_func(args,self.config['mB_model']['params'])
+        args['mB'],args['beta_SN'] = self.mb_func(args,self.config['mB_model']['params'])
         args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.385*(args['mB'][i]-1.5) - 10)+0.03,np.max([0.003,0.003*(args['mB'][i]-20)]))])
                          for i in range(len(args['mB']))]
 
