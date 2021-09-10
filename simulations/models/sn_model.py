@@ -3,7 +3,7 @@ from .dust_models import age_rv_step, mass_rv_step, age_rv_linear, mass_rv_linea
 from .colour_models import c_int_asymm, c_int_gauss, c_int_plus_dust
 from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix
 from .host_dust import choose_Av_SN_E_rv_fix, choose_Av_custom, choose_Av_SN_E_Rv_norm, choose_Av_SN_E_Rv_step
-from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta
+from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta,tripp_rv_two_beta_popns_age2
 class SN_Model():
     def __init__(self):
         '''
