@@ -4,6 +4,7 @@ from scipy.stats import norm, expon
 law_Rvs ={
     'C00':4.05
 }
+
 def age_rv_step(age, rv_young=3.0, rv_old=2.0, rv_sig_young=0.5, rv_sig_old=0.5, age_split=3):
     """
 
@@ -134,7 +135,9 @@ def E_exp_age(age,Tau_low,Tau_high,age_split=3):
             E_high.rvs(size=len(age)) * (age > age_split))
 
 def random_rv(Rv_mu,Rv_sig,n):
-    return np.random.normal(Rv_mu,Rv_sig,size=n)
+    Rv_norm = norm(Rv_mu,Rv_sig)
+    return Rv_norm.rvs(size=n)
+    
 def E_calc(Av,Rv):
     '''
 
