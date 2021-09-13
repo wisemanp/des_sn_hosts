@@ -144,16 +144,18 @@ class Sim(SN_Model):
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
         # The stellar population arrays are identical no matter what the Av is.
         m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
-
+        print('here1')
         args['Av_grid'] = z_df.Av.unique()
         args['mass'] = z_df.loc[m_av0_samples].mass.values
         args['ssfr'] = z_df.loc[m_av0_samples].ssfr.values
         args['sfr'] = z_df.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
         args['mean_ages'] = z_df.loc[m_av0_samples].mean_age.values
+        print('here1')
         sn_ages = [np.random.choice(z_df.loc[i,'SN_ages'],p=z_df.loc[i,'SN_age_dist'].fillna(0)/z_df.loc[i,'SN_age_dist'].fillna(0).sum()) for i in m_av0_samples]
         args['SN_age'] = np.array(sn_ages)
         args['rv'] = self.rv_func(args,self.config['SN_rv_model']['params'])
-        print('here1')
+        print('here3')
+        
         if  self.config['SN_E_model']['model'] in ['E_calc','E_from_host_random']:
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
             args['E'] = self.E_func(args, self.config['SN_E_model']['params'])
@@ -164,12 +166,12 @@ class Sim(SN_Model):
 
         args['host_Av'] = self.host_Av_func(args,self.config['Host_Av_model']['params'])
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
-        print('here 2')
+
         gal_df = z_df.loc[m_av_samples_inds]
         args['U-R'] = gal_df['U'].values - gal_df['R'].values #gal_df['U_R'].values
-        print('here 3')
+
         args['mean_ages'] = gal_df['mean_age'].values
-        print('here 4')
+
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
         args = self.x1_func(args,self.config['x1_model']['params'])
         args['mB'],args['beta_SN'] = self.mb_func(args,self.config['mB_model']['params'])
