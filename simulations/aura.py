@@ -129,24 +129,25 @@ class Sim(SN_Model):
         z_df = self.multi_df.loc['%.2f' % z]
         z_df['N_total'].replace(0., np.NaN, inplace=True)
         z_df = z_df.dropna(subset=['N_total'])
+        print('here 0')
         z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
+        print('here 1')
         z_df['N_SN_int'] = z_df['N_SN_float'].astype(int)
+        print('here2')
         # Now we set up some index arrays so that we can sample masses properly
         m_inds = ['%.2f' % m for m in z_df['mass'].unique()]
         m_rates = []
-        print('here 1')
+        print('here 3')
         for m in m_inds:
             m_df = z_df.loc[m]
             mav_inds = (m, '%.5f' % (m_df.Av.unique()[0]))
             m_rates.append(z_df.loc[mav_inds]['N_SN_int'])
-        print('here 2')
+
         # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
         m_samples = np.random.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
-        print('here3')
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
         # The stellar population arrays are identical no matter what the Av is.
         m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
-        print('here4')
         args['Av_grid'] = z_df.Av.unique()
         args['mass'] = z_df.loc[m_av0_samples].mass.values
         args['ssfr'] = z_df.loc[m_av0_samples].ssfr.values
