@@ -126,15 +126,10 @@ class Sim(SN_Model):
         args = {}
         args['n'] = int(n_samples)
         args['distmod'] = self.cosmo.distmod(z).value
-        print('here 1')
         z_df = self.multi_df.loc['%.2f' % z]
-        print('here 2')
         z_df['N_total'].replace(0., np.NaN, inplace=True)
-        print('here 3')
         z_df = z_df.dropna(subset=['N_total'])
-        print('here 4')
         z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
-        print('here 5')
         z_df['N_SN_int'] = z_df['N_SN_float'].astype(int)
         # Now we set up some index arrays so that we can sample masses properly
         m_inds = ['%.2f' % m for m in z_df['mass'].unique()]
@@ -158,7 +153,7 @@ class Sim(SN_Model):
         sn_ages = [np.random.choice(z_df.loc[i,'SN_ages'],p=z_df.loc[i,'SN_age_dist'].fillna(0)/z_df.loc[i,'SN_age_dist'].fillna(0).sum()) for i in m_av0_samples]
         args['SN_age'] = np.array(sn_ages)
         args['rv'] = self.rv_func(args,self.config['SN_rv_model']['params'])
-
+        print('here1')
         if  self.config['SN_E_model']['model'] in ['E_calc','E_from_host_random']:
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
             args['E'] = self.E_func(args, self.config['SN_E_model']['params'])
@@ -169,9 +164,12 @@ class Sim(SN_Model):
 
         args['host_Av'] = self.host_Av_func(args,self.config['Host_Av_model']['params'])
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
+        print('here 2')
         gal_df = z_df.loc[m_av_samples_inds]
         args['U-R'] = gal_df['U'].values - gal_df['R'].values #gal_df['U_R'].values
+        print('here 3')
         args['mean_ages'] = gal_df['mean_age'].values
+        print('here 4')
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
         args = self.x1_func(args,self.config['x1_model']['params'])
         args['mB'],args['beta_SN'] = self.mb_func(args,self.config['mB_model']['params'])
