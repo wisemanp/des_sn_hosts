@@ -129,14 +129,14 @@ class Sim(SN_Model):
         args['n'] = int(n_samples)
         args['distmod'] = self.cosmo.distmod(z).value
 
-        z_df = self.multi_df.loc['%.2f' % z]
+        z_df = self.multi_df.loc['%.2f' % z].copy()
 
         z_df['N_total'].replace(0., np.NaN, inplace=True)
         z_df.dropna(subset=['N_total'],inplace=True)
 
         z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
 
-        z_df['N_SN_int'] = z_df['N_SN_float'].astype(int)
+        z_df['N_SN_int'] = z_df.loc[:,'N_SN_float'].astype(int)
 
         # Now we set up some index arrays so that we can sample masses properly
         m_inds = ['%.2f' % m for m in z_df['mass'].unique()]
