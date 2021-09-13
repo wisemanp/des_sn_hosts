@@ -136,11 +136,11 @@ class Sim(SN_Model):
         z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
 
         z_df['N_SN_int'] = z_df['N_SN_float'].astype(int)
-        )
+        
         # Now we set up some index arrays so that we can sample masses properly
         m_inds = ['%.2f' % m for m in z_df['mass'].unique()]
         m_rates = []
-        
+
         for m in m_inds:
             m_df = z_df.loc[m]
             mav_inds = (m, '%.5f' % (m_df.Av.unique()[0]))
