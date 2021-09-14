@@ -363,7 +363,15 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
     #axMASS.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
     if obs:
         low =lisa_data['global_mass']['low']
+        for x in low.keys():
+            if x!='c':
+                low[x] = np.array(low[x])[~np.isnan(low['c'])]
+        low['c']=np.array(low['c'])[~np.isnan(low['c'])]
         high=lisa_data['global_mass']['high']
+        for x in high.keys():
+            if x!='c':
+                high[x] = np.array(high[x])[~np.isnan(high['c'])]
+        high['c'] = np.array(high['c'])[~np.isnan(high['c'])]
         axMASS.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr=low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
         axMASS.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr=high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
         chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
@@ -405,7 +413,15 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
 
     if obs:
         low =lisa_data['global_U-R']['low']
+        for x in low.keys():
+            if x!='c':
+                low[x] = np.array(low[x])[~np.isnan(low['c'])]
+        low['c']=np.array(low['c'])[~np.isnan(low['c'])]
         high=lisa_data['global_U-R']['high']
+        for x in high.keys():
+            if x!='c':
+                high[x] = np.array(high[x])[~np.isnan(high['c'])]
+        high['c'] = np.array(high['c'])[~np.isnan(high['c'])]
         chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
         axUR.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr =low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
         axUR.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr =high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')

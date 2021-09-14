@@ -133,6 +133,22 @@ def calculate_step(mu_res,mu_res_err,host_val,split):
     sig = np.abs(step/np.sqrt((np.std(errors_left)/np.sqrt(len(errors_left)))+(np.std(errors_right)/np.sqrt(len(errors_right)))))
     return step, sig
 def get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi):
+
+    if model_c_mids_lo[0] < low['c'][0]:
+        pass
+    else:
+        for x in low.keys():
+            print('cutting low')
+            low[x] = low[x][1:]
+
+
+    if model_c_mids_hi[0] < high['c'][0]:
+        pass
+    else:
+        for x in high.keys():
+            print('cutting high')
+            high[x] = high[x][1:]
+        
     interp_lo = interp1d(np.array(model_c_mids_lo),np.array(model_hr_mids_lo))
     mod_lo = interp_lo(np.array(low['c']))
     interp_hi = interp1d(np.array(model_c_mids_hi),np.array(model_hr_mids_hi))
