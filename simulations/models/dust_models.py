@@ -80,7 +80,7 @@ def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, a
     Rv_sigs = Rv_sig_low+((age - age_fix_low)*sig_slope)
     Rvs = []
     for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
-        Rvs.append(np.random.normal(Rv_mu,Rv_sig))
+        Rvs.append(np.random.normal(rv_mu,rv_sig))
     return np.clip(np.array(Rvs),a_min=1.2,a_max=None)
 
 def E_exp(TauE,n=1):
@@ -137,7 +137,7 @@ def E_exp_age(age,Tau_low,Tau_high,age_split=3):
 def random_rv(Rv_mu,Rv_sig,n):
     Rv_norm = norm(Rv_mu,Rv_sig)
     return Rv_norm.rvs(size=n)
-    
+
 def E_calc(Av,Rv):
     '''
 
