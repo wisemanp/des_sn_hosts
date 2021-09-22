@@ -148,7 +148,7 @@ def get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_
         for x in high.keys():
             print('cutting high')
             high[x] = high[x][1:]
-        
+
     interp_lo = interp1d(np.array(model_c_mids_lo),np.array(model_hr_mids_lo))
     mod_lo = interp_lo(np.array(low['c']))
     interp_hi = interp1d(np.array(model_c_mids_hi),np.array(model_hr_mids_hi))
@@ -159,6 +159,25 @@ def get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_
     mod_interp = np.concatenate([mod_lo,mod_hi])
     redchisq = get_red_chisq(obs,mod_interp,err)
     return redchisq
+
+def get_red_chisq_interp_splitx1(obs,model):
+    all_obs,all_err,all_mod = [],[],[]
+    for key in obs.keys():
+
+        while True:
+            if model[key]['c'][0] < obs[key]['c'][0]:
+                break
+            else:
+                for x in obs[key].keys():
+                    obs[key][x] = obs[key][x][1:]
+        interp = interp1d(np.array(model[key]['c']),np.array(model[key]['hr_mids']))
+        mod = interp(np.array(obs[key]['c']))
+        all_obs = np.concatenate([all_obs,np.array(obs[key]['hr'])])
+        all_err = np.concatenate([all_err,np.array(obs[key]['hr_err'])])
+        all_mod = np.concatenate([all_mod,mod])
+    redchisq = get_red_chisq(all_obs,all_mod,all_err)
+    return redchisq
+
 def get_red_chisq(obs,mod,err):
 
     chisq = np.nansum((obs - mod)**2/err**2)
