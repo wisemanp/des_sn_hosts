@@ -624,7 +624,6 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
     sim.sim_df['log_ssfr'] = np.log10(sim.sim_df['ssfr'])
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
 
-        print(n.mid)
         g1 = g[g['log_ssfr']>ssfr_hi_split]
         g1x1hi = g1[g1['x1']>x1_split]
         if len(g1x1hi)>0:
@@ -683,7 +682,7 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
           'hi_hi':{'c':model_c_mids_hi_hi ,'hr_mids':model_hr_mids_hi_hi}
           }
     chisq = get_red_chisq_interp_splitx1(obs,mod)
-    print(chisq)
+    
     ax.set_xlabel('$c$',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     ax.legend(fontsize=10)
