@@ -116,8 +116,7 @@ def plot_galaxy_properties_paper(sim):
     ax.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
     ax.set_ylabel('Normalized Frequency',size=20)
     ax.legend(fontsize=14)
-def get_hist_errs(df,par,errext = '_err',axhist=False,
-             linewidth=4.5,linestyle='-',lim_dist='skewnorm',label=None,bins=None,n=100,**kwargs):
+def get_hist_errs(df,par,errext = '_err',axhist=False,linewidth=4.5,linestyle='-',lim_dist='skewnorm',label=None,bins=None,n=100,**kwargs):
     df['detection'] =True
     sorted_vals = df[par].sort_values()
     sorted_vals = sorted_vals[pd.notna(sorted_vals)]
@@ -609,6 +608,231 @@ def plot_rms_paper(sim,label_ext='',colour_split=1,mass_split=1E+10):
     axURrms.set_ylim(0,0.4)
     plt.savefig(sim.fig_dir +'HR_rms_c_split_UR_%s'%(sim.save_string + '_paper')+label_ext)
 
+def plot_mu_res_paper_splitx1(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
+    '''f,ax=plt.subplots(figsize=(8,6.5))
+    ax.set_title(sim.save_string + '_paper',size=20)
+    g1 = sim.sim_df[sim.sim_df['mass']>1E+10]
+    g2 = sim.sim_df[sim.sim_df['mass']<=1E+10]
+    labelhi='High mass Host'
+    labello='Low mass Host'
+    ax.scatter(g1['c'],g1['mu_res'],c=split_colour_2,marker='o',s=50,alpha=0.3,label=labelhi,edgecolor='w',linewidth=0.5)
+    ax.scatter(g2['c'],g2['mu_res'],c=split_colour_1,marker='o',s=50,alpha=0.3,edgecolor='w',linewidth=0.5,label=labello,)
+    ax.set_xlabel('$c$',size=20)
+    ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    ax.legend(fontsize=16)
+    f,ax=plt.subplots(figsize=(8,6.5))
+    #ax.set_title(sim.save_string + '_paper',size=20)
+    ax.hist(sim.sim_df['mu_res'],bins=100)
+    ax.set_xlabel('$\mu_{\mathrm{res}}$',size=20)
+    plt.savefig(sim.fig_dir +'HR_hist_%s'%(sim.save_string + '_paper')+label_ext)
+    '''
+
+    f,(axMASS,axUR)=plt.subplots(1,2,figsize=(12,6),sharey=True)
+    #ax.set_title(sim.save_string + '_paper',size=20)
+    cb=axUR.scatter(sim.sim_df['U-R'],sim.sim_df['mu_res'],alpha=0.3,c=sim_colour,label='Simulated data')#sim.sim_df['c'],cmap='rainbow')
+    #plt.colorbar(cb,orientation='horizontal')
+    counter=0
+    for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['U-R'],bins=np.linspace(-0.5,2.5,30))):
+        if len(g)>0:
+            label=None
+            if counter==0:
+                label='Binned simulation'
+            else:
+                label=None
+            counter+=1
+            axUR.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),c='b',marker='D',s=100,label=label)
+            axUR.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='b',marker=None,ls='none')
+    counter=0
+    for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['U-R'],bins=np.linspace(-0.5,2.5,3))):
+        print(n.mid)
+        label=None
+        if counter==0:
+            label='Sim split at step'
+        else:
+            label=None
+        counter+=1
+        print(g['mu_res'].std()/np.sqrt(len(g['mu_res'])))
+        axUR.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),facecolor='none',
+                      edgecolor='purple',linewidth=4,marker='s',s=100,label=label)
+    leg =axUR.legend(loc='upper right',fontsize=15)
+    for lh in leg.legendHandles:
+        lh.set_alpha(1)
+    step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mB_err'],sim.sim_df['U-R'],1)
+    axUR.text(0.3,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=axUR.transAxes)
+    axUR.set_xlabel('$U-R$',size=20)
+    #axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    #ax.set_title(sim.save_string + '_paper',size=20)
+    axUR.set_ylim(-0.3,0.3)
+    axUR.set_xlim(-0.5,2.5)
+
+    plt.savefig('test')
+    l= axUR.get_xticklabels()
+
+    l[0]=matplotlib.text.Text(-0.5,0,' ')
+    axUR.set_xticklabels(l)
+    axUR.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
+    axUR.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axUR.tick_params(right=True,top=True,which='both',labelsize=16)
+    sim.sim_df['logmass'] = np.log10(sim.sim_df['mass'])
+    cb=axMASS.scatter(sim.sim_df['logmass'],sim.sim_df['mu_res'],alpha=0.3,c=sim_colour)#c=sim.sim_df['c'],cmap='rainbow')
+    #plt.colorbar(cb)
+    for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logmass'],bins=np.linspace(8,12,30))):
+        if len(g)>0:
+            axMASS.scatter(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),c='b',marker='D',s=100)
+            axMASS.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),c='b',marker=None,ls='none')
+    for n,g in sim.sim_df.groupby(pd.cut(sim.sim_df['logmass'],bins=np.linspace(8,12,3))):
+        print(n.mid)
+        axMASS.errorbar(n.mid,np.average(g['mu_res'],weights=(1/(g['mu_res_err'])**2)),yerr=g['mu_res'].std()/np.sqrt(len(g['mu_res'])),ecolor='b',markerfacecolor='none',markeredgecolor='purple',mew=4,marker='s',markersize=20,)
+    step,sig = calculate_step(sim.sim_df['mu_res'], sim.sim_df['mB_err'],sim.sim_df['logmass'],10)
+    axMASS.text(0.1,0.1,'%.3f mag, $%.2f \sigma$'%(step,sig),transform=axMASS.transAxes)
+    axMASS.set_xlabel('$\log(M_*/M_{\odot})$',size=20)
+    axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axMASS.set_xlim(7.5,12)
+    axMASS.set_ylim(-0.3,0.3)
+    axMASS.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
+    axMASS.yaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axMASS.tick_params(right=True,top=True,which='both',labelsize=16)
+    #ax.set_title(sim.save_string + '_paper',size=20)
+    plt.tight_layout()
+    plt.subplots_adjust(wspace=0,hspace=0)
+
+    plt.savefig(sim.fig_dir +'HR_vs_host_scatter_%s'%(sim.save_string + '_paper')+label_ext)
+
+    chis = []
+    fMASSUR,(axMASS,axUR)=plt.subplots(1,2,figsize=(10,6),sharey=True)
+    model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi_hi , model_hr_mids_hi_hi ,  model_hr_errs_hi_hi, model_c_mids_hi_lo , model_hr_mids_hi_lo ,  model_hr_errs_hi_lo =[],[],[],[],[],[],[],[],[]
+
+    x1_split=-0.3
+
+    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
+        try:
+            g1 = g[g['mass']>mass_split]
+            g1x1hi = g1[g1['x1']>x1_split]
+
+            model_hr_mids_hi_hi.append(np.average(g1x1hi['mu_res'],weights=1/g1x1hi['mu_res_err']**2))
+            model_hr_errs_hi_hi.append(g1x1hi['mu_res'].std()/np.sqrt(len(g1x1hi['mu_res'])))
+            model_c_mids_hi_hi.append(n.mid)
+
+            g1x1lo = g1[g1['x1']<=x1_split]
+
+            model_hr_mids_hi_lo.append(np.average(g1x1lo['mu_res'],weights=1/g1x1lo['mu_res_err']**2))
+            model_hr_errs_hi_lo.append(g1x1lo['mu_res'].std()/np.sqrt(len(g1x1lo['mu_res'])))
+            model_c_mids_hi_lo.append(n.mid)
+
+
+            g2 = g[g['mass']<=mass_split]
+
+            model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
+            model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
+            model_c_mids_lo.append(n.mid)
+        except:
+            pass
+
+    axMASS.plot(model_c_mids_lo ,model_hr_mids_lo,c=split_colour_1,lw=3,label='Model Low Mass')
+    axMASS.fill_between(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=split_colour_1,lw=0.5,ls=':',alpha=0.3)
+
+    axMASS.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,c=split_colour_2,lw=3,label='Model High Mass High x1',ls='--')
+    axMASS.fill_between(model_c_mids_hi_hi ,np.array(model_hr_mids_hi_hi)-np.array(model_hr_errs_hi_hi),np.array(model_hr_mids_hi_hi)+np.array(model_hr_errs_hi_hi),color=split_colour_2,lw=0.5,ls=':',alpha=0.3)
+
+    axMASS.plot(model_c_mids_hi_lo ,model_hr_mids_hi_lo,c='m',lw=3,label='Model High Mass Low x1',ls=':')
+    axMASS.fill_between(model_c_mids_hi_lo ,np.array(model_hr_mids_hi_lo)-np.array(model_hr_errs_hi_lo),np.array(model_hr_mids_hi_lo)+np.array(model_hr_errs_hi_lo),color='m',lw=0.5,ls=':',alpha=0.3)
+
+    #axMASS.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
+    if obs:
+        low =lisa_data['global_mass']['low']
+        for x in low.keys():
+            if x!='c':
+                low[x] = np.array(low[x])[~np.isnan(low['c'])]
+        low['c']=np.array(low['c'])[~np.isnan(low['c'])]
+        high=lisa_data['global_mass']['high']
+        for x in high.keys():
+            if x!='c':
+                high[x] = np.array(high[x])[~np.isnan(high['c'])]
+        high['c'] = np.array(high['c'])[~np.isnan(high['c'])]
+        axMASS.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr=low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
+        axMASS.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr=high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
+        #chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
+        #axMASS.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        #chis.append(chisq)
+    axMASS.set_xlabel('$c$',size=20)
+    axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axMASS.legend(fontsize=10)
+    #axMASS.set_title(sim.save_string + '_paper',size=20)
+    axMASS.set_ylim(-0.2,0.2)
+    axMASS.set_xlim(-0.19,0.3)
+    axMASS.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axMASS.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
+    axMASS.tick_params(which='both',right=True,top=True,labelsize=16)
+    #plt.savefig(sim.fig_dir +'HR_vs_c_split_mass_%s'%(sim.save_string + '_paper')+label_ext)
+    #fUR,axUR=plt.subplots(figsize=(8,6.5))
+    #axUR.set_title(sim.save_string + '_paper',size=20)
+    model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi_hi , model_hr_mids_hi_hi ,  model_hr_errs_hi_hi, model_c_mids_hi_lo , model_hr_mids_hi_lo ,  model_hr_errs_hi_lo =[],[],[],[],[],[],[],[],[]
+
+    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
+        try:
+            g1 = g[g['U-R']>colour_split]
+            g1x1hi = g1[g1['x1']>x1_split]
+
+            model_hr_mids_hi_hi.append(np.average(g1x1hi['mu_res'],weights=1/g1x1hi['mu_res_err']**2))
+            model_hr_errs_hi_hi.append(g1x1hi['mu_res'].std()/np.sqrt(len(g1x1hi['mu_res'])))
+            model_c_mids_hi_hi.append(n.mid)
+
+            g1x1lo = g1[g1['x1']<=x1_split]
+
+            model_hr_mids_hi_lo.append(np.average(g1x1lo['mu_res'],weights=1/g1x1lo['mu_res_err']**2))
+            model_hr_errs_hi_lo.append(g1x1lo['mu_res'].std()/np.sqrt(len(g1x1lo['mu_res'])))
+            model_c_mids_hi_lo.append(n.mid)
+            g2 = g[g['U-R']<=colour_split]
+
+            model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
+            model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
+            model_c_mids_lo.append(n.mid)
+        except:
+            pass
+
+    axUR.plot(model_c_mids_lo ,model_hr_mids_lo,c=split_colour_1,lw=3,label='Model Blue Host')
+    axUR.fill_between(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=split_colour_1,lw=0.5,ls=':',alpha=0.3)
+    axUR.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,c=split_colour_2,lw=3,label='Model Red Host High x1',ls='--')
+    axUR.fill_between(model_c_mids_hi_hi ,np.array(model_hr_mids_hi_hi)-np.array(model_hr_errs_hi_hi),np.array(model_hr_mids_hi_hi)+np.array(model_hr_errs_hi_hi),color=split_colour_2,lw=0.5,ls=':',alpha=0.3)
+
+    axUR.plot(model_c_mids_hi_lo ,model_hr_mids_hi_lo,c='m',lw=3,label='Model Blue Host Low x1',ls=':')
+    axUR.fill_between(model_c_mids_hi_lo ,np.array(model_hr_mids_hi_lo)-np.array(model_hr_errs_hi_lo),np.array(model_hr_mids_hi_lo)+np.array(model_hr_errs_hi_lo),color='m',lw=0.5,ls=':',alpha=0.3)
+
+    if obs:
+        low =lisa_data['global_U-R']['low']
+        for x in low.keys():
+            if x!='c':
+                low[x] = np.array(low[x])[~np.isnan(low['c'])]
+        low['c']=np.array(low['c'])[~np.isnan(low['c'])]
+        high=lisa_data['global_U-R']['high']
+        for x in high.keys():
+            if x!='c':
+                high[x] = np.array(high[x])[~np.isnan(high['c'])]
+        high['c'] = np.array(high['c'])[~np.isnan(high['c'])]
+        #chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
+        axUR.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr =low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
+        axUR.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr =high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')
+        #axUR.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        #chis.append(chisq)
+    axUR.set_xlabel('$c$',size=20)
+    #axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axUR.legend(fontsize=10,loc='lower left')
+    axUR.set_ylim(-0.2,0.2)
+    axUR.set_xlim(-0.19,0.3)
+    plt.savefig('test')
+    l= axUR.get_xticklabels()
+    print(l[0],l[1],l[2])
+    l[0]=matplotlib.text.Text(-0.2,0,' ')
+    axUR.set_xticklabels(l)
+    axUR.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axUR.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
+    axUR.tick_params(right=True,top=True,which='both',labelsize=16)
+
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0,wspace=0)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext)
+
+    return chis
 
 def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
     mvdf = pd.read_csv('/media/data3/wiseman/des/AURA/data/data_nozcut_snnv19.csv')
