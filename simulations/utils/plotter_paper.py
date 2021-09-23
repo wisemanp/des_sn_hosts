@@ -665,12 +665,20 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
     ax.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,c=split_colour_2,lw=3,label='Model high sSFR High x1',ls='--',color=youngest)
     ax.fill_between(model_c_mids_hi_hi ,np.array(model_hr_mids_hi_hi)-np.array(model_hr_errs_hi_hi),np.array(model_hr_mids_hi_hi)+np.array(model_hr_errs_hi_hi),color=youngest,lw=0.5,ls=':',alpha=0.1)
 
-    ax.errorbar(mvdf['avg_colour_log(sSFR)<-10.6,x_1<-0.3'],mvdf['avg_mures_log(sSFR)<-10.6,x_1<-0.3'],yerr=mvdf['stdm_mures_log(sSFR)<-10.6,x_1<-0.3'],marker='D',color=oldest,linestyle='none',markersize=10)
-    ax.errorbar(mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1<-0.3'],mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'],yerr=mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'],marker='D',color=oldish,linestyle='none',markersize=10)
+    ax.errorbar(mvdf['avg_colour_log(sSFR)<-10.6,x_1<-0.3'],mvdf['avg_mures_log(sSFR)<-10.6,x_1<-0.3'],
+        yerr=mvdf['stdm_mures_log(sSFR)<-10.6,x_1<-0.3'],marker='D',
+        color=oldest,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data low sSFR; low $x_1$')
+    ax.errorbar(mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1<-0.3'],mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'],
+        yerr=mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'],marker='o',
+        color=oldish,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data mid sSFR; low $x_1$')
 
-    ax.errorbar(mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1>-0.3'],mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'],yerr=mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'],marker='D',color=youngish,linestyle='none',markersize=10)
+    ax.errorbar(mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1>-0.3'],mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'],
+        yerr=mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'],marker='s',
+        color=youngish,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data mid sSFR; high $x_1$')
 
-    ax.errorbar(mvdf['avg_colour_log(sSFR)<-9.5,x_1>-0.3'],mvdf['avg_mures_log(sSFR)<-9.5,x_1>-0.3'],yerr=mvdf['stdm_mures_log(sSFR)<-9.5,x_1>-0.3'],marker='D',color=youngest,linestyle='none',markersize=10)
+    ax.errorbar(mvdf['avg_colour_log(sSFR)<-9.5,x_1>-0.3'],mvdf['avg_mures_log(sSFR)<-9.5,x_1>-0.3'],
+        yerr=mvdf['stdm_mures_log(sSFR)<-9.5,x_1>-0.3'],marker='^',
+        color=youngest,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data high sSFR; high $x_1$')
     obs = {'lo_lo':{'c':mvdf['avg_colour_log(sSFR)<-10.6,x_1<-0.3'].values,'hr':mvdf['avg_mures_log(sSFR)<-10.6,x_1<-0.3'].values,'hr_err':mvdf['stdm_mures_log(sSFR)<-10.6,x_1<-0.3'].values},
            'mid_lo':{'c':mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1<-0.3'].values,'hr':mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'].values,'hr_err':mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'].values},
            'mid_hi':{'c':mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1>-0.3'].values,'hr':mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'].values,'hr_err':mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'].values},
@@ -685,7 +693,7 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
     ax.text(0.,0.2,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
     ax.set_xlabel('$c$',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
-    ax.legend(fontsize=10)
+    ax.legend(fontsize=10,ncol=2)
     #axMASS.set_title(sim.save_string + '_paper',size=20)
     ax.set_ylim(-0.3,0.3)
     ax.set_xlim(-0.19,0.3)
