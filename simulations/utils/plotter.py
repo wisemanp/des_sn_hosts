@@ -192,7 +192,7 @@ def plot_x1s(sim,df,return_chi=True):
 
     f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['logmass'] = np.log10(df['mass'])
-    ax1.scatter(df['logmass'],df['x1'],alpha=0.6,edgecolor='w',lw=0.1,)
+    ax1.scatter(df['logmass'],df['x1'],alpha=0.4,edgecolor='w',lw=0.1,label='Sim')
 
     for counter, (n,g) in enumerate(df.groupby(pd.cut(df['logmass'],bins=np.linspace(8,12,30)))):
         if len(g)>0:
@@ -200,14 +200,14 @@ def plot_x1s(sim,df,return_chi=True):
             if counter==0:
                 label = 'Sim Mean'
             ax1.scatter(n.mid,g['x1'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='c',marker=None,ls='none')
+            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='c',marker=None,ls='none')
     for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30)))):
         if len(g)>0:
             label=None
             if counter==0:
                 label = 'DES5YR Mean'
             ax1.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
-            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='m',marker=None,ls='none')
+            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='m',marker=None,ls='none')
 
     cm=ax2.scatter(df['U-R'],df['x1'],alpha=0.6,edgecolor='w',lw=0.1,label='Sim')
 
@@ -217,20 +217,20 @@ def plot_x1s(sim,df,return_chi=True):
             if counter==0:
                 label = 'Sim Mean'
             ax2.scatter(n.mid,g['x1'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='c',marker=None,ls='none')
+            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='c',marker=None,ls='none')
     for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
         if len(g)>0:
             label=None
             if counter==0:
                 label = 'DES5YR Mean'
             ax2.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
-            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.sqrt(np.mean(g['x1']**2)),c='m',marker=None,ls='none')
+            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='m',marker=None,ls='none')
     ax1.legend()
-    ax2.legend()
+
 
     plt.subplots_adjust(wspace=0)
     ax1.set_ylabel('$x_1$',size=20)
-    
+
     ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     ax2.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
 
