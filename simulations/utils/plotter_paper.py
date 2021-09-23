@@ -682,7 +682,7 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
           'hi_hi':{'c':model_c_mids_hi_hi ,'hr_mids':model_hr_mids_hi_hi}
           }
     chisq = get_red_chisq_interp_splitx1(obs,mod)
-    
+    ax.text(0.,0.2,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
     ax.set_xlabel('$c$',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
     ax.legend(fontsize=10)
@@ -694,6 +694,6 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
     ax.tick_params(which='both',right=True,top=True,labelsize=16)
 
     plt.subplots_adjust(hspace=0,wspace=0)
-    #plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext)
 
     return chisq
