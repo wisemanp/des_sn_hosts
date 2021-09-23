@@ -226,7 +226,7 @@ def plot_x1s(sim,df,return_chi=True):
     ax1.legend()
 
     plt.subplots_adjust(wspace=0)
-    cb=plt.colorbar(cm,orientation='vertical')#shrink=0.7)
+    cb=plt.colorbar(cm,orientation='horizontal')#shrink=0.7)
     ax1.set_ylabel('$x_1$',size=20)
     cb.set_label('$A_V$',size=20,
                 )
