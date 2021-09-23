@@ -224,6 +224,7 @@ def plot_sample_hists(sim,label_ext='',):
     axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     axx1.yaxis.set_minor_locator(ticker.MultipleLocator(5))
     axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+    plt.tight_layout()
     plt.subplots_adjust(wspace=0,hspace=0,)
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
     return chi2x1,chi2c

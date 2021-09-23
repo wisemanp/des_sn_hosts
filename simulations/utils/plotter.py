@@ -226,6 +226,7 @@ def plot_x1s(sim,df,return_chi=True):
             ax2.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
             ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='m',marker=None,ls='none')
     ax1.legend()
+    plt.tight_layout()
 
 
     plt.subplots_adjust(wspace=0)
