@@ -226,10 +226,7 @@ def plot_x1s(sim,df,return_chi=True):
             ax2.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
             ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='m',marker=None,ls='none')
     ax1.legend()
-    plt.tight_layout()
 
-
-    plt.subplots_adjust(wspace=0)
     ax1.set_ylabel('$x_1$',size=20)
 
     ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
@@ -237,13 +234,16 @@ def plot_x1s(sim,df,return_chi=True):
 
     ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
-    for ax in [ax1,ax2]:
-        ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+
     ax1.set_xlabel('Stellar Mass',size=20)
     ax1.set_xlim(7.8,11.8)
     ax1.set_ylim(-3,3)
     ax2.set_xlabel('$U-R$',size=20)
     ax2.set_xlim(0,2.5)
+    plt.tight_layout()
+    plt.subplots_adjust(wspace=0)
+    for ax in [ax1,ax2]:
+        ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.savefig(sim.fig_dir +'SN_x1_hosts_%s'%sim.save_string)
     f,ax=plt.subplots(figsize=(8,6.5))
     hist=ax.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3)
