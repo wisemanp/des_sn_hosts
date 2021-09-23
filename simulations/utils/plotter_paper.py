@@ -194,7 +194,9 @@ def plot_sample_hists(sim,label_ext='',):
     axc.legend(fontsize=15)
     axc.set_ylabel('N SNe',size=20)
     axc.set_xlabel('c',size=20)
+    axc.text(0.2,70,r'$\chi^2_{\nu}=%.2f$'%chi2c,size=20)
     axc.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axc.yaxis.set_minor_locator(ticker.MultipleLocator(5))
     axc.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
 
     df['logmass'] = np.log10(df['mass'])
@@ -214,10 +216,11 @@ def plot_sample_hists(sim,label_ext='',):
     axx1.scatter(bin_centers,means,color='m',edgecolor='k',linewidth=0.8,zorder=6,s=50)
     axx1.errorbar(bin_centers,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
     axx1.set_xlabel('$x_1$',size=20)
-
+    axx1.text(2,70,r'$\chi^2_{\nu}=%.2f$'%chi2x1,size=20)
     #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
     #axx1.legend()
     axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axx1.yaxis.set_minor_locator(ticker.MultipleLocator(5))
     axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.subplots_adjust(wspace=0,hspace=0,)
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
