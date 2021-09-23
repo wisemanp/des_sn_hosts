@@ -174,6 +174,7 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,linewidth=4.5,linestyle='-
 def plot_sample_hists(sim,label_ext='',):
     df = sim.sim_df
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+    plt.tight_layout()
     df['detections'] =True
     bin_centers,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))
 
@@ -224,7 +225,7 @@ def plot_sample_hists(sim,label_ext='',):
     axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     axx1.yaxis.set_minor_locator(ticker.MultipleLocator(5))
 
-    plt.tight_layout()
+
     plt.subplots_adjust(wspace=0,)
     axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
