@@ -245,6 +245,7 @@ def plot_x1s(sim,df,return_chi=True):
     for ax in [ax1,ax2]:
         ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.savefig(sim.fig_dir +'SN_x1_hosts_%s'%sim.save_string)
+    plt.savefig(sim.fig_dir +'SN_x1_hosts_%s.pdf'%sim.save_string)
     f,ax=plt.subplots(figsize=(8,6.5))
     hist=ax.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3)
     ax.set_xlabel('$x_1$',size=20)
