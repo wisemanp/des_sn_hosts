@@ -652,17 +652,17 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
 
 
 
-    ax.plot(model_c_mids_lo_lo ,model_hr_mids_lo_lo,c=split_colour_1,lw=3,label='Model Passive',color=oldest)
+    ax.plot(model_c_mids_lo_lo ,model_hr_mids_lo_lo,c=split_colour_1,lw=3,label='Model low sSFR; low $x_1$',color=oldest)
     ax.fill_between(model_c_mids_lo_lo,np.array(model_hr_mids_lo_lo)-np.array(model_hr_errs_lo_lo),np.array(model_hr_mids_lo_lo)+np.array(model_hr_errs_lo_lo),color=oldest,lw=0.5,ls=':',alpha=0.1)
 
-    ax.plot(model_c_mids_mid_lo ,model_hr_mids_mid_lo,c='m',lw=3,label='Model mid sSFR Low x1',ls=':',color=oldish)
+    ax.plot(model_c_mids_mid_lo ,model_hr_mids_mid_lo,c='m',lw=3,label='Model mid sSFR; low $x_1$',ls=':',color=oldish)
     ax.fill_between(model_c_mids_mid_lo ,np.array(model_hr_mids_mid_lo)-np.array(model_hr_errs_mid_lo),np.array(model_hr_mids_mid_lo)+np.array(model_hr_errs_mid_lo),color=oldish,lw=0.5,ls=':',alpha=0.1)
 
-    ax.plot(model_c_mids_mid_hi ,model_hr_mids_mid_hi,c='m',lw=3,label='Model mid sSFR High x1',ls='-.',color=youngish)
+    ax.plot(model_c_mids_mid_hi ,model_hr_mids_mid_hi,c='m',lw=3,label='Model mid sSFR; high $x_1$',ls='-.',color=youngish)
     ax.fill_between(model_c_mids_mid_hi ,np.array(model_hr_mids_mid_hi)-np.array(model_hr_errs_mid_hi),np.array(model_hr_mids_mid_hi)+np.array(model_hr_errs_mid_hi),color=youngish,lw=0.5,ls=':',alpha=0.1)
 
 
-    ax.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,c=split_colour_2,lw=3,label='Model high sSFR High x1',ls='--',color=youngest)
+    ax.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,c=split_colour_2,lw=3,label='Model high sSFR; high $x_1$',ls='--',color=youngest)
     ax.fill_between(model_c_mids_hi_hi ,np.array(model_hr_mids_hi_hi)-np.array(model_hr_errs_hi_hi),np.array(model_hr_mids_hi_hi)+np.array(model_hr_errs_hi_hi),color=youngest,lw=0.5,ls=':',alpha=0.1)
 
     ax.errorbar(mvdf['avg_colour_log(sSFR)<-10.6,x_1<-0.3'],mvdf['avg_mures_log(sSFR)<-10.6,x_1<-0.3'],
@@ -690,10 +690,10 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
           'hi_hi':{'c':model_c_mids_hi_hi ,'hr_mids':model_hr_mids_hi_hi}
           }
     chisq = get_red_chisq_interp_splitx1(obs,mod)
-    ax.text(0.,0.2,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+    ax.text(-0.1,-0.25,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
     ax.set_xlabel('$c$',size=20)
     ax.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
-    ax.legend(fontsize=10,ncol=2)
+    ax.legend(fontsize=10,ncol=2,loc='upper center')
     #axMASS.set_title(sim.save_string + '_paper',size=20)
     ax.set_ylim(-0.3,0.3)
     ax.set_xlim(-0.19,0.3)
