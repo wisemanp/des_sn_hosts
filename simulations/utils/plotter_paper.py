@@ -12,7 +12,7 @@ import pickle
 from astropy.stats import poisson_conf_interval
 from scipy.stats import halfnorm, skewnorm
 from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp, get_red_chisq_interp_splitx1
-
+plt.rcParams.update(rc_fonts)
 
 aura_dir = os.environ['AURA_DIR']
 des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))
@@ -231,7 +231,8 @@ def plot_sample_hists(sim,label_ext='',):
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chi2x1,chi2c
 
-def plot_model_hists(sim,label_ext,colour,linestyle,bin_centers_list,f,axc,axx1):
+
+def plot_model_hists2(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,axc,axx1):
     df = sim.sim_df
 
     df['detections'] =True
@@ -245,12 +246,10 @@ def plot_model_hists(sim,label_ext,colour,linestyle,bin_centers_list,f,axc,axx1)
     sim_bins_chi2 = (simbins_chi2[:-1] + simbins_chi2[1:])/2
     simcounts_chi2 = np.array(simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2]))
 
-    axc.step(sim_bins,simcounts,where='mid',color=colour,label=label_ext,lw=1,ls=linestyle)
+    axc.step(sim_bins,simcounts,where='mid',color=colour,label=label_c,lw=1,ls=linestyle)
 
     #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
-    axc.legend(fontsize=15)
-    axc.set_ylabel('N SNe',size=20)
-    axc.set_xlabel('c',size=20)
+
 
     df['logmass'] = np.log10(df['mass'])
 
@@ -263,11 +262,11 @@ def plot_model_hists(sim,label_ext,colour,linestyle,bin_centers_list,f,axc,axx1)
     sim_bins_chi2 = (simbins_chi2[:-1] + simbins_chi2[1:])/2
     simcounts_chi2 = simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2])
 
-    axx1.step(sim_bins,simcounts,where='mid',color=colour,lw=1,ls=linestyle)
+    axx1.step(sim_bins,simcounts,where='mid',color=colour,lw=1,ls=linestyle,label=label_x1)
 
     return f,axc, axx1
 
-def plot_sample_hists_multi(sims,labels):
+def plot_sample_hists_multi2(sims,labels):
     colours = itertools.cycle(sns.color_palette('husl',n_colors=3))
     linestyles = itertools.cycle(['-','--',':'])
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
@@ -278,9 +277,9 @@ def plot_sample_hists_multi(sims,labels):
     axc.scatter(bin_centers_c,means,color='m',label='DES5YR',edgecolor='k',linewidth=0.8,zorder=6,s=50)
     axc.errorbar(bin_centers_c,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
 
-    axc.legend(fontsize=15)
-    axc.set_ylabel('N SNe',size=20)
-    axc.set_xlabel('c',size=20)
+
+    axc.set_ylabel('$N$ SNe',size=20)
+    axc.set_xlabel(r'$c$',size=20)
 
     axc.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
     axc.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
@@ -294,19 +293,21 @@ def plot_sample_hists_multi(sims,labels):
     axx1.xaxis.set_major_locator(ticker.MultipleLocator(1))
     axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     axx1.yaxis.set_minor_locator(ticker.MultipleLocator(5))
-    axx1.set_xlabel('$x_1$',size=20)
-
-
+    axx1.set_xlabel(r'$x_1$',size=20)
+    axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
 
     for sim,label in zip(sims,labels):
-        f,axc,axx1 = plot_model_hists(sim,label,next(colours),
+        f,axc,axx1 = plot_model_hists2(sim,label[0],label[1],next(colours),
                 next(linestyles),[bin_centers_c,bin_centers_x1],f,axc,axx1)
         plt.tight_layout()
         plt.subplots_adjust(wspace=0,)
-
-    plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
-    plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
-    return chi2x1,chi2c
+    axc.legend(fontsize=13,loc='upper right')
+    axx1.legend(fontsize=15,loc='upper left')
+    axc.set_xlim(-0.32,0.32)
+    axc.set_ylim(0,113)
+    plt.savefig(sim.fig_dir +'SN_samples_multimodel_paper')
+    plt.savefig(sim.fig_dir +'SN_samples_multimodel_paper.pdf')
+    return
 
 def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
     '''f,ax=plt.subplots(figsize=(8,6.5))
