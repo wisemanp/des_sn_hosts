@@ -232,7 +232,7 @@ def plot_sample_hists(sim,label_ext='',):
     return chi2x1,chi2c
 
 
-def plot_model_hists2(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,axc,axx1):
+def plot_model_hists(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,axc,axx1):
     df = sim.sim_df
 
     df['detections'] =True
@@ -266,7 +266,7 @@ def plot_model_hists2(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,a
 
     return f,axc, axx1
 
-def plot_sample_hists_multi2(sims,labels):
+def plot_sample_hists_multi(sims,labels):
     colours = itertools.cycle(sns.color_palette('husl',n_colors=3))
     linestyles = itertools.cycle(['-','--',':'])
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
@@ -529,7 +529,7 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
     plt.tight_layout()
     plt.subplots_adjust(hspace=0,wspace=0)
     plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext)
-
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chis
 def plot_rms_paper(sim,label_ext='',colour_split=1,mass_split=1E+10):
 
@@ -1013,5 +1013,5 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
 
     plt.subplots_adjust(hspace=0,wspace=0)
     plt.savefig(sim.fig_dir +'HR_vs_c_split_sSFR_x1_%s'%(sim.save_string + '_paper')+label_ext)
-
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_sSFR_x1_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chisq
