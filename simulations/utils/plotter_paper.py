@@ -231,7 +231,7 @@ def plot_sample_hists(sim,label_ext='',):
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chi2x1,chi2c
 
-def plot_model_hists(sim,label_ext,colour,linestyle,bin_centers_list,axc,axx1):
+def plot_model_hists(sim,label_ext,colour,linestyle,bin_centers_list,f,axc,axx1):
     df = sim.sim_df
 
     df['detections'] =True
@@ -300,7 +300,7 @@ def plot_sample_hists_multi(sims,labels):
 
     for sim,label in zip(sims,labels):
         f,axc,axx1 = plot_model_hists(sim,label,next(colours),
-                next(linestyles),[bin_centers_c,bin_centers_x1],axc,axx1)
+                next(linestyles),[bin_centers_c,bin_centers_x1],f,axc,axx1)
         plt.tight_layout()
         plt.subplots_adjust(wspace=0,)
 
