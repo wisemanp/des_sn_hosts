@@ -187,12 +187,13 @@ def plot_cs(sim,df):
     yplus= intervals[:,1] -counts
     chi2 = get_red_chisq(counts,simcounts,yplus)
     return chi2
-def plot_x1s(sim,df,return_chi=True):
+def plot_x1s(sim,df,return_chi=True,scatter_all=False):
 
 
     f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['logmass'] = np.log10(df['mass'])
-    ax1.scatter(df['logmass'],df['x1'],alpha=0.4,edgecolor='w',lw=0.1,label='Sim')
+    if scatter_all:
+        ax1.scatter(df['logmass'],df['x1'],alpha=0.4,edgecolor='w',lw=0.1,label='Sim')
 
     for counter, (n,g) in enumerate(df.groupby(pd.cut(df['logmass'],bins=np.linspace(8,12,30)))):
         if len(g)>0:
@@ -209,7 +210,8 @@ def plot_x1s(sim,df,return_chi=True):
             ax1.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
             ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='m',marker=None,ls='none')
 
-    cm=ax2.scatter(df['U-R'],df['x1'],alpha=0.6,edgecolor='w',lw=0.1,label='Sim')
+    if scatter_all:
+        cm=ax2.scatter(df['U-R'],df['x1'],alpha=0.6,edgecolor='w',lw=0.1,label='Sim')
 
     for counter, (n,g) in enumerate(df.groupby(pd.cut(df['U-R'],bins=np.linspace(-0.5,2.5,30)))):
         if len(g)>0:
