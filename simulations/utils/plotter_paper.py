@@ -265,18 +265,18 @@ def plot_model_hists(sim,label_ext,colour,linestyle,bin_centers_list):
 
     axx1.step(sim_bins,simcounts,where='mid',color=colour,lw=1,ls=linestyle)
 
-    return f,axx1, axc
+    return f,axc, axx1
 
 def plot_sample_hists_multi(sims,labels):
     colours = itertools.cycle(sns.color_palette('husl',n_colors=3))
     linestyles = itertools.cycle(['-','--',':'])
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
 
-    bin_centers,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))
+    bin_centers_c,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))
 
 
-    axc.scatter(bin_centers,means,color='m',label='DES5YR',edgecolor='k',linewidth=0.8,zorder=6,s=50)
-    axc.errorbar(bin_centers,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
+    axc.scatter(bin_centers_c,means,color='m',label='DES5YR',edgecolor='k',linewidth=0.8,zorder=6,s=50)
+    axc.errorbar(bin_centers_c,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
 
     axc.legend(fontsize=15)
     axc.set_ylabel('N SNe',size=20)
@@ -287,9 +287,9 @@ def plot_sample_hists_multi(sims,labels):
     axc.yaxis.set_minor_locator(ticker.MultipleLocator(5))
     axc.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
 
-    bin_centers,means,stds = get_hist_errs(des5yr,'x1',errext='ERR',n=100,bins=np.linspace(-3,3,20))
-    axx1.scatter(bin_centers,means,color='m',edgecolor='k',linewidth=0.8,zorder=6,s=50)
-    axx1.errorbar(bin_centers,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
+    bin_centers_x1,means,stds = get_hist_errs(des5yr,'x1',errext='ERR',n=100,bins=np.linspace(-3,3,20))
+    axx1.scatter(bin_centers_x1,means,color='m',edgecolor='k',linewidth=0.8,zorder=6,s=50)
+    axx1.errorbar(bin_centers_x1,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
 
     axx1.xaxis.set_major_locator(ticker.MultipleLocator(1))
     axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
@@ -299,10 +299,11 @@ def plot_sample_hists_multi(sims,labels):
 
 
     for sim,label in zip(sims,labels):
-        f,axx1,axc = plot_model_hists(sim,label,colour=next(colours),linestyle=next(linestyles))
+        f,axc,axx1 = plot_model_hists(sim,label,colour=next(colours),
+                linestyle=next(linestyles),bin_centers_list=[bin_centers_c,bin_centers_x1])
         plt.tight_layout()
         plt.subplots_adjust(wspace=0,)
-        axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chi2x1,chi2c
