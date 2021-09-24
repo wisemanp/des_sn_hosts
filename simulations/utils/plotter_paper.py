@@ -231,11 +231,11 @@ def plot_sample_hists(sim,label_ext='',):
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chi2x1,chi2c
 
-def plot_model_hists(sim,label_ext,colour,linestyle):
+def plot_model_hists(sim,label_ext,colour,linestyle,bin_centers_list):
     df = sim.sim_df
 
     df['detections'] =True
-
+    bin_centers = bin_centers_list[0]
     # First do the histogram for plotting
     simcounts,simbins = np.histogram(sim.sim_df['c'],density=False,bins=np.linspace(-0.3,0.3,50))
     sim_bins = (simbins[:-1] + simbins[1:])/2
@@ -254,8 +254,7 @@ def plot_model_hists(sim,label_ext,colour,linestyle):
 
     df['logmass'] = np.log10(df['mass'])
 
-    bin_centers,means,stds = get_hist_errs(des5yr,'x1',errext='ERR',n=100,bins=np.linspace(-3,3,20))
-
+    bin_centers = bin_centers_list[1]
     simcounts,simbins = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,50))
     sim_bins = (simbins[:-1] + simbins[1:])/2
     simcounts = simcounts * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins[-1]-simbins[-2])
