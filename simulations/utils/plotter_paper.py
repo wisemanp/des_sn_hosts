@@ -231,6 +231,100 @@ def plot_sample_hists(sim,label_ext='',):
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chi2x1,chi2c
 
+def plot_model_hists(sim,label_ext='',colour,linestyle):
+    df = sim.sim_df
+
+    df['detections'] =True
+
+    # First do the histogram for plotting
+    simcounts,simbins = np.histogram(sim.sim_df['c'],density=False,bins=np.linspace(-0.3,0.3,50))
+    sim_bins = (simbins[:-1] + simbins[1:])/2
+    simcounts = simcounts * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins[-1]-simbins[-2])
+    # Now rebin the histogram to calculate the chi_squared
+    simcounts_chi2,simbins_chi2 = np.histogram(sim.sim_df['c'],density=False,bins=np.linspace(-0.3,0.3,20))
+    sim_bins_chi2 = (simbins_chi2[:-1] + simbins_chi2[1:])/2
+    simcounts_chi2 = np.array(simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2]))
+
+    chi2c = get_red_chisq(means,simcounts_chi2,stds)
+    axc.step(sim_bins,simcounts,where='mid',color=colour,label='Simulation',lw=1,ls=linestyle)
+
+    #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
+    axc.legend(fontsize=15)
+    axc.set_ylabel('N SNe',size=20)
+    axc.set_xlabel('c',size=20)
+
+    axc.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
+    axc.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axc.yaxis.set_minor_locator(ticker.MultipleLocator(5))
+    axc.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+
+    df['logmass'] = np.log10(df['mass'])
+
+    bin_centers,means,stds = get_hist_errs(des5yr,'x1',errext='ERR',n=100,bins=np.linspace(-3,3,20))
+
+    simcounts,simbins = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,50))
+    sim_bins = (simbins[:-1] + simbins[1:])/2
+    simcounts = simcounts * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins[-1]-simbins[-2])
+
+    simcounts_chi2,simbins_chi2 = np.histogram(sim.sim_df['x1'],density=False,bins=np.linspace(-3,3,20))
+    sim_bins_chi2 = (simbins_chi2[:-1] + simbins_chi2[1:])/2
+    simcounts_chi2 = simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2])
+
+    chi2x1 = get_red_chisq(means,simcounts_chi2,stds)
+    axx1.step(sim_bins,simcounts,where='mid',color=colour,lw=1,ls=linestyle)
+    axx1.set_xlabel('$x_1$',size=20)
+
+    #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
+    #axx1.legend()
+    axx1.xaxis.set_major_locator(ticker.MultipleLocator(1))
+    axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axx1.yaxis.set_minor_locator(ticker.MultipleLocator(5))
+
+    plt.tight_layout()
+    plt.subplots_adjust(wspace=0,)
+    axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+    plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
+    plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
+    return f,axx1, axc
+
+def plot_sample_hists_multi(sims,labels):
+    colours = itertools.cycle(sns.color_palette('husl',n_colors=3))
+    linestyles = itertools.cycle(['-','--',':'])
+    f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+
+    bin_centers,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))
+
+
+    axc.scatter(bin_centers,means,color='m',label='DES5YR',edgecolor='k',linewidth=0.8,zorder=6,s=50)
+    axc.errorbar(bin_centers,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
+
+    axc.legend(fontsize=15)
+    axc.set_ylabel('N SNe',size=20)
+    axc.set_xlabel('c',size=20)
+
+    axc.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
+    axc.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axc.yaxis.set_minor_locator(ticker.MultipleLocator(5))
+    axc.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+
+    bin_centers,means,stds = get_hist_errs(des5yr,'x1',errext='ERR',n=100,bins=np.linspace(-3,3,20))
+
+    axx1.step(sim_bins,simcounts,where='mid',color='c',lw=3)
+    axx1.set_xlabel('$x_1$',size=20)
+
+    axx1.xaxis.set_major_locator(ticker.MultipleLocator(1))
+    axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
+    axx1.yaxis.set_minor_locator(ticker.MultipleLocator(5))
+
+    plt.tight_layout()
+    plt.subplots_adjust(wspace=0,)
+    axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
+    for sim,label in zip(sims,labels):
+        f,axx1,axc = plot_model_hists(sim,label,colour=next(colours),linestyle=next(linestyles))
+    plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
+    plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
+    return chi2x1,chi2c
+
 def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
     '''f,ax=plt.subplots(figsize=(8,6.5))
     ax.set_title(sim.save_string + '_paper',size=20)
