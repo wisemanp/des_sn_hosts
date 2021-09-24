@@ -11,7 +11,7 @@ import pickle
 import numpy as np
 from astropy.stats import poisson_conf_interval
 from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp
-
+plt.rcParams['text.usetex'] = True
 
 aura_dir = os.environ['AURA_DIR']
 des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))

@@ -12,7 +12,7 @@ import pickle
 from astropy.stats import poisson_conf_interval
 from scipy.stats import halfnorm, skewnorm
 from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp, get_red_chisq_interp_splitx1
-plt.rcParams.update(rc_fonts)
+plt.rcParams['text.usetex'] = True
 
 aura_dir = os.environ['AURA_DIR']
 des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))
