@@ -231,7 +231,7 @@ def plot_sample_hists(sim,label_ext='',):
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chi2x1,chi2c
 
-def plot_model_hists(sim,label_ext='',colour,linestyle):
+def plot_model_hists(sim,label_ext,colour,linestyle):
     df = sim.sim_df
 
     df['detections'] =True
@@ -246,7 +246,7 @@ def plot_model_hists(sim,label_ext='',colour,linestyle):
     simcounts_chi2 = np.array(simcounts_chi2 * len(des5yr)/len(sim.sim_df) * (bin_centers[-1]-bin_centers[-2])/(simbins_chi2[-1]-simbins_chi2[-2]))
 
     chi2c = get_red_chisq(means,simcounts_chi2,stds)
-    axc.step(sim_bins,simcounts,where='mid',color=colour,label='Simulation',lw=1,ls=linestyle)
+    axc.step(sim_bins,simcounts,where='mid',color=colour,label=label_ext,lw=1,ls=linestyle)
 
     #ax.hist(pantheon['c'],density=True,bins=25,histtype='step',color='y',label='Obs Pantheon',lw=3)
     axc.legend(fontsize=15)
