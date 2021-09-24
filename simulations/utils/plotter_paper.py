@@ -299,8 +299,8 @@ def plot_sample_hists_multi(sims,labels):
 
 
     for sim,label in zip(sims,labels):
-        f,axc,axx1 = plot_model_hists(sim,label,colour=next(colours),
-                linestyle=next(linestyles),bin_centers_list=[bin_centers_c,bin_centers_x1],axc,axx1)
+        f,axc,axx1 = plot_model_hists(sim,label,next(colours),
+                next(linestyles),[bin_centers_c,bin_centers_x1],axc,axx1)
         plt.tight_layout()
         plt.subplots_adjust(wspace=0,)
 
