@@ -265,23 +265,8 @@ def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None,n
         ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.savefig(sim.fig_dir +'SN_x1_hosts_%s'%sim.save_string)
     plt.savefig(sim.fig_dir +'SN_x1_hosts_%s.pdf'%sim.save_string)
-    f,ax=plt.subplots(figsize=(8,6.5))
-    hist=ax.hist(df['x1'],bins=np.linspace(-3,3,100),density=True,label='Simulation',histtype='step',lw=3)
-    ax.set_xlabel('$x_1$',size=20)
-    ax.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES5YR')
-    #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
-    ax.legend(fontsize=16)
-    ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
-    ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
-    plt.savefig(sim.fig_dir +'SN_x1_hist_%s'%sim.save_string)
-    #calculate the reduced chi-squared
-    counts,bin_edges =np.histogram(des5yr['x1'],bins=np.linspace(-3,3,20),density=False)
-    simcounts,simbins = np.histogram(sim.sim_df['x1'],bins=np.linspace(-3,3,20),density=False)
-    simcounts = simcounts/(len(sim.sim_df)/len(des5yr))
-    intervals = poisson_conf_interval(counts,interval='root-n-0').T
-    yplus= intervals[:,1] -counts
-    chi2 = get_red_chisq(counts,simcounts,yplus)
-    return chi2, f, ax1, ax2
+
+    return f, ax1, ax2
 def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     plot_df=sim.sim_df[(sim.sim_df['z']>zmin)&(sim.sim_df['z']<zmax)]
     if x1:
