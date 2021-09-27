@@ -1015,3 +1015,207 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
     plt.savefig(sim.fig_dir +'HR_vs_c_split_sSFR_x1_%s'%(sim.save_string + '_paper')+label_ext)
     plt.savefig(sim.fig_dir +'HR_vs_c_split_sSFR_x1_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chisq
+
+
+def plot_mu_res_paper_combined(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
+
+    chis = []
+    fMASSUR,(axMASS,axUR,axsSFR)=plt.subplots(1,3,figsize=(16,6.6),sharey=True)
+    model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
+    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
+        try:
+            g1 = g[g['mass']>mass_split]
+
+
+            model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
+            model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
+            model_c_mids_hi.append(n.mid)
+            g2 = g[g['mass']<=mass_split]
+
+            model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
+            model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
+            model_c_mids_lo.append(n.mid)
+        except:
+            pass
+
+    axMASS.plot(model_c_mids_lo ,model_hr_mids_lo,c=split_colour_1,lw=3,label='Model Low Mass')
+    axMASS.fill_between(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=split_colour_1,lw=0.5,ls=':',alpha=0.3)
+
+    axMASS.plot(model_c_mids_hi ,model_hr_mids_hi,c=split_colour_2,lw=3,label='Model High Mass',ls='--')
+    axMASS.fill_between(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),color=split_colour_2,lw=0.5,ls=':',alpha=0.3)
+    #axMASS.plot(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),c=split_colour_2,lw=0.5,ls=':')
+    if obs:
+        low =lisa_data['global_mass']['low']
+        for x in low.keys():
+            if x!='c':
+                low[x] = np.array(low[x])[~np.isnan(low['c'])]
+        low['c']=np.array(low['c'])[~np.isnan(low['c'])]
+        high=lisa_data['global_mass']['high']
+        for x in high.keys():
+            if x!='c':
+                high[x] = np.array(high[x])[~np.isnan(high['c'])]
+        high['c'] = np.array(high['c'])[~np.isnan(high['c'])]
+        axMASS.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr=low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})<10$')
+        axMASS.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr=high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
+        chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
+        axMASS.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        chis.append(chisq)
+    axMASS.set_xlabel('$c$',size=24)
+    axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=24,)
+    axMASS.legend(fontsize=13,loc='lower center')
+    #axMASS.set_title(sim.save_string + '_paper',size=20)
+    axMASS.set_ylim(-0.2,0.2)
+    axMASS.set_xlim(-0.19,0.3)
+    axMASS.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axMASS.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
+    axMASS.tick_params(which='both',right=True,top=True,labelsize=16)
+    #plt.savefig(sim.fig_dir +'HR_vs_c_split_mass_%s'%(sim.save_string + '_paper')+label_ext)
+    #fUR,axUR=plt.subplots(figsize=(8,6.5))
+    #axUR.set_title(sim.save_string + '_paper',size=20)
+    model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
+
+    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
+        try:
+            g1 = g[g['U-R']>colour_split]
+
+            model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
+            model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
+            model_c_mids_hi.append(n.mid)
+            g2 = g[g['U-R']<=colour_split]
+
+            model_hr_mids_lo.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
+            model_hr_errs_lo.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
+            model_c_mids_lo.append(n.mid)
+        except:
+            pass
+
+    axUR.plot(model_c_mids_lo ,model_hr_mids_lo,c=split_colour_1,lw=3,label='Model Blue Host')
+    axUR.fill_between(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=split_colour_1,lw=0.5,ls=':',alpha=0.3)
+    axUR.plot(model_c_mids_hi ,model_hr_mids_hi,c=split_colour_2,lw=3,label='Model Red Host',ls='--')
+    axUR.fill_between(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),color=split_colour_2,lw=0.5,ls=':',alpha=0.3)
+
+    if obs:
+        low =lisa_data['global_U-R']['low']
+        for x in low.keys():
+            if x!='c':
+                low[x] = np.array(low[x])[~np.isnan(low['c'])]
+        low['c']=np.array(low['c'])[~np.isnan(low['c'])]
+        high=lisa_data['global_U-R']['high']
+        for x in high.keys():
+            if x!='c':
+                high[x] = np.array(high[x])[~np.isnan(high['c'])]
+        high['c'] = np.array(high['c'])[~np.isnan(high['c'])]
+        chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
+        axUR.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr =low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
+        axUR.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr =high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')
+        axUR.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        chis.append(chisq)
+    axUR.set_xlabel('$c$',size=24)
+    #axUR.set_ylabel('$\mu_{\mathrm{res}}$',size=20,)
+    axUR.legend(fontsize=13,loc='lower left')
+    axUR.set_ylim(-0.2,0.2)
+    axUR.set_xlim(-0.19,0.3)
+    plt.savefig('test')
+    l= axUR.get_xticklabels()
+    print(l[0],l[1],l[2])
+    l[0]=matplotlib.text.Text(-0.2,0,' ')
+    axUR.set_xticklabels(l)
+    axUR.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axUR.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
+    axUR.tick_params(right=True,top=True,which='both',labelsize=16)
+    mvdf = pd.read_csv('/media/data3/wiseman/des/AURA/data/data_nozcut_snnv19.csv')
+
+    oldest,oldish,youngish,youngest = ['#FF9100','red','purple','darkblue']
+
+
+    model_c_mids_lo_lo , model_hr_mids_lo_lo , model_hr_errs_lo_lo ,model_c_mids_mid_lo , model_hr_mids_mid_lo , model_hr_errs_mid_lo = [],[],[],[],[],[]
+    model_c_mids_mid_hi , model_hr_mids_mid_hi , model_hr_errs_mid_hi, model_c_mids_hi_hi , model_hr_mids_hi_hi ,  model_hr_errs_hi_hi = [],[],[],[],[],[]
+    x1_split=-0.3
+    ssfr_lo_split = -10.2
+    ssfr_hi_split = -9.5
+    sim.sim_df['log_ssfr'] = np.log10(sim.sim_df['ssfr'])
+    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
+
+        g1 = g[g['log_ssfr']>ssfr_hi_split]
+        g1x1hi = g1[g1['x1']>x1_split]
+        if len(g1x1hi)>0:
+            model_c_mids_hi_hi.append(n.mid)
+            model_hr_mids_hi_hi.append(np.average(g1x1hi['mu_res'],weights=1/g1x1hi['mu_res_err']**2))
+            model_hr_errs_hi_hi.append(g1x1hi['mu_res'].std()/np.sqrt(len(g1x1hi['mu_res'])))
+
+        g2 = g[(g['log_ssfr']<=ssfr_hi_split)&(g['ssfr']>ssfr_lo_split)]
+        g2x1hi = g2[g2['x1']>x1_split]
+        if len(g2x1hi)>0:
+
+            model_c_mids_mid_hi.append(n.mid)
+            model_hr_mids_mid_hi.append(np.average(g2x1hi['mu_res'],weights=1/g2x1hi['mu_res_err']**2))
+            model_hr_errs_mid_hi.append(g2x1hi['mu_res'].std()/np.sqrt(len(g2x1hi['mu_res'])))
+        g2x1lo = g2[g2['x1']<=x1_split]
+        if len(g2x1lo)>0:
+            model_c_mids_mid_lo.append(n.mid)
+            model_hr_mids_mid_lo.append(np.average(g2x1lo['mu_res'],weights=1/g2x1lo['mu_res_err']**2))
+            model_hr_errs_mid_lo.append(g2x1lo['mu_res'].std()/np.sqrt(len(g2x1lo['mu_res'])))
+        g3 = g[g['log_ssfr']<=ssfr_lo_split]
+        g3x1lo = g3[g3['x1']<x1_split]
+        if len(g3x1lo)>0:
+            model_c_mids_lo_lo.append(n.mid)
+            model_hr_mids_lo_lo.append(np.average(g3x1lo['mu_res'],weights=1/g3x1lo['mu_res_err']**2))
+            model_hr_errs_lo_lo.append(g3x1lo['mu_res'].std()/np.sqrt(len(g3x1lo['mu_res'])))
+
+
+
+    axsSFR.plot(model_c_mids_lo_lo ,model_hr_mids_lo_lo,c=split_colour_1,lw=3,label='Model low sSFR; low $x_1$',color=oldest)
+    axsSFR.fill_between(model_c_mids_lo_lo,np.array(model_hr_mids_lo_lo)-np.array(model_hr_errs_lo_lo),np.array(model_hr_mids_lo_lo)+np.array(model_hr_errs_lo_lo),color=oldest,lw=0.5,ls=':',alpha=0.1)
+
+    axsSFR.plot(model_c_mids_mid_lo ,model_hr_mids_mid_lo,c='m',lw=3,label='Model mid sSFR; low $x_1$',ls=':',color=oldish)
+    axsSFR.fill_between(model_c_mids_mid_lo ,np.array(model_hr_mids_mid_lo)-np.array(model_hr_errs_mid_lo),np.array(model_hr_mids_mid_lo)+np.array(model_hr_errs_mid_lo),color=oldish,lw=0.5,ls=':',alpha=0.1)
+
+    axsSFR.plot(model_c_mids_mid_hi ,model_hr_mids_mid_hi,c='m',lw=3,label='Model mid sSFR; high $x_1$',ls='-.',color=youngish)
+    axsSFR.fill_between(model_c_mids_mid_hi ,np.array(model_hr_mids_mid_hi)-np.array(model_hr_errs_mid_hi),np.array(model_hr_mids_mid_hi)+np.array(model_hr_errs_mid_hi),color=youngish,lw=0.5,ls=':',alpha=0.1)
+
+
+    axsSFR.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,c=split_colour_2,lw=3,label='Model high sSFR; high $x_1$',ls='--',color=youngest)
+    axsSFR.fill_between(model_c_mids_hi_hi ,np.array(model_hr_mids_hi_hi)-np.array(model_hr_errs_hi_hi),np.array(model_hr_mids_hi_hi)+np.array(model_hr_errs_hi_hi),color=youngest,lw=0.5,ls=':',alpha=0.1)
+
+    axsSFR.errorbar(mvdf['avg_colour_log(sSFR)<-10.6,x_1<-0.3'],mvdf['avg_mures_log(sSFR)<-10.6,x_1<-0.3'],
+        yerr=mvdf['stdm_mures_log(sSFR)<-10.6,x_1<-0.3'],marker='D',
+        color=oldest,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data low sSFR; low $x_1$')
+    axsSFR.errorbar(mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1<-0.3'],mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'],
+        yerr=mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'],marker='o',
+        color=oldish,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data mid sSFR; low $x_1$')
+
+    axsSFR.errorbar(mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1>-0.3'],mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'],
+        yerr=mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'],marker='s',
+        color=youngish,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data mid sSFR; high $x_1$')
+
+    axsSFR.errorbar(mvdf['avg_colour_log(sSFR)<-9.5,x_1>-0.3'],mvdf['avg_mures_log(sSFR)<-9.5,x_1>-0.3'],
+        yerr=mvdf['stdm_mures_log(sSFR)<-9.5,x_1>-0.3'],marker='^',
+        color=youngest,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data high sSFR; high $x_1$')
+    obs = {'lo_lo':{'c':mvdf['avg_colour_log(sSFR)<-10.6,x_1<-0.3'].values,'hr':mvdf['avg_mures_log(sSFR)<-10.6,x_1<-0.3'].values,'hr_err':mvdf['stdm_mures_log(sSFR)<-10.6,x_1<-0.3'].values},
+           'mid_lo':{'c':mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1<-0.3'].values,'hr':mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'].values,'hr_err':mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1<-0.3'].values},
+           'mid_hi':{'c':mvdf['avg_colour_-10.6<log(sSFR)<-9.5,x_1>-0.3'].values,'hr':mvdf['avg_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'].values,'hr_err':mvdf['stdm_mures_-10.6<log(sSFR)<-9.5,x_1>-0.3'].values},
+           'hi_hi':{'c':mvdf['avg_colour_log(sSFR)<-9.5,x_1>-0.3'].values,'hr':mvdf['avg_mures_log(sSFR)<-9.5,x_1>-0.3'].values,'hr_err':mvdf['stdm_mures_log(sSFR)<-9.5,x_1>-0.3'].values}
+          }
+    mod = {'lo_lo':{'c':model_c_mids_lo_lo ,'hr_mids':model_hr_mids_lo_lo},
+          'mid_lo':{'c':model_c_mids_mid_lo ,'hr_mids':model_hr_mids_mid_lo} ,
+          'mid_hi':{'c':model_c_mids_mid_hi ,'hr_mids':model_hr_mids_mid_hi} ,
+          'hi_hi':{'c':model_c_mids_hi_hi ,'hr_mids':model_hr_mids_hi_hi}
+          }
+    chisq = get_red_chisq_interp_splitx1(obs,mod)
+    axsSFR.text(-0.1,-0.25,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+    axsSFR.set_xlabel('$c$',size=24)
+
+    axsSFR.legend(fontsize=10,ncol=2,loc='upper center')
+    #axMASS.set_title(sim.save_string + '_paper',size=20)
+    axsSFR.set_ylim(-0.3,0.3)
+    axsSFR.set_xlim(-0.19,0.3)
+    axsSFR.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+    axsSFR.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
+    axsSFR.tick_params(which='both',right=True,top=True,labelsize=16)
+
+
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0,wspace=0)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext)
+    plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
+    return chis

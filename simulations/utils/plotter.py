@@ -187,10 +187,10 @@ def plot_cs(sim,df):
     yplus= intervals[:,1] -counts
     chi2 = get_red_chisq(counts,simcounts,yplus)
     return chi2
-def plot_x1s(sim,df,return_chi=True,scatter_all=False):
+def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None):
 
-
-    f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+    if f ==None:
+        f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['logmass'] = np.log10(df['mass'])
     if scatter_all:
         ax1.scatter(df['logmass'],df['x1'],alpha=0.4,edgecolor='w',lw=0.1,label='Sim')
@@ -264,7 +264,7 @@ def plot_x1s(sim,df,return_chi=True,scatter_all=False):
     intervals = poisson_conf_interval(counts,interval='root-n-0').T
     yplus= intervals[:,1] -counts
     chi2 = get_red_chisq(counts,simcounts,yplus)
-    return chi2
+    return chi2, f, ax1, ax2
 def plot_samples(sim,zmin=0,zmax=1.2,x1=True,c=True,hosts=True):
     plot_df=sim.sim_df[(sim.sim_df['z']>zmin)&(sim.sim_df['z']<zmax)]
     if x1:
