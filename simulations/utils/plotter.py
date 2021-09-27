@@ -187,7 +187,7 @@ def plot_cs(sim,df):
     yplus= intervals[:,1] -counts
     chi2 = get_red_chisq(counts,simcounts,yplus)
     return chi2
-def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None):
+def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,sim_colour='c',model_name='Sim'):
 
     if f ==None:
         f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
@@ -199,11 +199,11 @@ def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None):
         if len(g)>0:
             label=None
             if counter==0:
-                label = 'Sim Mean'
-            ax1.scatter(n.mid,g['x1'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='c',marker=None,ls='none')
+                label = model_name+' Mean'
+            ax1.scatter(n.mid,g['x1'].mean(),color=sim_colour,edgecolor='w',linewidth=1,marker='D',s=100,label=label)
+            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=sim_colour,marker=None,ls='none')
     for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30)))):
-        if len(g)>0:
+        if len(g)>0 and nplot==0:
             label=None
             if counter==0:
                 label = 'DES5YR Mean'
@@ -217,11 +217,11 @@ def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None):
         if len(g)>0:
             label=None
             if counter==0:
-                label = 'Sim Mean'
-            ax2.scatter(n.mid,g['x1'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='c',marker=None,ls='none')
+                label = model_name+' Mean'
+            ax2.scatter(n.mid,g['x1'].mean(),color=sim_colour,edgecolor='w',linewidth=1,marker='D',s=100,label=label)
+            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=sim_colour,marker=None,ls='none')
     for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
-        if len(g)>0:
+        if len(g)>0 and nplot==0:
             label=None
             if counter==0:
                 label = 'DES5YR Mean'
