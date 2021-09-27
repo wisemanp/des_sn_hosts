@@ -192,42 +192,56 @@ def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None,n
     if f ==None:
         f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['logmass'] = np.log10(df['mass'])
+    lcounter=0
+    for n,g in des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30))):
+        if len(g)>1 and nplot==0:
+            label=None
+            if lcounter==0:
+                label = 'DES5YR mean'
+                lcounter+=1
+            ax1.scatter(n.mid,g['x1'].mean(),color=data_colour,edgecolor='grey',linewidth=1,marker='s',s=100,label=label)
+            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=data_colour,marker=None,ls='none')
+
+        elif len(g)==1 and nplot==0:
+
+            ax2.scatter(n.mid,g['x1'].mean(),color=data_colour,edgecolor='grey',linewidth=1,marker='s',s=100)
+            ax2.errorbar(n.mid,g['x1'].mean(),yerr=g['x1ERR'],c=data_colour,marker=None,ls='none')
     if scatter_all:
         ax1.scatter(df['logmass'],df['x1'],alpha=0.4,edgecolor='w',lw=0.1,label='Sim')
 
+    mass_mids,x1_mids = [],[]
     for counter, (n,g) in enumerate(df.groupby(pd.cut(df['logmass'],bins=np.linspace(8,12,30)))):
         if len(g)>0:
-            label=None
-            if counter==0:
-                label = model_name+' Mean'
-            ax1.scatter(n.mid,g['x1'].mean(),color=sim_colour,edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=sim_colour,marker=None,ls='none')
-    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30)))):
-        if len(g)>0 and nplot==0:
-            label=None
-            if counter==0:
-                label = 'DES5YR Mean'
-            ax1.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
-            ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='m',marker=None,ls='none')
+
+            mass_mids.append(n.mid)
+            x1_mids.append(g['x1'].mean())
+            #ax1.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=sim_colour,marker=None,ls='none')
+    ax1.plot(mass_mids,x1_mids,color=sim_colour,linewidth=3,label = model_name+' mean',linestyle=sim_linestyle)
 
     if scatter_all:
         cm=ax2.scatter(df['U-R'],df['x1'],alpha=0.6,edgecolor='w',lw=0.1,label='Sim')
-
+    UR_mids,x1_mids = [],[]
     for counter, (n,g) in enumerate(df.groupby(pd.cut(df['U-R'],bins=np.linspace(-0.5,2.5,30)))):
         if len(g)>0:
-            label=None
-            if counter==0:
-                label = model_name+' Mean'
-            ax2.scatter(n.mid,g['x1'].mean(),color=sim_colour,edgecolor='w',linewidth=1,marker='D',s=100,label=label)
-            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=sim_colour,marker=None,ls='none')
+
+
+            #ax2.scatter(n.mid,g['x1'].mean(),color=sim_colour,edgecolor='grey',linewidth=1,marker=sim_marker,s=50,label=label)
+            UR_mids.append(n.mid)
+            x1_mids.append(g['x1'].mean())
+    ax2.plot(UR_mids,x1_mids,color=sim_colour,linewidth=3,label= model_name+' mean',linestyle=sim_linestyle)
+            #ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=sim_colour,marker=None,ls='none')
     for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
-        if len(g)>0 and nplot==0:
-            label=None
-            if counter==0:
-                label = 'DES5YR Mean'
-            ax2.scatter(n.mid,g['x1'].mean(),color='m',edgecolor='w',linewidth=1,marker='s',s=100,label=label)
-            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c='m',marker=None,ls='none')
-    ax1.legend()
+        if len(g)>1 and nplot==0:
+
+            ax2.scatter(n.mid,g['x1'].mean(),color=data_colour,edgecolor='grey',linewidth=1,marker='s',s=100)
+            ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=data_colour,marker=None,ls='none')
+
+        elif len(g)==1 and nplot==0:
+
+            ax2.scatter(n.mid,g['x1'].mean(),color=data_colour,edgecolor='grey',linewidth=1,marker='s',s=100,label=label)
+            ax2.errorbar(n.mid,g['x1'].mean(),yerr=g['x1ERR'],c=data_colour,marker=None,ls='none')
+
+    ax1.legend(fontsize=16)
 
     ax1.set_ylabel('$x_1$',size=20)
 
@@ -239,7 +253,10 @@ def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None,n
 
     ax1.set_xlabel('Stellar Mass',size=20)
     ax1.set_xlim(7.8,11.8)
-    ax1.set_ylim(-3,3)
+    if scatter_all:
+        ax1.set_ylim(-3,3)
+    else:
+        ax1.set_ylim(-1.5,1.5)
     ax2.set_xlabel('$U-R$',size=20)
     ax2.set_xlim(0,2.5)
     plt.tight_layout()
@@ -253,7 +270,7 @@ def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None,n
     ax.set_xlabel('$x_1$',size=20)
     ax.hist(des5yr['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='DES5YR')
     #ax.hist(pantheon['x1'],density=True,bins=np.linspace(-3,3,20),histtype='step',lw=3,label='Pantheon')
-    ax.legend()
+    ax.legend(fontsize=16)
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.savefig(sim.fig_dir +'SN_x1_hist_%s'%sim.save_string)
