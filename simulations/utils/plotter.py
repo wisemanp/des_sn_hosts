@@ -187,7 +187,7 @@ def plot_cs(sim,df):
     yplus= intervals[:,1] -counts
     chi2 = get_red_chisq(counts,simcounts,yplus)
     return chi2
-def plot_x1s(sim,df,return_chi=True,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,sim_colour='c',model_name='Sim'):
+def plot_x1s(sim,df,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,sim_colour='c',model_name='Sim',sim_linestyle='-'):
 
     if f ==None:
         f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
