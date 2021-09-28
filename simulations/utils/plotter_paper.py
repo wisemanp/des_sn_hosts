@@ -297,7 +297,7 @@ def plot_sample_hists_multi(sims,labels):
     axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
 
     for sim,label in zip(sims,labels):
-        f,axc,axx1 = plot_model_hists2(sim,label[0],label[1],next(colours),
+        f,axc,axx1 = plot_model_hists(sim,label[0],label[1],next(colours),
                 next(linestyles),[bin_centers_c,bin_centers_x1],f,axc,axx1)
         plt.tight_layout()
         plt.subplots_adjust(wspace=0,)
