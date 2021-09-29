@@ -14,8 +14,12 @@ def load_config(cpath):
         return yload(f)
 
 def sim_worker(args):
-    sim = aura.Sim(pth)
+
     rv_hi,rv_lo,age_step,cfg = [args[i] for i in range(4)]
+    pth = cfg['config_path']
+    model_config = os.path.split(pth)[-1]
+    model_name = model_config.split('.')[0]
+    sim = aura.Sim(pth)
     with open(pth,'r') as f:
         c = yload(f)
     c['SN_rv_model']['params']['rv_low'] = float(rv_hi)
@@ -24,9 +28,7 @@ def sim_worker(args):
     sim.config = c
     n_samples_arr = sim._get_z_dist(des5yr['z'],n=2500)
     zarr=[0.05,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65]
-    pth = cfg['config_path']
-    model_config = os.path.split(pth)[-1]
-    model_name = model_config.split('.')[0]
+
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'])):
         os.path.mkdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir']))
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/',cfg['save']['dir'])):
