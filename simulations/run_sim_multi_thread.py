@@ -69,7 +69,7 @@ def sim_worker(args):
     c['SN_rv_model']['params']['rv_high'] = float(rv_lo)
     c['mB_model']['params']['age_step']['mag'] = float(age_step)
     sim.config = c
-    n_samples_arr = sim._get_z_dist(des5yr['z'],n=2500)
+    n_samples_arr = sim._get_z_dist(des5yr['z'],n=cfg['n_samples'])
     zarr=[0.05,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65]
 
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'])):
