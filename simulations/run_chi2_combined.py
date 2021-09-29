@@ -9,7 +9,8 @@ import sys
 
 from yaml import safe_load as yload
 cpath = sys.argv[1]
-cfg = load_config(cpath)
+with open(cpath,'r') as f:
+    cfg =  yload(f)
 Rv_lo_grid = np.arange(cfg['Rv_lo']['lo'],cfg['Rv_lo']['hi'],cfg['Rv_lo']['step'])
 Rv_hi_grid = np.arange(cfg['Rv_hi']['lo'],cfg['Rv_hi']['hi'],cfg['Rv_hi']['step'])
 age_step_grid = np.arange(cfg['age_step']['lo'],cfg['age_step']['hi'],cfg['age_step']['step'])
