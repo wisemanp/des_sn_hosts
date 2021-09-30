@@ -28,7 +28,7 @@ split_colour_2 = '#8500f2'
 sim_colour= 'c'
 data_colour = 'm'
 
-data_lolo =np.array([(-0.1916, 0.3395, 0.2384), (-0.1193, -0.0415, 0.0397), (-0.049, -0.0649, 0.0265), (0.0225, -0.0757, 0.0372), (0.1068, -0.1069, 0.088), (0.1746, -0.0861, 0.1131), (0.2573, -0.2456, 0.1302)])
+data_lo_lo =np.array([(-0.1916, 0.3395, 0.2384), (-0.1193, -0.0415, 0.0397), (-0.049, -0.0649, 0.0265), (0.0225, -0.0757, 0.0372), (0.1068, -0.1069, 0.088), (0.1746, -0.0861, 0.1131), (0.2573, -0.2456, 0.1302)])
 data_mid_lo =np.array([(-0.2166, 0.269, 0.3), (-0.1197, 0.0721, 0.0438), (-0.0489, -0.0172, 0.0214), (0.0257, -0.0662, 0.0203), (0.1037, -0.0682, 0.0289), (0.1679, -0.0703, 0.0525), (0.2613, 0.0201, 0.105)])
 data_mid_hi= np.array([(-0.2357, 0.4071, 0.3), (-0.1107, 0.0628, 0.0358), (-0.0486, -0.0147, 0.015), (0.0209, -0.0085, 0.0186), (0.1068, 0.026, 0.0273), (0.1794, -0.0065, 0.031), (0.2645, 0.079, 0.0649)])
 data_hi_hi =np.array([(-0.2021, 0.2031, 0.3), (-0.1161, 0.0366, 0.0219), (-0.0546, 0.0491, 0.017), (0.02, 0.038, 0.0193), (0.0961, 0.0841, 0.0411), (0.1603, 0.1585, 0.0748), (0.2527, 0.0682, 0.5459)])
@@ -979,7 +979,7 @@ def plot_mu_res_paper_splitssfr(sim,obs=True,label_ext='',colour_split=1,mass_sp
     ax.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,c=split_colour_2,lw=3,label='Model high sSFR; high $x_1$',ls='--',color=youngest)
     ax.fill_between(model_c_mids_hi_hi ,np.array(model_hr_mids_hi_hi)-np.array(model_hr_errs_hi_hi),np.array(model_hr_mids_hi_hi)+np.array(model_hr_errs_hi_hi),color=youngest,lw=0.5,ls=':',alpha=0.1)
 
-    ax.errorbar(data_lolo[:,0],data_lolo[:,1],yerr=data_lolo[:,2],marker='D',
+    ax.errorbar(data_lo_lo[:,0],data_lo_lo[:,1],yerr=data_lo_lo[:,2],marker='D',
         #yerr=mvdf['stdm_mures_log(sSFR)<-10.6,x_1<-0.3'],
         color=oldest,linestyle='none',markersize=10,mec='k',mew=0.5,label='Data low sSFR; low $x_1$')
     ax.errorbar(data_mid_lo[:,0],data_mid_lo[:,1],yerr=data_mid_lo[:,2],marker='o',
