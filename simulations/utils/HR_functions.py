@@ -170,6 +170,12 @@ def get_red_chisq_interp_splitx1(obs,model):
             else:
                 for x in obs[key].keys():
                     obs[key][x] = obs[key][x][1:]
+        while True:
+            if model[key]['c'][-1] > obs[key]['c'][-1]:
+                break
+            else:
+                for x in obs[key].keys():
+                    obs[key][x] = obs[key][x][:-1]
         interp = interp1d(np.array(model[key]['c']),np.array(model[key]['hr_mids']))
         mod = interp(np.array(obs[key]['c']))
         all_obs = np.concatenate([all_obs,np.array(obs[key]['hr'])])
