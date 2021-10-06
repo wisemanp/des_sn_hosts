@@ -77,10 +77,10 @@ def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, a
     logage = np.log10(age)
     log_age_fix_low = np.log10(age_fix_low)
     log_age_fix_high = np.log10(age_fix_high)
-    Rv_slope = (Rv_high-Rv_low) /(age_fix_high - age_fix_low)
-    sig_slope = (Rv_sig_high-Rv_sig_low) /(age_fix_high - age_fix_low)
-    Rv_mus = Rv_low +((logage-age_fix_low) *Rv_slope)
-    Rv_sigs = Rv_sig_low+((logage - age_fix_low)*sig_slope)
+    Rv_slope = (Rv_high-Rv_low) /(log_age_fix_high - log_age_fix_low)
+    sig_slope = (Rv_sig_high-Rv_sig_low) /(log_age_fix_high - log_age_fix_low)
+    Rv_mus = Rv_low +((logage-log_age_fix_low) *Rv_slope)
+    Rv_sigs = Rv_sig_low+((logage - log_age_fix_low)*sig_slope)
     Rvs = []
     for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
         Rvs.append(np.random.normal(rv_mu,rv_sig))
