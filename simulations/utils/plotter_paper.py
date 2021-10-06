@@ -1165,17 +1165,17 @@ def plot_mu_res_paper_combined(sim,obs=True,label_ext='',colour_split=1,mass_spl
 
 
 
-    axsSFR.plot(model_c_mids_lo_lo ,model_hr_mids_lo_lo,c=split_colour_1,lw=3,label='Model low sSFR; low $x_1$',color=oldest)
+    axsSFR.plot(model_c_mids_lo_lo ,model_hr_mids_lo_lo,lw=3,label='Model low sSFR; low $x_1$',color=oldest)
     axsSFR.fill_between(model_c_mids_lo_lo,np.array(model_hr_mids_lo_lo)-np.array(model_hr_errs_lo_lo),np.array(model_hr_mids_lo_lo)+np.array(model_hr_errs_lo_lo),color=oldest,lw=0.5,ls=':',alpha=0.1)
 
-    axsSFR.plot(model_c_mids_mid_lo ,model_hr_mids_mid_lo,c='m',lw=3,label='Model mid sSFR; low $x_1$',ls=':',color=oldish)
+    axsSFR.plot(model_c_mids_mid_lo ,model_hr_mids_mid_lo,lw=3,label='Model mid sSFR; low $x_1$',ls=':',color=oldish)
     axsSFR.fill_between(model_c_mids_mid_lo ,np.array(model_hr_mids_mid_lo)-np.array(model_hr_errs_mid_lo),np.array(model_hr_mids_mid_lo)+np.array(model_hr_errs_mid_lo),color=oldish,lw=0.5,ls=':',alpha=0.1)
 
-    axsSFR.plot(model_c_mids_mid_hi ,model_hr_mids_mid_hi,c='m',lw=3,label='Model mid sSFR; high $x_1$',ls='-.',color=youngish)
+    axsSFR.plot(model_c_mids_mid_hi ,model_hr_mids_mid_hi,lw=3,label='Model mid sSFR; high $x_1$',ls='-.',color=youngish)
     axsSFR.fill_between(model_c_mids_mid_hi ,np.array(model_hr_mids_mid_hi)-np.array(model_hr_errs_mid_hi),np.array(model_hr_mids_mid_hi)+np.array(model_hr_errs_mid_hi),color=youngish,lw=0.5,ls=':',alpha=0.1)
 
 
-    axsSFR.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,c=split_colour_2,lw=3,label='Model high sSFR; high $x_1$',ls='--',color=youngest)
+    axsSFR.plot(model_c_mids_hi_hi ,model_hr_mids_hi_hi,lw=3,label='Model high sSFR; high $x_1$',ls='--',color=youngest)
     axsSFR.fill_between(model_c_mids_hi_hi ,np.array(model_hr_mids_hi_hi)-np.array(model_hr_errs_hi_hi),np.array(model_hr_mids_hi_hi)+np.array(model_hr_errs_hi_hi),color=youngest,lw=0.5,ls=':',alpha=0.1)
 
     axsSFR.errorbar(mvdf['avg_colour_log(sSFR)<-10.6,x_1<-0.3'],mvdf['avg_mures_log(sSFR)<-10.6,x_1<-0.3'],
