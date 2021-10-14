@@ -187,10 +187,15 @@ class Sim(SN_Model):
         args['c_err'] = [np.max([0.02,np.random.normal((0.675*args['mB_err'][i] +0.005),0.003)])
                          for i in range(len(args['mB']))]
 
+        args['c_noise'] =norm(0,args['c_err']).rvs(size=len(args['c']))
+        args['c'] = args['c'] + args['c_noise']
+
         args['x1_err'] = [np.max([0.02,np.random.normal((14*args['mB_err'][i] -0.25 ),0.08)])
                          for i in range(len(args['mB']))]
+        args['x1_noise'] =norm(0,args['x1_err']).rvs(size=len(args['x1']))
+        args['x1'] = args['x1'] + args['x1_noise']
         #C = np.cov([args['mB'],args['x1'],args['c']])
-        
+
         args['cov_mB_x1'],args['cov_mB_c'],args['cov_x1_c'] = 0,0,0 #Set covariance off-diagonal terms to 0 for now #C[0,1],C[0,2],C[1,2]
         self.args = args
         args['distmod'] = np.ones_like(args['c'])*args['distmod']
