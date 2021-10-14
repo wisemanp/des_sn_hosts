@@ -194,6 +194,7 @@ class Sim(SN_Model):
         args['x1_err'] = [np.max([0.02,np.random.normal((14*args['mB_err'][i] -0.25 ),0.08)])
                          for i in range(len(args['mB']))]
         args['x1_noise'] =norm(0,args['x1_err']).rvs(size=len(args['x1']))
+        args['x1_int'] = args['x1'].copy()
         args['x1'] = args['x1'] + args['x1_noise']
         #C = np.cov([args['mB'],args['x1'],args['c']])
 
