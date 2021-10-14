@@ -4,6 +4,7 @@ from astropy.table import Table
 import os
 from yaml import safe_load as yload
 import scipy.stats as stats
+from scipy.stats import norm
 import sys
 import pickle
 import warnings
