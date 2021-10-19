@@ -18,7 +18,9 @@ def load_config(cpath):
 def prep_df_for_BBC(df):
     df = df[df['mB']<23.35]
     df = df[(df['x1']<3)&(df['x1']>-3)&(df['c']>-0.3)&(df['c']<0.3)&\
-                           (df['x1_err']<1)&(df['c_err']<0.05)]
+                           (df['x1_err']<1)\
+                           #&(df['c_err']<0.05)    # uncomment to include a colour error cut
+                           ]
     df['CID'] = np.arange(len(df),dtype=int)
     #df['CID'] = df['CID'].astype(int)
     df['IDSURVEY'] = 10
@@ -80,7 +82,9 @@ def sim_worker(args):
                    savepath=os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
                    '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)))
     sim.sim_df = sim.sim_df[(sim.sim_df['x1']<3)&(sim.sim_df['x1']>-3)&(sim.sim_df['c']>-0.3)&\
-                            (sim.sim_df['c']<0.3)&(sim.sim_df['x1_err']<1)&(sim.sim_df['c_err']<0.05)]
+                            (sim.sim_df['c']<0.3)&(sim.sim_df['x1_err']<1)&\
+                            #(sim.sim_df['c_err']<0.05)   # uncomment to include a colour error cut
+                            ]
     sim.sim_df = sim.sim_df[sim.sim_df['mB']<23.35]
 
     sim.sim_df.to_hdf(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
