@@ -175,7 +175,7 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,linewidth=4.5,linestyle='-
         means.append(np.mean(count_arr[:,i]))
         stds.append(np.std(count_arr[:,i]))
     return np.array(bin_centers),np.array(means),np.array(stds)
-def plot_sample_hists(sim,label_ext='',):
+def plot_sample_hists(sim,label_ext='',return_axes=False):
     df = sim.sim_df
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['detections'] =True
@@ -233,7 +233,10 @@ def plot_sample_hists(sim,label_ext='',):
     axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext)
     plt.savefig(sim.fig_dir +'SN_samples_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
-    return chi2x1,chi2c
+    if return_axes:
+        return axc,axx1
+    else:
+        return chi2x1,chi2c
 
 
 def plot_model_hists(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,axc,axx1):
