@@ -182,7 +182,7 @@ class Sim(SN_Model):
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
         args = self.x1_func(args,self.config['x1_model']['params'])
         args['mB'],args['beta_SN'] = self.mb_func(args,self.config['mB_model']['params'])
-        args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.385*(args['mB'][i]-1.5) - 10)+0.03,np.max([0.003,0.003*(args['mB'][i]-20)]))])
+        args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.395*(args['mB'][i]-1.5) - 10)+0.03,np.max([0.003,0.003*(args['mB'][i]-20)]))])
                          for i in range(len(args['mB']))]
 
         args['c_err'] = [np.max([0.02,np.random.normal((0.675*args['mB_err'][i] +0.005),0.003)])
@@ -191,7 +191,7 @@ class Sim(SN_Model):
         args['c_noise'] =norm(0,args['c_err']).rvs(size=len(args['c']))
         args['c'] = args['c'] + args['c_noise']
 
-        args['x1_err'] = [np.max([0.02,np.random.normal((14*args['mB_err'][i] -0.25 ),0.08)])
+        args['x1_err'] = [np.max([0.08,np.random.normal((14*args['mB_err'][i] -0.25 ),0.05)])
                          for i in range(len(args['mB']))]
         args['x1_noise'] =norm(0,args['x1_err']).rvs(size=len(args['x1']))
         args['x1_int'] = args['x1'].copy()
