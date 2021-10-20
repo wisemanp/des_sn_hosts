@@ -53,7 +53,7 @@ def prep_df_for_BBC(df):
              'VPEC', 'VPECERR', 'PKMJD', 'PKMJDERR', 'FITPROB',
            'PROB_SNNTRAINV19_z_TRAINDES_V19', 'HOST_LOGMASS', 'HOST_LOG_SFR',
            'HOST_LOG_sSFR', 'distmod', 'mass', 'ssfr', 'sfr', 'mean_ages',
-           'SN_age', 'rv', 'E', 'host_Av', 'U-R', 'c', 'e_noise', 'c_int', 'x1','x1_int','x1_noise'
+           'SN_age', 'rv', 'E', 'host_Av', 'U-R', 'c', 'c_noise', 'c_int', 'x1','x1_int','x1_noise'
            #'prog_age'
             ]
     return df,columns
