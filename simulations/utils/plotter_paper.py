@@ -103,7 +103,7 @@ def plot_galaxy_properties_paper(sim):
 
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.hist(sim.sim_df['U-R'],density=True,bins=np.linspace(-0.5,2.5,100),histtype='step',lw=3,color=sim_colour,label='Sim')
-    ax.hist(des5yr['Host U-R'],density=True,bins=np.linspace(-0.5,2.5,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
+    ax.hist(des5yr['U-R'],density=True,bins=np.linspace(-0.5,2.5,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
     ax.tick_params(right=True,top=True,which='both',labelsize=16)
@@ -113,7 +113,7 @@ def plot_galaxy_properties_paper(sim):
     f,ax=plt.subplots(figsize=(8,6.5))
 
     ax.hist(np.log10(sim.sim_df['mass']),density=True,bins=np.linspace(7,12,100),histtype='step',lw=3,color=sim_colour,label='Sim')
-    ax.hist(des5yr['Host Mass'],density=True,bins=np.linspace(7,12,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
+    ax.hist(des5yr['mass'],density=True,bins=np.linspace(7,12,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
     ax.tick_params(right=True,top=True,which='both',labelsize=16)

@@ -14,7 +14,7 @@ from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp
 plt.rcParams['text.usetex'] = True
 
 aura_dir = os.environ['AURA_DIR']
-des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))
+des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018.h5'))
 lisa_data = pickle.load(open(os.path.join(aura_dir,'data','des5yr_hosts.pkl'),'rb'))
 plt.style.use('default')
 sns.set_context('paper')
@@ -97,7 +97,7 @@ def plot_galaxy_properties(sim):
 
     f,ax=plt.subplots(figsize=(8,6.5))
     ax.hist(sim.sim_df['U-R'],density=True,bins=np.linspace(-0.5,2.5,100),histtype='step',lw=3,color=sim_colour,label='Sim')
-    ax.hist(des5yr['Host U-R'],density=True,bins=np.linspace(-0.5,2.5,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
+    ax.hist(des5yr['U-R'],density=True,bins=np.linspace(-0.5,2.5,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.1))
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
     ax.tick_params(right=True,top=True,which='both',labelsize=16)
@@ -107,7 +107,7 @@ def plot_galaxy_properties(sim):
     f,ax=plt.subplots(figsize=(8,6.5))
 
     ax.hist(np.log10(sim.sim_df['mass']),density=True,bins=np.linspace(7,12,100),histtype='step',lw=3,color=sim_colour,label='Sim')
-    ax.hist(des5yr['Host Mass'],density=True,bins=np.linspace(7,12,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
+    ax.hist(des5yr['massmc'],density=True,bins=np.linspace(7,12,20),histtype='step',lw=3,color=data_colour,label='DES5YR')
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.05))
     ax.tick_params(right=True,top=True,which='both',labelsize=16)
@@ -126,7 +126,7 @@ def plot_cs(sim,df):
                 label = 'Sim Mean'
             ax1.scatter(n.mid,g['c'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
             ax1.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='c',marker=None,ls='none')
-    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30)))):
+    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['massmc'],bins=np.linspace(8,12,30)))):
         if len(g)>0:
             label=None
             if counter==0:
@@ -144,7 +144,7 @@ def plot_cs(sim,df):
                 label = 'Sim Mean'
             ax2.scatter(n.mid,g['c'].mean(),color='c',edgecolor='w',linewidth=1,marker='D',s=100,label=label)
             ax2.errorbar(n.mid,g['c'].mean(),yerr=np.sqrt(np.mean(g['c']**2)),c='c',marker=None,ls='none')
-    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
+    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['U-R'],bins=np.linspace(-0.5,2.5,30)))):
         if len(g)>0:
             label=None
             if counter==0:
@@ -193,7 +193,7 @@ def plot_x1s(sim,df,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,sim_colou
         f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['logmass'] = np.log10(df['mass'])
     lcounter=0
-    for n,g in des5yr.groupby(pd.cut(des5yr['Host Mass'],bins=np.linspace(8,12,30))):
+    for n,g in des5yr.groupby(pd.cut(des5yr['massmc'],bins=np.linspace(8,12,30))):
         if len(g)>1 and nplot==0:
             label=None
             if lcounter==0:
@@ -230,7 +230,7 @@ def plot_x1s(sim,df,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,sim_colou
             x1_mids.append(g['x1'].mean())
     ax2.plot(UR_mids,x1_mids,color=sim_colour,linewidth=3,label= model_name+' mean',linestyle=sim_linestyle)
             #ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=sim_colour,marker=None,ls='none')
-    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['Host U-R'],bins=np.linspace(-0.5,2.5,30)))):
+    for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['U-R'],bins=np.linspace(-0.5,2.5,30)))):
         if len(g)>1 and nplot==0:
 
             ax2.scatter(n.mid,g['x1'].mean(),color=data_colour,edgecolor='grey',linewidth=1,marker='s',s=100)
