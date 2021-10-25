@@ -15,8 +15,10 @@ from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp, g
 plt.rcParams['text.usetex'] = True
 
 aura_dir = os.environ['AURA_DIR']
-des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))
+#des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))
 lisa_data = pickle.load(open(os.path.join(aura_dir,'data','des5yr_hosts.pkl'),'rb'))
+des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018.h5'))
+
 plt.style.use('default')
 sns.set_context('paper')
 plt.rcParams.update({'font.size': 20})
