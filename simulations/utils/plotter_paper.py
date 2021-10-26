@@ -17,8 +17,8 @@ plt.rcParams['text.usetex'] = True
 aura_dir = os.environ['AURA_DIR']
 #des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))
 lisa_data = pickle.load(open(os.path.join(aura_dir,'data','des5yr_hosts.pkl'),'rb'))
-des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018.h5'))
-
+des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
+#des5yr  = des5yr[des5yr['SPECZ']<0.6]
 plt.style.use('default')
 sns.set_context('paper')
 plt.rcParams.update({'font.size': 20})
