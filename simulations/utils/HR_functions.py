@@ -160,7 +160,7 @@ def get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_
     redchisq = get_red_chisq(obs,mod_interp,err)
     return redchisq
 
-def get_red_chisq_interp2(data_c_mids_lo,data_hr_mids_lo,data_hr_errs_mids_lo,data_c_mids_hi,data_hr_mids_hi,data_hr_errs_mids_hi,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi):
+def get_red_chisq_interp2(data_c_mids_lo,data_hr_mids_lo,data_hr_errs_lo,data_c_mids_hi,data_hr_mids_hi,data_hr_errs_hi,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi):
 
     if model_c_mids_lo[0] < data_c_mids_lo[0]:
         pass
@@ -171,9 +171,9 @@ def get_red_chisq_interp2(data_c_mids_lo,data_hr_mids_lo,data_hr_errs_mids_lo,da
     if model_c_mids_hi[0] < data_c_mids_hi[0]:
         pass
     else:
-        for x in high.keys():
-            data_c_mids_hi = data_c_mids_hi[1:]
-            data_hr_mids_hi = data_hr_mids_hi[1:]
+
+        data_c_mids_hi = data_c_mids_hi[1:]
+        data_hr_mids_hi = data_hr_mids_hi[1:]
 
     interp_lo = interp1d(np.array(model_c_mids_lo),np.array(model_hr_mids_lo))
     mod_lo = interp_lo(np.array(data_c_mids_lo))
