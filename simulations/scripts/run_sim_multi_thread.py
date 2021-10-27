@@ -85,7 +85,8 @@ def sim_worker(args):
                             (sim.sim_df['c']<0.3)&(sim.sim_df['x1_err']<1)&\
                             (sim.sim_df['c_err']<0.1)   # uncomment to include a colour error cut
                             ]
-    sim.sim_df = sim.sim_df[sim.sim_df['mB']<23.35]
+    sim.sim_df = sim.sim_df[sim.sim_df['mB']<25]
+    sim.sim_df = sim.sim_df[sim.sim_df['eff_mask']==1]
 
     sim.sim_df.to_hdf(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
         '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)),key='sim')
