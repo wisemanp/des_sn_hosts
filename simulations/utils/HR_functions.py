@@ -167,14 +167,14 @@ def get_red_chisq_interp2(data_c_mids_lo,data_hr_mids_lo,data_hr_errs_lo,data_c_
     else:
         data_c_mids_lo = data_c_mids_lo[1:]
         data_hr_mids_lo = data_hr_mids_lo[1:]
-
+        data_hr_errs_lo = data_hr_errs_lo[1:]
     if model_c_mids_hi[0] < data_c_mids_hi[0]:
         pass
     else:
 
         data_c_mids_hi = data_c_mids_hi[1:]
         data_hr_mids_hi = data_hr_mids_hi[1:]
-
+        data_hr_errs_hi = data_hr_errs_hi[1:]
     interp_lo = interp1d(np.array(model_c_mids_lo),np.array(model_hr_mids_lo))
     mod_lo = interp_lo(np.array(data_c_mids_lo))
     interp_hi = interp1d(np.array(model_c_mids_hi),np.array(model_hr_mids_hi))
