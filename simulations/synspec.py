@@ -1,4 +1,4 @@
-from spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
+from des_sn_hosts.simulations.spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
 from what_the_flux import what_the_flux as wtf
 import numpy as np
 import pandas as pd
