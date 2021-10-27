@@ -68,7 +68,6 @@ def ozdes_efficiency():
     for y in ['Y123','Y4','Y5']:
         for f in ['X12','C12','S12','E12','X3','C3']:
             eff = np.clip(efficiencies['%s_%s'%(f,y)](mags),a_min=0,a_max=None)
-            ax.plot(mags,eff)
             eff_df['%s_%s'%(f,y)] = eff
     mean_eff_func = interp1d(mags,eff_df.mean(axis=1))
     std_eff_func =  interp1d(mags,eff_df.std(axis=1))
