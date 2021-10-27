@@ -160,6 +160,32 @@ def get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_
     redchisq = get_red_chisq(obs,mod_interp,err)
     return redchisq
 
+def get_red_chisq_interp2(data_c_mids_lo,data_hr_mids_lo,data_hr_errs_mids_lo,data_c_mids_hi,data_hr_mids_hi,data_hr_errs_mids_hi,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi):
+
+    if model_c_mids_lo[0] < data_c_mids_lo[0]:
+        pass
+    else:
+        data_c_mids_lo = data_c_mids_lo[1:]
+        data_hr_mids_lo = data_hr_mids_lo[1:]
+
+    if model_c_mids_hi[0] < data_c_mids_hi[0]:
+        pass
+    else:
+        for x in high.keys():
+            data_c_mids_hi = data_c_mids_hi[1:]
+            data_hr_mids_hi = data_hr_mids_hi[1:]
+
+    interp_lo = interp1d(np.array(model_c_mids_lo),np.array(model_hr_mids_lo))
+    mod_lo = interp_lo(np.array(data_c_mids_lo))
+    interp_hi = interp1d(np.array(model_c_mids_hi),np.array(model_hr_mids_hi))
+    mod_hi = interp_hi(np.array(data_c_mids_hi))
+
+    obs = np.concatenate([np.array(data_hr_mids_lo),np.array(data_hr_mids_hi)])
+    err = np.concatenate([np.array(data_hr_errs_lo),np.array(data_hr_errs_hi)])
+    mod_interp = np.concatenate([mod_lo,mod_hi])
+    redchisq = get_red_chisq(obs,mod_interp,err)
+    return redchisq
+
 def get_red_chisq_interp_splitx1(obs,model):
     all_obs,all_err,all_mod = [],[],[]
     for key in obs.keys():
