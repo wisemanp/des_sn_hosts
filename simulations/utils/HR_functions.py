@@ -198,7 +198,7 @@ def get_red_chisq_interp_split_multi(data_c_mids_lo,data_hr_mids_lo,data_hr_errs
             split['data_hr_errs'] = split['data_hr_errs'][1:]
 
         interp = interp1d(np.array(split['model_c_mids']),np.array(split['model_hr_mids']))
-        mod = interp(split['data_c_mids']))
+        mod = interp(split['data_c_mids'])
         all_obs = np.concatenate([all_obs,split['data_hr_mids']])
         all_err = np.concatenate([all_err,split['data_hr_errs']])
         all_mod = np.concatenate([all_mod,mod])
@@ -255,7 +255,7 @@ def get_red_chisq_interp_split_multi(splits):
         all_mod = np.concatenate([all_mod,mod])
     redchisq = get_red_chisq(all_obs,all_mod,all_err)
     return redchisq
-    
+
 def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True,data='new'):
     data_mass_split = np.log10(mass_split)
     chis = []
