@@ -251,7 +251,7 @@ class SynSpec():
         filter1 = np.loadtxt(self.filt_dir + 'Bessell%s.dat' % flt1)
         fwave1,fflux1 = filter1[:,0],filter1[:,1]
         filter2 = np.loadtxt(self.filt_dir + 'Bessell%s.dat' % flt2)
-        fwave2,fflux2 = filter2[:,0],filter21[:,1]
+        fwave2,fflux2 = filter2[:,0],filter2[:,1]
         absmag_corr = 1 / ((10 * u.pc.to(u.cm)) ** 2)
         band1 = wtf.Band_Vega(fwave1, fflux1 * u.erg / u.s / u.AA)
         band2 = wtf.Band_Vega(fwave2, fflux2 * u.erg / u.s / u.AA)
