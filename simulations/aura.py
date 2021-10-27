@@ -13,7 +13,7 @@ from astropy.cosmology import FlatLambdaCDM
 from scipy.optimize import minimize
 import time
 from .models.sn_model import SN_Model
-from .utils.gal_functions import schechter, single_schechter, double_schechter
+from .utils.gal_functions import schechter, single_schechter, double_schechter, ozdes_efficiency
 from .utils.plotter import *
 from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
 
@@ -156,8 +156,7 @@ class Sim(SN_Model):
         args['mass'] = z_df.loc[m_av0_samples].mass.values
         args['ssfr'] = z_df.loc[m_av0_samples].ssfr.values
         args['sfr'] = z_df.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
-        for band in ['g','r','i','z']:
-            args['m_%s'%band] = z_df.loc[m_av0_samples]['m_%s'%band].values
+
         args['mean_ages'] = z_df.loc[m_av0_samples].mean_age.values
 
         sn_ages = [np.random.choice(z_df.loc[i,'SN_ages'],p=z_df.loc[i,'SN_age_dist'].fillna(0)/z_df.loc[i,'SN_age_dist'].fillna(0).sum()) for i in m_av0_samples]
@@ -178,7 +177,13 @@ class Sim(SN_Model):
 
         gal_df = z_df.loc[m_av_samples_inds]
         args['U-R'] = gal_df['U'].values - gal_df['R'].values #gal_df['U_R'].values
-
+        for band in ['g','r','i','z']:
+            args['m_%s'%band] = z_df.loc[m_av0_samples]['m_%s'%band].values
+        mean_eff_func,std_eff_func = ozdes_efficiency()
+        spec_eff = mean_eff_func(args['m_r'])
+        spec_eff_std = std_eff_func(args['m_r'])
+        effs = np.clip(np.random.normal(spec_eff,spec_eff_std),a_min=0,a_max=1)
+        args['eff_mask'] = [np.random.choice([0,1],p=[1-effs[i],effs[i]]) for i in range(len(effs))]
         args['mean_ages'] = gal_df['mean_age'].values
 
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
