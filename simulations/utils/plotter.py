@@ -14,7 +14,7 @@ from .HR_functions import calculate_step, get_red_chisq, get_red_chisq_interp
 plt.rcParams['text.usetex'] = True
 
 aura_dir = os.environ['AURA_DIR']
-des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
+#des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
 
 lisa_data = pickle.load(open(os.path.join(aura_dir,'data','des5yr_hosts.pkl'),'rb'))
 plt.style.use('default')
@@ -115,7 +115,7 @@ def plot_galaxy_properties(sim):
     ax.set_xlabel('$\log (M_*/M_{\odot})$',size=20)
     ax.set_ylabel('Normalized Frequency',size=20)
     ax.legend(fontsize=14)
-def plot_cs(sim,df):
+def plot_cs(sim,df,des5yr,):
     f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['logmass'] = np.log10(df['mass'])
     ax1.scatter(df['logmass'],df['c'],c=df['host_Av'],alpha=0.6,edgecolor='w',lw=0.1,cmap='viridis',label='Sim')
@@ -188,7 +188,7 @@ def plot_cs(sim,df):
     yplus= intervals[:,1] -counts
     chi2 = get_red_chisq(counts,simcounts,yplus)
     return chi2
-def plot_x1s(sim,df,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,sim_colour='c',model_name='Sim',sim_linestyle='-'):
+def plot_x1s(sim,df,des5yr,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,sim_colour='c',model_name='Sim',sim_linestyle='-'):
 
     if f ==None:
         f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
