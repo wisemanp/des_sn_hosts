@@ -178,6 +178,7 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,linewidth=4.5,linestyle='-
         stds.append(np.std(count_arr[:,i]))
     return np.array(bin_centers),np.array(means),np.array(stds)
 def plot_sample_hists(sim,label_ext='',return_axes=False,z_cut=0.6):
+    des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
     des5yr  = des5yr[des5yr['SPECZ']<z_cut]
     df = sim.sim_df
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
