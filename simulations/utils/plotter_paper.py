@@ -18,7 +18,7 @@ aura_dir = os.environ['AURA_DIR']
 #des5yr = pd.read_csv(os.path.join(aura_dir,'data','df_after_cuts_z0.6_UR1.csv'))
 lisa_data = pickle.load(open(os.path.join(aura_dir,'data','des5yr_hosts.pkl'),'rb'))
 des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
-#des5yr  = des5yr[des5yr['SPECZ']<0.6]
+
 plt.style.use('default')
 sns.set_context('paper')
 plt.rcParams.update({'font.size': 20})
@@ -177,7 +177,8 @@ def get_hist_errs(df,par,errext = '_err',axhist=False,linewidth=4.5,linestyle='-
         means.append(np.mean(count_arr[:,i]))
         stds.append(np.std(count_arr[:,i]))
     return np.array(bin_centers),np.array(means),np.array(stds)
-def plot_sample_hists(sim,label_ext='',return_axes=False):
+def plot_sample_hists(sim,label_ext='',return_axes=False,z_cut=0.6):
+    des5yr  = des5yr[des5yr['SPECZ']<z_cut]
     df = sim.sim_df
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
     df['detections'] =True
