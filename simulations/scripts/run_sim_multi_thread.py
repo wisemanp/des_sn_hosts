@@ -10,7 +10,9 @@ import csv
 import numpy as np
 
 import multiprocessing
+des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
 
+des5yr = des5yr[des5yr['SPECZ']<0.7]
 def load_config(cpath):
     with open(cpath,'r') as f:
         return yload(f)
