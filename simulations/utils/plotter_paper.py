@@ -1229,6 +1229,7 @@ def plot_mu_res_paper_combined(sim,obs=True,label_ext='',colour_split=1,mass_spl
     return chis
 
 def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True,data='new'):
+    des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5')
     data_mass_split = np.log10(mass_split)
     chis = []
     fMASSUR,(axMASS,axUR,axsSFR)=plt.subplots(1,3,figsize=(16,6.6),sharey=True)

@@ -41,7 +41,7 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     sim.sim_df = from_bbc
                     sim.sim_df.rename(columns={'U_R':'U-R','MURES':'mu_res','MUERR':'mu_res_err','mBERR':'mB_err'},inplace=True)
                     try:
-                        chis[i,j,k] =np.sum([plot_mu_res_paper_splitssfr(sim),np.sum(plot_mu_res_paper(sim))])
+                        chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim))
                     except:
                         chis[i,j,k] =-9999
                     n +=1
