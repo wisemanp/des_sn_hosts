@@ -9,7 +9,10 @@ import sys
 
 from yaml import safe_load as yload
 cpath = sys.argv[1]
-BBC = sys.argv[2]
+try:
+    BBC = sys.argv[2]
+except:
+    BBC = '1D'
 with open(cpath,'r') as f:
     cfg =  yload(f)
 Rv_lo_grid = np.arange(cfg['Rv_lo']['lo'],cfg['Rv_lo']['hi'],cfg['Rv_lo']['step'])
@@ -53,4 +56,4 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     except:
                         chis[i,j,k] =-9999
                     n +=1
-np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_combined.npy'%(cfg['save']['dir']),chis)
+np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_combined_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
