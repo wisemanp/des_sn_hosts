@@ -9,6 +9,7 @@ import sys
 
 from yaml import safe_load as yload
 cpath = sys.argv[1]
+BBC = sys.argv[2]
 with open(cpath,'r') as f:
     cfg =  yload(f)
 Rv_lo_grid = np.arange(cfg['Rv_lo']['lo'],cfg['Rv_lo']['hi'],cfg['Rv_lo']['step'])
@@ -35,13 +36,20 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     c['SN_rv_model']['params']['rv_high'] = float(rv_lo)
                     c['mB_model']['params']['age_step']['mag'] = float(age_step)
                     sim.config = c
+                    if BBC =='5D':
+                        from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/5D/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
+                                          delimiter='\s+', comment='#')
+                    else:
 
-                    from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
+                        from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
                                           delimiter='\s+', comment='#')
                     sim.sim_df = from_bbc
                     sim.sim_df.rename(columns={'U_R':'U-R','MURES':'mu_res','MUERR':'mu_res_err','mBERR':'mB_err'},inplace=True)
                     try:
-                        chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim))
+                        if BBC=='5D':
+                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D'))
+                        else:
+                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,))
                     except:
                         chis[i,j,k] =-9999
                     n +=1
