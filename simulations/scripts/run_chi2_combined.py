@@ -16,7 +16,7 @@ except:
 try:
     chi_plots = sys.argv[3].split(',')
 except:
-    chi_plots = ['M','UR','sSFR']
+    chi_plots = ['M','UR']
 with open(cpath,'r') as f:
     cfg =  yload(f)
 Rv_lo_grid = np.arange(cfg['Rv_lo']['lo'],cfg['Rv_lo']['hi'],cfg['Rv_lo']['step'])
