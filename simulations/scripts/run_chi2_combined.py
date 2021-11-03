@@ -13,6 +13,10 @@ try:
     BBC = sys.argv[2]
 except:
     BBC = '1D'
+try:
+    chi_plots = sys.argv[3].split(',')
+except:
+    chi_plots = ['M','UR','sSFR']
 with open(cpath,'r') as f:
     cfg =  yload(f)
 Rv_lo_grid = np.arange(cfg['Rv_lo']['lo'],cfg['Rv_lo']['hi'],cfg['Rv_lo']['step'])
@@ -50,9 +54,9 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     sim.sim_df.rename(columns={'U_R':'U-R','MURES':'mu_res','MUERR':'mu_res_err','mBERR':'mB_err'},inplace=True)
                     try:
                         if BBC=='5D':
-                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D'))
+                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots))
                         else:
-                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,))
+                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots))
                     except:
                         chis[i,j,k] =-9999
                     n +=1

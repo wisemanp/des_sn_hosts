@@ -1228,7 +1228,7 @@ def plot_mu_res_paper_combined(sim,obs=True,label_ext='',colour_split=1,mass_spl
     plt.savefig(sim.fig_dir +'HR_vs_c_split_%s'%(sim.save_string + '_paper')+label_ext+'.pdf')
     return chis
 
-def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True,data='new',y5data='default'):
+def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True,data='new',y5data='default',chi_plots=['M','UR']):
     if y5data=='default':
         des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
     elif y5data =='5D':
@@ -1273,7 +1273,8 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
         axMASS.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr=high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $\log(M_*/M_{\odot})>10$')
         chisq =get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi)
         axMASS.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
-        chis.append(chisq)
+        if 'M' in chi_plots:
+            chis.append(chisq)
 
     if obs and data=='new':
         data_c_mids_lo , data_hr_mids_lo , data_hr_errs_lo , data_c_mids_hi , data_hr_mids_hi ,  data_hr_errs_hi =[],[],[],[],[],[]
@@ -1308,7 +1309,8 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
 
         chisq = get_red_chisq_interp_split_multi(splits)
         axMASS.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
-        chis.append(chisq)
+        if 'M' in chi_plots:
+            chis.append(chisq)
 
     axMASS.set_xlabel('$c$',size=24)
     axMASS.set_ylabel('$\mu_{\mathrm{res}}$',size=24,)
@@ -1357,7 +1359,8 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
         axUR.errorbar(low['c'],low['hr'],xerr=low['c_err'],yerr =low['hr_err'],marker='D',color=split_colour_1,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R<1$')
         axUR.errorbar(high['c'],high['hr'],xerr=high['c_err'],yerr =high['hr_err'],marker='D',color=split_colour_2,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR global $U-R>1$')
         axUR.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
-        chis.append(chisq)
+        if 'UR' in chi_plots:
+            chis.append(chisq)
 
     if obs and data=='new':
         data_c_mids_lo , data_hr_mids_lo , data_hr_errs_lo , data_c_mids_hi , data_hr_mids_hi ,  data_hr_errs_hi =[],[],[],[],[],[]
@@ -1392,7 +1395,8 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
 
         chisq = get_red_chisq_interp_split_multi(splits)
         axUR.text(0.,0.15,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
-        chis.append(chisq)
+        if 'UR' in chi_plots:
+            chis.append(chisq)
     axUR.set_xlabel('$c$',size=24)
     axUR.legend(fontsize=13,loc='lower left')
     axUR.set_ylim(-0.2,0.2)
@@ -1501,7 +1505,8 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
 
     chisq = get_red_chisq_interp_split_multi(splits)
     axsSFR.text(-0.1,-0.25,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
-    chis.append(chisq)
+    if 'sSFR' in chi_plots:
+        chis.append(chisq)
     axsSFR.set_xlabel('$c$',size=24)
     axsSFR.legend(fontsize=10,ncol=2,loc='upper center')
 
