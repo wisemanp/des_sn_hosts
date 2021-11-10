@@ -2,7 +2,8 @@ from des_sn_hosts.simulations import aura
 from des_sn_hosts.simulations.utils.plotter_paper import *
 from tqdm import tqdm
 import sys
-
+import matplotlib
+matplotlib.rc('figure', max_open_warning = 0)
 # read in the BBC output files and calculate the chi-squared to the HR-vs-colour split by mass plot
 # read in the BBC output files and calculate the chi-squared to the HR-vs-colour split by mass plot
 
