@@ -1233,6 +1233,8 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
         des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
     elif y5data =='5D':
         des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC5D.h5'))
+    elif y5data =='0D':
+        des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC0D.h5'))
     data_mass_split = np.log10(mass_split)
     chis = []
     fMASSUR,(axMASS,axUR,axsSFR)=plt.subplots(1,3,figsize=(16,6.6),sharey=True)
