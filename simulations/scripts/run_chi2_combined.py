@@ -47,6 +47,9 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     if BBC =='5D':
                         from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/BBC5D/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
                                           delimiter='\s+', comment='#')
+                    elif BBC =='0D':
+                        from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/0D/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
+                                          delimiter='\s+', comment='#')
                     else:
 
                         from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
@@ -56,6 +59,8 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     try:
                         if BBC=='5D':
                             chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots))
+                        elif BBC=='0D':
+                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots))
                         else:
                             chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots))
                     except:
