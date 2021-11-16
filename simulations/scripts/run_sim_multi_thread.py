@@ -69,8 +69,13 @@ def sim_worker(args):
     sim = aura.Sim(pth)
     with open(pth,'r') as f:
         c = yload(f)
-    c['SN_rv_model']['params']['rv_low'] = float(rv_hi)
-    c['SN_rv_model']['params']['rv_high'] = float(rv_lo)
+    if c['SN_rv_model']['model']=='age_rv_step':
+        c['SN_rv_model']['params']['rv_young'] = float(rv_hi)
+        c['SN_rv_model']['params']['rv_old'] = float(rv_lo)
+
+    else:
+        c['SN_rv_model']['params']['rv_low'] = float(rv_hi)
+        c['SN_rv_model']['params']['rv_high'] = float(rv_lo)
     c['mB_model']['params']['age_step']['mag'] = float(age_step)
     sim.config = c
     n_samples_arr = sim._get_z_dist(des5yr['zHD'],n=cfg['n_samples'])
@@ -80,6 +85,7 @@ def sim_worker(args):
         os.mkdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir']))
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/',cfg['save']['dir'])):
         os.mkdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/',cfg['save']['dir']))
+    print('Running sim. Rv_young')
     sim.sample_SNe(zarr,n_samples_arr,
                    savepath=os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
                    '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)))
