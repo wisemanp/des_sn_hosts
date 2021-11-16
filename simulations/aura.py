@@ -90,7 +90,7 @@ class Sim(SN_Model):
         '''
         counts, bins = np.histogram(z_vals,
                                     bins=[0.125, 0.175, 0.225, 0.275, 0.325, 0.375, 0.425, 0.475, 0.525, 0.575, 0.625,
-                                          0.675])
+                                          0.675,0.725,0.775])
         norm_counts = counts / np.sum(counts)
         norm_counts = counts / np.sum(counts)
         n_samples_arr = norm_counts * n
