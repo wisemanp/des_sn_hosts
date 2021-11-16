@@ -56,14 +56,14 @@ def ozdes_efficiency():
             slope_end = eff['r_obs'].loc[eff['HOSTEFF'].idxmin()]
             x_new=np.linspace(slope_start,slope_end,1000)
             ffit = poly.polyval(x_new, coefs)
-            x_new = np.concatenate([np.linspace(13,slope_start,50),x_new])
-            ffit = np.concatenate([np.ones_like(np.linspace(13,slope_start,50)),ffit])
-            x_new = np.concatenate([x_new,np.linspace(slope_end,32,50)])
-            ffit = np.concatenate([ffit,np.zeros_like(np.linspace(slope_end,32,50))])
+            x_new = np.concatenate([np.linspace(10,slope_start,50),x_new])
+            ffit = np.concatenate([np.ones_like(np.linspace(10,slope_start,50)),ffit])
+            x_new = np.concatenate([x_new,np.linspace(slope_end,39,50)])
+            ffit = np.concatenate([ffit,np.zeros_like(np.linspace(slope_end,39,50))])
             completeness_func = interp1d(x_new,ffit)
             efficiencies[f+'_Y'+y] = completeness_func
 
-    mags = np.linspace(13,32,100)
+    mags = np.linspace(13,39,100)
     eff_df = pd.DataFrame(index=mags)
     for y in ['Y123','Y4','Y5']:
         for f in ['X12','C12','S12','E12','X3','C3']:
