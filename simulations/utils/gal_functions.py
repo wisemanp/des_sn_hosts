@@ -37,9 +37,9 @@ def schechter(z,logM):
         return double_schechter_T14(logM,**zfourge[0.2])
     elif z>=0.5 and z<0.75:
         return double_schechter_T14(logM,**zfourge[0.5])
-    elif z>0.75 and z<1:
+    elif z>=0.75 and z<1:
         return double_schechter_T14(logM,**zfourge[0.75])
-    elif z>1 and z<1.25:
+    elif z>=1 and z<1.25:
         return double_schechter_T14(logM,**zfourge[1])
 
 def ozdes_efficiency():
