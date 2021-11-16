@@ -122,6 +122,7 @@ class Sim(SN_Model):
             self.sim_df.to_hdf(self.savepath,key='sim')
 
     def _sample_SNe_z(self,z,n_samples):
+        print('*** Sampling %i SNe at redshift %.2f'%(n_samples,z))
         if n_samples == 0:
             return pd.DataFrame(columns=self.sim_df.columns)
         args = {}
