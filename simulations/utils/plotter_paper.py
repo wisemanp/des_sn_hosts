@@ -278,7 +278,7 @@ def plot_model_hists(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,ax
     return f,axc, axx1
 
 def plot_sample_hists_multi(sims,labels,des5yr):
-    colours = itertools.cycle(sns.color_palette('husl',n_colors=3))
+    colours = itertools.cycle(sns.color_palette('colorblind',n_colors=3))
     linestyles = itertools.cycle(['-','--',':'])
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
 
@@ -315,10 +315,10 @@ def plot_sample_hists_multi(sims,labels,des5yr):
     axc.legend(fontsize=13,loc='upper right')
     axx1.legend(fontsize=15,loc='upper left')
     axc.set_xlim(-0.32,0.32)
-    axc.set_ylim(0,113)
+    #axc.set_ylim(0,113)
     plt.savefig(sim.fig_dir +'SN_samples_multimodel_paper')
     plt.savefig(sim.fig_dir +'SN_samples_multimodel_paper.pdf')
-    return
+    return f, axc, axx1
 
 def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True):
     '''f,ax=plt.subplots(figsize=(8,6.5))
