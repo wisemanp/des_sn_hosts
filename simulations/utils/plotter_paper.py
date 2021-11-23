@@ -243,7 +243,7 @@ def plot_sample_hists(sim,des5yr,label_ext='',return_axes=False,z_cut=0.6):
         return chi2x1,chi2c
 
 
-def plot_model_hists(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,axc,axx1):
+def plot_model_hists(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,axc,axx1,des5yr):
     df = sim.sim_df
 
     df['detections'] =True
@@ -309,7 +309,7 @@ def plot_sample_hists_multi(sims,labels,des5yr):
 
     for sim,label in zip(sims,labels):
         f,axc,axx1 = plot_model_hists(sim,label[0],label[1],next(colours),
-                next(linestyles),[bin_centers_c,bin_centers_x1],f,axc,axx1)
+                next(linestyles),[bin_centers_c,bin_centers_x1],f,axc,axx1,des5yr)
         plt.tight_layout()
         plt.subplots_adjust(wspace=0,)
     axc.legend(fontsize=13,loc='upper right')
