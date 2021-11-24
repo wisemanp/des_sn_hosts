@@ -89,7 +89,7 @@ def sim_worker(args):
         os.mkdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir']))
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/',cfg['save']['dir'])):
         os.mkdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/',cfg['save']['dir']))
-    print('Running sim. Rv_young')
+    
     sim.sample_SNe(zarr,n_samples_arr,
                    savepath=os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
                    '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)))
