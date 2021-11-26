@@ -22,7 +22,7 @@ norm_x1hi = 0.51E-13
 beta_x1lo = -0.79
 norm_x1lo = 1.19E-13
 #beta = -1.14
-beta=-0.5
+beta=-1.5
 dtd_norm = 2.08E-13
 
 def parser():
@@ -144,7 +144,7 @@ def run(args):
     #flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
     #flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
     flux_df['g_r'] = flux_df['m_g'] - flux_df['m_r']
-    flux_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_0.5.h5'%(args.templates,z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res),key='main')
+    flux_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_1.5.h5'%(args.templates,z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res),key='main')
     print("Done!")
 if __name__=="__main__":
     args = parser()
