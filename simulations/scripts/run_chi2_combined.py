@@ -81,7 +81,7 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                                 chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
 
                     except:
-                        chis[i,j,k] =-9999
+                        chis[i][j].append(-9999)
                     n +=1
 if args.save_sum:
     np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_combined_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
