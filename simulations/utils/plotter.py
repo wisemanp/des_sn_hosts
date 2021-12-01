@@ -28,7 +28,7 @@ split_colour_2 = '#8500f2'
 sim_colour= 'c'
 data_colour = 'm'
 
-def plot_galaxy_properties(sim):
+def plot_galaxy_properties(sim,des5yr):
 
     f,(ax1,ax2,ax3)=plt.subplots(1,3,figsize=(10,4),sharey=True)
     cm =ax1.scatter(np.log10(sim.flux_df['mean_age']/1000),sim.flux_df['U']-sim.flux_df['R'],c=sim.flux_df['Av'],alpha=0.3)
@@ -39,7 +39,6 @@ def plot_galaxy_properties(sim):
     ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     ax1.tick_params(which='both',labelsize=14,right=True,top=True)
     #cbaxes = f.add_axes([0.2, 0.95, 0.6, 0.02])
-
 
     cm =ax2.scatter(np.log10(sim.flux_df['ssfr']),sim.flux_df['U']-sim.flux_df['R'],c=sim.flux_df['Av'],alpha=0.3)
 

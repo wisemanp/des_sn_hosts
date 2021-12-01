@@ -5,19 +5,23 @@ import sys
 import matplotlib
 matplotlib.rc('figure', max_open_warning = 0)
 # read in the BBC output files and calculate the chi-squared to the HR-vs-colour split by mass plot
-# read in the BBC output files and calculate the chi-squared to the HR-vs-colour split by mass plot
-
-
 from yaml import safe_load as yload
-cpath = sys.argv[1]
-try:
-    BBC = sys.argv[2]
-except:
-    BBC = '1D'
-try:
-    chi_plots = sys.argv[3].split(',')
-except:
-    chi_plots = ['M','UR']
+
+def parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c','--cpath',help='Config file',type=str)
+    parser.add_argument('-b','--BBC',help='BiasCor',default='1D',type=str)
+    parser.add_argument('-p','--plots',help='Which plots to do',default='M,UR',type=str)
+    parser.add_argument('-s','--save_sum',help='Save the sum of chi squared?',action='store_true')
+
+    args = parser.parse_args()
+    return args
+
+args = parser()
+cpath = args.cpath
+BBC = args.BBC
+chi_plots = args.plots.split(',')
+
 with open(cpath,'r') as f:
     cfg =  yload(f)
 Rv_lo_grid = np.arange(cfg['Rv_lo']['lo'],cfg['Rv_lo']['hi'],cfg['Rv_lo']['step'])
@@ -56,14 +60,27 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                                           delimiter='\s+', comment='#')
                     sim.sim_df = from_bbc
                     sim.sim_df.rename(columns={'U_R':'U-R','MURES':'mu_res','MUERR':'mu_res_err','mBERR':'mB_err'},inplace=True)
+
                     try:
-                        if BBC=='5D':
-                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots))
-                        elif BBC=='0D':
-                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots))
+                        if args.save_sum:
+                            if BBC=='5D':
+                                chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots))
+                            elif BBC=='0D':
+                                chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots))
+                            else:
+                                chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots))
                         else:
-                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots))
+                            if BBC=='5D':
+                                chis[i,j,k] =plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots)
+                            elif BBC=='0D':
+                                chis[i,j,k] =plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots)
+                            else:
+                                chis[i,j,k] =plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots)
+
                     except:
                         chis[i,j,k] =-9999
                     n +=1
-np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_combined_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
+if args.save_sum:
+    np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_combined_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
+else:
+    np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_separate_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
