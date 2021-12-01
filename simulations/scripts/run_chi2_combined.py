@@ -33,8 +33,8 @@ model_config = os.path.split(pth)[-1]
 model_name = model_config.split('.')[0]
 
 n=0
-chis = np.zeros((len(Rv_lo_grid),len(Rv_hi_grid),len(age_step_grid)),dtype=float)
-
+#chis = np.zeros((len(Rv_lo_grid),len(Rv_hi_grid),len(age_step_grid)),dtype=float)
+chis = []
 from tqdm import tqdm
 from des_sn_hosts.simulations.utils.plotter_paper import *
 sim = aura.Sim(pth)
@@ -42,7 +42,9 @@ sim = aura.Sim(pth)
 with open(pth,'r') as f:
     c = yload(f)
 for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
+    chis.append([])
         for j,rv_hi in tqdm(enumerate(Rv_hi_grid)):
+            chis[i].append([])
             for k,age_step in enumerate(age_step_grid):
 
                     c['SN_rv_model']['params']['rv_low'] = float(rv_hi)
@@ -65,18 +67,18 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     try:
                         if args.save_sum:
                             if BBC=='5D':
-                                chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots))
+                                chis[i,j,k].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
                             elif BBC=='0D':
-                                chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots))
+                                chis[i,j,k].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
                             else:
-                                chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots))
+                                chis[i,j,k].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
                         else:
                             if BBC=='5D':
-                                chis[i,j,k] =plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots)
+                                chis[i,j,k].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))
                             elif BBC=='0D':
-                                chis[i,j,k] =plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots)
+                                chis[i,j,k].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))
                             else:
-                                chis[i,j,k] =plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots)
+                                chis[i,j,k].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))
 
                     except:
                         chis[i,j,k] =-9999
