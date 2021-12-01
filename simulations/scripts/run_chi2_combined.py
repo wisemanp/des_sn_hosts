@@ -67,18 +67,18 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     try:
                         if args.save_sum:
                             if BBC=='5D':
-                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
+                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
                             elif BBC=='0D':
-                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
+                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
                             else:
-                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
+                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
                         else:
                             if BBC=='5D':
-                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))
+                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
                             elif BBC=='0D':
-                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))
+                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
                             else:
-                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))
+                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
 
                     except:
                         chis[i,j,k] =-9999
