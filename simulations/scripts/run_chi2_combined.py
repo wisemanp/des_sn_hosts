@@ -6,6 +6,7 @@ import matplotlib
 matplotlib.rc('figure', max_open_warning = 0)
 # read in the BBC output files and calculate the chi-squared to the HR-vs-colour split by mass plot
 from yaml import safe_load as yload
+import argparse
 
 def parser():
     parser = argparse.ArgumentParser()
