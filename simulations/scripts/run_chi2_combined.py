@@ -64,24 +64,24 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     sim.sim_df = from_bbc
                     sim.sim_df.rename(columns={'U_R':'U-R','MURES':'mu_res','MUERR':'mu_res_err','mBERR':'mB_err'},inplace=True)
 
-                    try:
-                        if args.save_sum:
-                            if BBC=='5D':
-                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
-                            elif BBC=='0D':
-                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
-                            else:
-                                chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
+                    #try:
+                    if args.save_sum:
+                        if BBC=='5D':
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
+                        elif BBC=='0D':
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
                         else:
-                            if BBC=='5D':
-                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
-                            elif BBC=='0D':
-                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
-                            else:
-                                chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step))))
+                    else:
+                        if BBC=='5D':
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
+                        elif BBC=='0D':
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
+                        else:
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f'%(rv_lo,rv_hi,age_step)))
 
-                    except:
-                        chis[i][j].append(-9999)
+                    #except:
+                        #chis[i][j].append(-9999)
                     n +=1
 if args.save_sum:
     np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_combined_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
