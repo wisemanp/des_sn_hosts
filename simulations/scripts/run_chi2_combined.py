@@ -42,7 +42,7 @@ sim = aura.Sim(pth)
 with open(pth,'r') as f:
     c = yload(f)
 for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
-    chis.append([])
+        chis.append([])
         for j,rv_hi in tqdm(enumerate(Rv_hi_grid)):
             chis[i].append([])
             for k,age_step in enumerate(age_step_grid):
