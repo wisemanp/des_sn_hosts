@@ -14,7 +14,7 @@ def parser():
     parser.add_argument('-b','--BBC',help='BiasCor',default='1D',type=str)
     parser.add_argument('-p','--plots',help='Which plots to do',default='M,UR',type=str)
     parser.add_argument('-s','--save_sum',help='Save the sum of chi squared?',action='store_true')
-
+    parser.add_argument('-x','--step_par',help='Step parameter',default='age')
     args = parser.parse_args()
     return args
 
@@ -22,12 +22,12 @@ args = parser()
 cpath = args.cpath
 BBC = args.BBC
 chi_plots = args.plots.split(',')
-
+step = args.step_par
 with open(cpath,'r') as f:
     cfg =  yload(f)
 Rv_lo_grid = np.arange(cfg['Rv_lo']['lo'],cfg['Rv_lo']['hi'],cfg['Rv_lo']['step'])
 Rv_hi_grid = np.arange(cfg['Rv_hi']['lo'],cfg['Rv_hi']['hi'],cfg['Rv_hi']['step'])
-age_step_grid = np.arange(cfg['age_step']['lo'],cfg['age_step']['hi'],cfg['age_step']['step'])
+age_step_grid = np.arange(cfg['%s_step'%step]['lo'],cfg['%s_step'%step]['hi'],cfg['%s_step'%step]['step'])
 pth = cfg['config_path']
 model_config = os.path.split(pth)[-1]
 model_name = model_config.split('.')[0]
@@ -49,7 +49,7 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
 
                     c['SN_rv_model']['params']['rv_low'] = float(rv_hi)
                     c['SN_rv_model']['params']['rv_high'] = float(rv_lo)
-                    c['mB_model']['params']['age_step']['mag'] = float(age_step)
+                    c['mB_model']['params']['%s_step'%step]['mag'] = float(age_step)
                     sim.config = c
                     if BBC =='5D':
                         from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/BBC5D/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
