@@ -381,7 +381,7 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
     axUR.set_ylim(-0.3,0.3)
     axUR.set_xlim(-0.5,2.5)
 
-    plt.savefig('test')
+    plt.savefig(sim.fig_dir +'test')
     l= axUR.get_xticklabels()
 
     l[0]=matplotlib.text.Text(-0.5,0,' ')
@@ -528,7 +528,7 @@ def plot_mu_res_paper(sim,obs=True,label_ext='',colour_split=1,mass_split=1E+10,
     axUR.legend(fontsize=13,loc='lower left')
     axUR.set_ylim(-0.2,0.2)
     axUR.set_xlim(-0.19,0.3)
-    plt.savefig('test')
+    plt.savefig(sim.fig_dir+'test')
     l= axUR.get_xticklabels()
     print(l[0],l[1],l[2])
     l[0]=matplotlib.text.Text(-0.2,0,' ')
@@ -762,7 +762,7 @@ def plot_mu_res_paper_splitx1(sim,obs=True,label_ext='',colour_split=1,mass_spli
     axUR.set_ylim(-0.3,0.3)
     axUR.set_xlim(-0.5,2.5)
 
-    plt.savefig('test')
+    plt.savefig(sim.fig_dir+'test')
     l= axUR.get_xticklabels()
 
     l[0]=matplotlib.text.Text(-0.5,0,' ')
@@ -916,7 +916,7 @@ def plot_mu_res_paper_splitx1(sim,obs=True,label_ext='',colour_split=1,mass_spli
     axUR.legend(fontsize=10,loc='lower left')
     axUR.set_ylim(-0.2,0.2)
     axUR.set_xlim(-0.19,0.3)
-    plt.savefig('test')
+    plt.savefig(sim.fig_dir+'test')
     l= axUR.get_xticklabels()
     print(l[0],l[1],l[2])
     l[0]=matplotlib.text.Text(-0.2,0,' ')
@@ -1123,7 +1123,7 @@ def plot_mu_res_paper_combined(sim,obs=True,label_ext='',colour_split=1,mass_spl
     axUR.legend(fontsize=13,loc='lower left')
     axUR.set_ylim(-0.2,0.2)
     axUR.set_xlim(-0.19,0.3)
-    plt.savefig('test')
+    plt.savefig(sim.fig_dir+'test')
     l= axUR.get_xticklabels()
     print(l[0],l[1],l[2])
     l[0]=matplotlib.text.Text(-0.2,0,' ')
@@ -1403,7 +1403,7 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
     axUR.legend(fontsize=13,loc='lower left')
     axUR.set_ylim(-0.2,0.2)
     axUR.set_xlim(-0.19,0.3)
-    plt.savefig('test')
+    plt.savefig(sim.fig_dir+'test')
     l= axUR.get_xticklabels()
     l[0]=matplotlib.text.Text(-0.2,0,' ')
     axUR.set_xticklabels(l)
