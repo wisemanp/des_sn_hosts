@@ -1237,7 +1237,10 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
         des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC0D.h5'))
     data_mass_split = np.log10(mass_split)
     chis = []
-    fMASSUR,(axMASS,axUR,axsSFR)=plt.subplots(1,3,figsize=(16,6.6),sharey=True)
+    if len(chi_plots)==3:
+        fMASSUR,(axMASS,axUR,axsSFR)=plt.subplots(1,3,figsize=(16,6.6),sharey=True)
+    else:
+        fMASSUR,(axMASS,axUR)=plt.subplots(1,2,figsize=(13,6.6),sharey=True)
     model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo , model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi =[],[],[],[],[],[]
     for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
         try:
@@ -1414,110 +1417,111 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
 
     oldest,oldish,youngish,youngest = ['#FF9100','red','purple','darkblue']
 
+    if 'sSFR' in chi_plots:
 
-    model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo ,model_c_mids_mid , model_hr_mids_mid , model_hr_errs_mid = [],[],[],[],[],[]
-    model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi = [],[],[]
-    x1_split=-0.3
-    ssfr_lo_split = -11
-    sim_ssfr_lo_split = ssfr_lo_split+0.5
-    ssfr_hi_split = -9.5
-    sim_ssfr_hi_split = ssfr_hi_split
-    sim.sim_df['log_ssfr'] = np.log10(sim.sim_df['ssfr'])
-    for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
+        model_c_mids_lo , model_hr_mids_lo , model_hr_errs_lo ,model_c_mids_mid , model_hr_mids_mid , model_hr_errs_mid = [],[],[],[],[],[]
+        model_c_mids_hi , model_hr_mids_hi ,  model_hr_errs_hi = [],[],[]
+        x1_split=-0.3
+        ssfr_lo_split = -11
+        sim_ssfr_lo_split = ssfr_lo_split+0.5
+        ssfr_hi_split = -9.5
+        sim_ssfr_hi_split = ssfr_hi_split
+        sim.sim_df['log_ssfr'] = np.log10(sim.sim_df['ssfr'])
+        for counter,(n,g) in enumerate(sim.sim_df.groupby(pd.cut(sim.sim_df['c'],bins=np.linspace(-0.3,0.3,20)))):
 
-        g1 = g[g['log_ssfr']>sim_ssfr_hi_split]
-
-        if len(g1)>0:
-            model_c_mids_hi.append(n.mid)
-            model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
-            model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
-
-        g2 = g[(g['log_ssfr']<=sim_ssfr_hi_split)&(g['log_ssfr']>sim_ssfr_lo_split)]
-
-        if len(g2)>0:
-
-            model_c_mids_mid.append(n.mid)
-            model_hr_mids_mid.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
-            model_hr_errs_mid.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
-
-        g3 = g[g['log_ssfr']<=sim_ssfr_lo_split]
-
-        if len(g3)>0:
-            model_c_mids_lo.append(n.mid)
-            model_hr_mids_lo.append(np.average(g3['mu_res'],weights=1/g3['mu_res_err']**2))
-            model_hr_errs_lo.append(g3['mu_res'].std()/np.sqrt(len(g3['mu_res'])))
-
-
-
-    axsSFR.plot(model_c_mids_lo ,model_hr_mids_lo,lw=1,label='Model $\log(\mathrm{sSFR}/\mathrm{yr}^{-1})<11$',color=oldest)
-    axsSFR.fill_between(model_c_mids_lo,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=oldest,lw=0.5,ls=':',alpha=0.05)
-
-    axsSFR.plot(model_c_mids_mid ,model_hr_mids_mid,lw=1,label='Model $-11\leq\log(\mathrm{sSFR}/\mathrm{yr}^{-1})<9.5$',ls=':',color=oldish)
-    axsSFR.fill_between(model_c_mids_mid ,np.array(model_hr_mids_mid)-np.array(model_hr_errs_mid),np.array(model_hr_mids_mid)+np.array(model_hr_errs_mid),color=oldish,lw=0.5,ls=':',alpha=0.05)
-
-
-    axsSFR.plot(model_c_mids_hi,model_hr_mids_hi,lw=1,label='Model $\log(\mathrm{sSFR}/\mathrm{yr}^{-1})>-9.5$',ls='--',color=youngest)
-    axsSFR.fill_between(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),color=youngest,lw=0.5,ls=':',alpha=0.05)
-    if obs and data=='new':
-        data_c_mids_lo , data_hr_mids_lo , data_hr_errs_lo , data_c_mids_mid , data_hr_mids_mid ,  data_hr_errs_mid, data_c_mids_hi , data_hr_mids_hi ,  data_hr_errs_hi =[],[],[],[],[],[],[],[],[]
-        for counter,(n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['c'],bins=np.linspace(-0.3,0.3,10)))):
-
-            g1 = g[g['ssfr']<ssfr_lo_split]
-
-            g1 = g1.dropna(subset=['MURES'])
+            g1 = g[g['log_ssfr']>sim_ssfr_hi_split]
 
             if len(g1)>0:
+                model_c_mids_hi.append(n.mid)
+                model_hr_mids_hi.append(np.average(g1['mu_res'],weights=1/g1['mu_res_err']**2))
+                model_hr_errs_hi.append(g1['mu_res'].std()/np.sqrt(len(g1['mu_res'])))
 
-                data_hr_mids_lo.append(np.average(g1['MURES'],weights=1/g1['MUERR']**2))
-                data_hr_errs_lo.append(g1['MURES'].std()/np.sqrt(len(g1['MURES'])))
-                data_c_mids_lo.append(n.mid)
-
-
-            g2 = g[(g['ssfr']>=ssfr_lo_split)&(g['ssfr']<ssfr_hi_split)]
-
-            g2 = g2.dropna(subset=['MURES'])
+            g2 = g[(g['log_ssfr']<=sim_ssfr_hi_split)&(g['log_ssfr']>sim_ssfr_lo_split)]
 
             if len(g2)>0:
 
-                data_hr_mids_mid.append(np.average(g2['MURES'],weights=1/g2['MUERR']**2))
-                data_hr_errs_mid.append(g2['MURES'].std()/np.sqrt(len(g2['MURES'])))
-                data_c_mids_mid.append(n.mid)
+                model_c_mids_mid.append(n.mid)
+                model_hr_mids_mid.append(np.average(g2['mu_res'],weights=1/g2['mu_res_err']**2))
+                model_hr_errs_mid.append(g2['mu_res'].std()/np.sqrt(len(g2['mu_res'])))
 
-            g3 = g[g['ssfr']>=ssfr_hi_split]
-
-            g3 = g3.dropna(subset=['MURES'])
+            g3 = g[g['log_ssfr']<=sim_ssfr_lo_split]
 
             if len(g3)>0:
-
-                data_hr_mids_hi.append(np.average(g3['MURES'],weights=1/g3['MUERR']**2))
-                data_hr_errs_hi.append(g3['MURES'].std()/np.sqrt(len(g3['MURES'])))
-                data_c_mids_hi.append(n.mid)
-
-
-        axsSFR.errorbar(data_c_mids_lo,data_hr_mids_lo,yerr=data_hr_errs_lo,marker='D',color=oldest,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR $\log(\mathrm{sSFR}/\mathrm{yr}^{-1})<11$')
-        axsSFR.errorbar(data_c_mids_mid,data_hr_mids_mid,yerr=data_hr_errs_mid,marker='D',color=oldish,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR $-11\leq\log(\mathrm{sSFR}/\mathrm{yr}^{-1})<9.5$')
-
-        axsSFR.errorbar(data_c_mids_hi,data_hr_mids_hi,yerr=data_hr_errs_hi,marker='D',color=youngest,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR $\log(\mathrm{sSFR}/\mathrm{yr}^{-1})>-9.5$')
+                model_c_mids_lo.append(n.mid)
+                model_hr_mids_lo.append(np.average(g3['mu_res'],weights=1/g3['mu_res_err']**2))
+                model_hr_errs_lo.append(g3['mu_res'].std()/np.sqrt(len(g3['mu_res'])))
 
 
-    splits = {'lo':{'data_c_mids':data_c_mids_lo,'data_hr_mids':data_hr_mids_lo,'data_hr_errs':data_hr_errs_lo,'model_c_mids':model_c_mids_lo,'model_hr_mids':model_hr_mids_lo},
-           'mid':{'data_c_mids':data_c_mids_mid,'data_hr_mids':data_hr_mids_mid,'data_hr_errs':data_hr_errs_mid,'model_c_mids':model_c_mids_mid,'model_hr_mids':model_hr_mids_mid},
-           'hi':{'data_c_mids':data_c_mids_hi,'data_hr_mids':data_hr_mids_hi,'data_hr_errs':data_hr_errs_hi,'model_c_mids':model_c_mids_hi,'model_hr_mids':model_hr_mids_hi}
-              }
 
-    chisq = get_red_chisq_interp_split_multi(splits)
-    axsSFR.text(-0.1,-0.25,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
-    if 'sSFR' in chi_plots:
-        chis.append(chisq)
-    axsSFR.set_xlabel('$c$',size=24)
-    axsSFR.legend(fontsize=10,ncol=2,loc='upper center')
+        axsSFR.plot(model_c_mids_lo ,model_hr_mids_lo,lw=1,label='Model $\log(\mathrm{sSFR}/\mathrm{yr}^{-1})<11$',color=oldest)
+        axsSFR.fill_between(model_c_mids_lo,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=oldest,lw=0.5,ls=':',alpha=0.05)
 
-    axsSFR.set_ylim(-0.3,0.3)
-    axsSFR.set_xlim(-0.19,0.3)
-    axsSFR.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
-    axsSFR.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
-    axsSFR.tick_params(which='both',right=True,top=True,labelsize=16)
+        axsSFR.plot(model_c_mids_mid ,model_hr_mids_mid,lw=1,label='Model $-11\leq\log(\mathrm{sSFR}/\mathrm{yr}^{-1})<9.5$',ls=':',color=oldish)
+        axsSFR.fill_between(model_c_mids_mid ,np.array(model_hr_mids_mid)-np.array(model_hr_errs_mid),np.array(model_hr_mids_mid)+np.array(model_hr_errs_mid),color=oldish,lw=0.5,ls=':',alpha=0.05)
 
+
+        axsSFR.plot(model_c_mids_hi,model_hr_mids_hi,lw=1,label='Model $\log(\mathrm{sSFR}/\mathrm{yr}^{-1})>-9.5$',ls='--',color=youngest)
+        axsSFR.fill_between(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),color=youngest,lw=0.5,ls=':',alpha=0.05)
+        if obs and data=='new':
+            data_c_mids_lo , data_hr_mids_lo , data_hr_errs_lo , data_c_mids_mid , data_hr_mids_mid ,  data_hr_errs_mid, data_c_mids_hi , data_hr_mids_hi ,  data_hr_errs_hi =[],[],[],[],[],[],[],[],[]
+            for counter,(n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['c'],bins=np.linspace(-0.3,0.3,10)))):
+
+                g1 = g[g['ssfr']<ssfr_lo_split]
+
+                g1 = g1.dropna(subset=['MURES'])
+
+                if len(g1)>0:
+
+                    data_hr_mids_lo.append(np.average(g1['MURES'],weights=1/g1['MUERR']**2))
+                    data_hr_errs_lo.append(g1['MURES'].std()/np.sqrt(len(g1['MURES'])))
+                    data_c_mids_lo.append(n.mid)
+
+
+                g2 = g[(g['ssfr']>=ssfr_lo_split)&(g['ssfr']<ssfr_hi_split)]
+
+                g2 = g2.dropna(subset=['MURES'])
+
+                if len(g2)>0:
+
+                    data_hr_mids_mid.append(np.average(g2['MURES'],weights=1/g2['MUERR']**2))
+                    data_hr_errs_mid.append(g2['MURES'].std()/np.sqrt(len(g2['MURES'])))
+                    data_c_mids_mid.append(n.mid)
+
+                g3 = g[g['ssfr']>=ssfr_hi_split]
+
+                g3 = g3.dropna(subset=['MURES'])
+
+                if len(g3)>0:
+
+                    data_hr_mids_hi.append(np.average(g3['MURES'],weights=1/g3['MUERR']**2))
+                    data_hr_errs_hi.append(g3['MURES'].std()/np.sqrt(len(g3['MURES'])))
+                    data_c_mids_hi.append(n.mid)
+
+
+            axsSFR.errorbar(data_c_mids_lo,data_hr_mids_lo,yerr=data_hr_errs_lo,marker='D',color=oldest,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR $\log(\mathrm{sSFR}/\mathrm{yr}^{-1})<11$')
+            axsSFR.errorbar(data_c_mids_mid,data_hr_mids_mid,yerr=data_hr_errs_mid,marker='D',color=oldish,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR $-11\leq\log(\mathrm{sSFR}/\mathrm{yr}^{-1})<9.5$')
+
+            axsSFR.errorbar(data_c_mids_hi,data_hr_mids_hi,yerr=data_hr_errs_hi,marker='D',color=youngest,linestyle='none',markersize=10,alpha=0.8,mew=1.5,mec='w',label='DES5YR $\log(\mathrm{sSFR}/\mathrm{yr}^{-1})>-9.5$')
+
+
+        splits = {'lo':{'data_c_mids':data_c_mids_lo,'data_hr_mids':data_hr_mids_lo,'data_hr_errs':data_hr_errs_lo,'model_c_mids':model_c_mids_lo,'model_hr_mids':model_hr_mids_lo},
+               'mid':{'data_c_mids':data_c_mids_mid,'data_hr_mids':data_hr_mids_mid,'data_hr_errs':data_hr_errs_mid,'model_c_mids':model_c_mids_mid,'model_hr_mids':model_hr_mids_mid},
+               'hi':{'data_c_mids':data_c_mids_hi,'data_hr_mids':data_hr_mids_hi,'data_hr_errs':data_hr_errs_hi,'model_c_mids':model_c_mids_hi,'model_hr_mids':model_hr_mids_hi}
+                  }
+
+        chisq = get_red_chisq_interp_split_multi(splits)
+        axsSFR.text(-0.1,-0.25,r'$\chi^2_{\nu}=%.2f$'%chisq,size=20)
+        if 'sSFR' in chi_plots:
+            chis.append(chisq)
+        axsSFR.set_xlabel('$c$',size=24)
+        axsSFR.legend(fontsize=10,ncol=2,loc='upper center')
+
+        axsSFR.set_ylim(-0.3,0.3)
+        axsSFR.set_xlim(-0.19,0.3)
+        axsSFR.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
+        axsSFR.yaxis.set_minor_locator(ticker.MultipleLocator(0.025))
+        axsSFR.tick_params(which='both',right=True,top=True,labelsize=16)
+        
 
     plt.tight_layout()
     plt.subplots_adjust(hspace=0,wspace=0)
