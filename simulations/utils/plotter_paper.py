@@ -1532,6 +1532,7 @@ def plot_mu_res_paper_combined_new(sim,obs=True,label_ext='',colour_split=1,mass
     return chis
 
 def plot_mu_res_paper_combined_multi(sims,sim_names,obs=True,label_ext='',colour_split=1,mass_split=1E+10,return_chi=True,data='new',y5data='default',chi_plots=['M','UR']):
+    plt.rcParams['text.usetex'] = True
     if y5data=='default':
         des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
     elif y5data =='5D':
