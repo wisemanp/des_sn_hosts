@@ -107,10 +107,10 @@ def run(args):
                 ages = sfh_df['stellar_age']/1000
                 mwsa = np.average(sfh_df['stellar_age'],weights=sfh_df['m_formed']/mtot)
                 if mtot>1E+10:
-                    mu_Rv = 2.2
+                    mu_Rv = 2.6
                     #avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 else:
-                    mu_Rv = 3.5
+                    mu_Rv = 3.1
                     #avs_SBL = np.clip(np.random.normal(av_means_mlo,av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 if args.templates == 'BC03':
                     sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
