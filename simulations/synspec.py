@@ -367,3 +367,63 @@ class SynSpec():
             np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s.txt' % (
             z, np.log10(mtot), dust['Av'],self.library), spec_arr)
         return colour, des_fluxes, colours
+
+    def calculate_model_fluxes_pw_fixed_SFH(self,templates,z,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True):
+        #print('Combining the weighted SSPs for this SFH')
+        model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
+        wave = self.template_obj_list[0].wave()
+        model_spec = Spectrum(wave=wave,
+                    flux=model_spec,
+                    var=np.ones_like(model_spec))
+
+        if neb:
+            model_neb_wave,model_neb_flux= self.synphot_model_emlines(sfh_coeffs,logU=logU)
+            #print(model_neb_wave)
+
+            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave*10,model_neb_flux/10,model_spec.wave())
+            #self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
+            model_spec = Spectrum(wave=model_spec.wave(),flux = model_spec.flux() + model_neb_flux_rebinned,var = model_spec.var())
+        #print('Going to redden my model spectrum')
+        #self.model_spec = model_spec
+        if not dust:
+
+            model_spec_reddened = model_spec
+        else:
+            #print('Reddening with this dust: ',dust)
+            try:
+                wave,flux = self.redden_a_combined_spec(model_spec.wave(),model_spec.flux(),law=dust['law'],Av=dust['Av'],Rv=dust['Rv'],delta=dust['delta'])
+            except:
+                wave, flux = self.redden_a_combined_spec(model_spec.wave(), model_spec.flux(), law=dust['law'],
+                                                         Av=dust['Av'], Rv=dust['Rv'], delta=dust['delta'])
+
+            var = np.ones_like(wave)
+            model_spec_reddened=Spectrum(wave=wave,flux=flux,var=var)
+        self.model_spec = model_spec
+        #print('I reddened things, they look like this: ',model_spec_reddened)
+        #f,ax=plt.subplots()
+        #ax.step(model_spec_reddened.wave(),model_spec_reddened.flux())
+        #ax.set_xlim(2500,12000)
+        #print('Going go calculate restframe colour')
+        # mass to light ratio
+        mtol = 3
+        if self.library == 'BC03':
+            flux_conv_factor = 1 * u.Lsun.to(u.erg / u.s) * (u.erg / u.s) / u.AA
+
+        else:
+            flux_conv_factor = 1 * (u.erg / u.s) / u.AA
+
+        model_spec_reddened =Spectrum(wave=model_spec_reddened.wave(),
+                                      flux=model_spec_reddened.flux()*mtot*flux_conv_factor,
+                                      var=np.ones_like(model_spec_reddened.wave()))
+        colour = self.calculate_colour_wtf([model_spec_reddened])
+        colours = self.get_bands_wtf([model_spec_reddened],band_dict={'Bessell%s'%b:'Vega' for b in ['U','B','V','R','I']})
+        #print('Here is the colour: ',colour)
+        #print('Going go calculate observed flux with this',model_spec_reddened)
+        des_fluxes = self.get_bands_wtf([model_spec_reddened],band_dict={'DES_%s'%b:'AB' for b in ['g','r','i','z']},z=z) #extra 1+z for flux densities
+        if savespec:
+            spec_arr = np.zeros((len(model_spec_reddened.wave()), 2))
+            spec_arr[:, 0] = model_spec_reddened.wave()
+            spec_arr[:, 1] = model_spec_reddened.flux()
+            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s.txt' % (
+            z, np.log10(mtot), dust['Av'],self.library), spec_arr)
+        return colour, des_fluxes, colours

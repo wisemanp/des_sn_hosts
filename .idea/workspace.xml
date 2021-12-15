@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="81045d16-b9a1-45a7-b3eb-a334fcc6a4a7" name="Default Changelist" comment="Adding docs folder">
+    <list default="true" id="81045d16-b9a1-45a7-b3eb-a334fcc6a4a7" name="Default Changelist" comment="ADding some comments">
       <change beforePath="$PROJECT_DIR$/.idea/des_sn_hosts.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/des_sn_hosts.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/simulations/aura.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulations/aura.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simulations/synspec.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulations/synspec.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,6 +83,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Integrating with pycharm" />
     <MESSAGE value="Adding docs folder" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding docs folder" />
+    <MESSAGE value="ADding some comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="ADding some comments" />
   </component>
 </project>
