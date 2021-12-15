@@ -1,6 +1,6 @@
 import numpy as np
 from astropy.cosmology import FlatLambdaCDM
-
+from scipy.interpolate import interp1d
 def add_mass_step(logM,mag=0.1,loc=10):
     return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
 
@@ -12,7 +12,8 @@ def add_age_step_choice(age,mag=0.1):
 def fit_mass_step(logM,mag=0.1,loc=10):
     return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
 
-def chisq_mu_res_nostep(x0,args):
+def chisq_mu_res_nostep_old(x0,args):
+    '''Deprecated. Use chisq_mu_res_nostep'''
     df,params,cosmo = args[0],args[1],args[2]
     fa,fb=params['fix_alpha'],params['fix_beta']
     if fa==False:
@@ -29,6 +30,45 @@ def chisq_mu_res_nostep(x0,args):
     obs = df['mB'] +alpha*df['x1'] - beta*df['c'] -M0
     err = df['mB_err']
     return np.sum(((obs-mod)**2)/err**2)
+
+
+def chisq_mu_res_nostep(x0,args):
+    df,params,cosmo = args[0],args[1],args[2]
+    fa,fb=params['fix_alpha'],params['fix_beta']
+    if fa==False:
+        alpha=x0[0]
+    else:
+        alpha=fa
+    if fb==False:
+        beta=x0[1]
+    else:
+        beta=fb
+    M0 =x0[2]
+
+    mod = cosmo.distmod(df['z']).value
+
+    obs = df['mB'] +alpha*df['x1'] - beta*df['c'] -M0
+    var =  df['mB_err']**2 + alpha**2*df['x1_err']**2 + beta**2*df['c_err']**2
+    return np.sum(((obs-mod)**2)/var)
+
+    def chisq_mu_res_nostep_sigint(x0,args):
+        df,params,cosmo = args[0],args[1],args[2]
+        fa,fb=params['fix_alpha'],params['fix_beta']
+        if fa==False:
+            alpha=x0[0]
+        else:
+            alpha=fa
+        if fb==False:
+            beta=x0[1]
+        else:
+            beta=fb
+        M0 =x0[2]
+        sigint=x0[3]
+        mod = cosmo.distmod(df['z']).value
+
+        obs = df['mB'] +alpha*df['x1'] - beta*df['c'] -M0
+        var =  df['mB_err']**2 + alpha**2*df['x1_err']**2 + beta**2*df['c_err']**2
+        return np.sum(((obs-mod)**2)/var)
 
 def get_mu_res_nostep(x0,df,params,cosmo):
 
@@ -92,3 +132,59 @@ def calculate_step(mu_res,mu_res_err,host_val,split):
     step = np.average(data_left,weights=1/errors_left**2) - np.average(data_right,weights=1/errors_right**2)
     sig = np.abs(step/np.sqrt((np.std(errors_left)/np.sqrt(len(errors_left)))+(np.std(errors_right)/np.sqrt(len(errors_right)))))
     return step, sig
+def get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi):
+
+    if model_c_mids_lo[0] < low['c'][0]:
+        pass
+    else:
+        for x in low.keys():
+            print('cutting low')
+            low[x] = low[x][1:]
+
+
+    if model_c_mids_hi[0] < high['c'][0]:
+        pass
+    else:
+        for x in high.keys():
+            print('cutting high')
+            high[x] = high[x][1:]
+
+    interp_lo = interp1d(np.array(model_c_mids_lo),np.array(model_hr_mids_lo))
+    mod_lo = interp_lo(np.array(low['c']))
+    interp_hi = interp1d(np.array(model_c_mids_hi),np.array(model_hr_mids_hi))
+    mod_hi = interp_hi(np.array(high['c']))
+
+    obs = np.concatenate([np.array(low['hr']),np.array(high['hr'])])
+    err = np.concatenate([np.array(low['hr_err']),np.array(high['hr_err'])])
+    mod_interp = np.concatenate([mod_lo,mod_hi])
+    redchisq = get_red_chisq(obs,mod_interp,err)
+    return redchisq
+
+def get_red_chisq_interp_splitx1(obs,model):
+    all_obs,all_err,all_mod = [],[],[]
+    for key in obs.keys():
+
+        while True:
+            if model[key]['c'][0] < obs[key]['c'][0]:
+                break
+            else:
+                for x in obs[key].keys():
+                    obs[key][x] = obs[key][x][1:]
+        while True:
+            if model[key]['c'][-1] > obs[key]['c'][-1]:
+                break
+            else:
+                for x in obs[key].keys():
+                    obs[key][x] = obs[key][x][:-1]
+        interp = interp1d(np.array(model[key]['c']),np.array(model[key]['hr_mids']))
+        mod = interp(np.array(obs[key]['c']))
+        all_obs = np.concatenate([all_obs,np.array(obs[key]['hr'])])
+        all_err = np.concatenate([all_err,np.array(obs[key]['hr_err'])])
+        all_mod = np.concatenate([all_mod,mod])
+    redchisq = get_red_chisq(all_obs,all_mod,all_err)
+    return redchisq
+
+def get_red_chisq(obs,mod,err):
+
+    chisq = np.nansum((obs - mod)**2/err**2)
+    return chisq/len(err[~np.isnan(err)])

@@ -48,7 +48,7 @@ class SynSpec():
                 new_template_spec = load_spectrum(bc03_fn)
                 template_obj_list.append(new_template_spec)
         elif library == 'PEGASE':
-            templates = pd.read_hdf(template_dir + 'templates.h5')
+            templates = pd.read_hdf(template_dir + 'test_infall.h5')
             templates.drop(
                 ['m_gal', 'm_star', 'm_wd', 'm_nsbh', 'm_substellar', 'm_gas', 'z_ism', 'z_stars_mass', 'z_stars_bl',
                  'l_bol', 'od_v', 'l_dust_l_bol',
@@ -248,11 +248,13 @@ class SynSpec():
         return mag_1 - mag_2
 
     def calculate_colour_wtf(self, spec_list, flt1='U', flt2='R'):
-        filter1 = load_spectrum(self.filt_dir + 'Bessell%s.dat' % flt1)
-        filter2 = load_spectrum(self.filt_dir + 'Bessell%s.dat' % flt2)
+        filter1 = np.loadtxt(self.filt_dir + 'Bessell%s.dat' % flt1)
+        fwave1,fflux1 = filter1[:,0],filter1[:,1]
+        filter2 = np.loadtxt(self.filt_dir + 'Bessell%s.dat' % flt2)
+        fwave2,fflux2 = filter2[:,0],filter21[:,1]
         absmag_corr = 1 / ((10 * u.pc.to(u.cm)) ** 2)
-        band1 = wtf.Band_Vega(filter1.wave(), filter1.flux() * u.erg / u.s / u.AA)
-        band2 = wtf.Band_Vega(filter2.wave(), filter2.flux() * u.erg / u.s / u.AA)
+        band1 = wtf.Band_Vega(fwave1, fflux1 * u.erg / u.s / u.AA)
+        band2 = wtf.Band_Vega(fwave2, fflux2 * u.erg / u.s / u.AA)
         colours = []
         for s in spec_list:
             try:
@@ -264,24 +266,41 @@ class SynSpec():
             colours.append(mag1 - mag2)
         return colours
 
+
+
     def get_bands_wtf(self, spec_list, band_dict, z=0):
         colours = {}
         if z==0:
-            mag_corr = 1 / ((4 * np.pi * 10 * u.pc.to(u.cm)) ** 2)
+            mag_corr = 1 / (4 * np.pi * (10 * u.pc.to(u.cm)) ** 2)
         else:
             mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
         for f, ftype in band_dict.items():
             colours[f] = []
-            filter = load_spectrum(self.filt_dir + '%s.dat' % f)
+            filter = np.loadtxt(self.filt_dir + '%s.dat' % f)
+            fwave,fflux = filter[:,0],filter[:,1]
             if ftype == 'Vega':
-                wtf_filter = wtf.Band_Vega(filter.wave(), filter.flux())
+                wtf_filter = wtf.Band_Vega(fwave, fflux)
             elif ftype == 'AB':
-                wtf_filter = wtf.Band_AB(filter.wave(), filter.flux())
+                wtf_filter = wtf.Band_AB(fwave, fflux)
             for s in spec_list:
                 try:
                     spec = wtf.Spectrum((1 + z) * s.wave().values * u.AA, s.flux() * mag_corr / (1 + z))
                 except:
                     spec = wtf.Spectrum((1 + z) * s.wave() * u.AA, s.flux() * mag_corr / (1 + z))
+                colours[f].append(-2.5 * np.log10(spec.bandflux(wtf_filter).value / wtf_filter.zpFlux().value))
+        return colours
+
+    def get_bands_sedpy(self, spec_list, band_dict, z=0):
+        colours = {}
+        if z==0:
+            mag_corr = 1 / (4 * np.pi * (10 * u.pc.to(u.cm)) ** 2)
+        else:
+            mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
+        for f, ftype in band_dict.items():
+            colours[f] = []
+
+            for s in spec_list:
+                spec = wtf.Spectrum((1 + z) * s.wave() * u.AA, s.flux() * mag_corr / (1 + z))
                 colours[f].append(-2.5 * np.log10(spec.bandflux(wtf_filter).value / wtf_filter.zpFlux().value))
         return colours
     def synphot_model_spectra_pw(self,sfh_coeffs,):
@@ -308,21 +327,42 @@ class SynSpec():
 
         return em_waves,em_lums[:,0]/3.826e27
 
-    def calculate_model_fluxes_pw(self,sfh_coeffs,z,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True):
+    def get_pegase_template(self,df,age):
+        df.drop(['m_gal', 'm_star', 'm_wd', 'm_nsbh', 'm_substellar', 'm_gas', 'z_ism', 'z_stars_mass', 'z_stars_bl',
+                 'l_bol', 'od_v', 'l_dust_l_bol', 'sfr', 'phot_lyman', 'rate_snii', 'rate_snia', 'age_star_mass',
+                 'age_star_lbol'],
+                axis=1, inplace=True)
+        df.set_index('time', drop=True, inplace=True)
+        df.columns = df.columns.astype(float)
+        df = df.T
+        df.sort_index(inplace=True)
+        df = df.T
+        row_high = df.loc[df.index > age].iloc[0]
+        row_low = df.loc[df.index < age].iloc[-1]
+        t_high = row_high.name
+        t_low = row_low.name
+        tfrac = (age - t_low) / (t_high - t_low)
+        flux_interp = row_low + tfrac * (row_high - row_low)
+        s = Spectrum(wave=row_high.index, flux=flux_interp.values, var=np.ones_like(df.loc[0]))
+        return s
+
+    def calculate_model_fluxes_pw(self,z,sfh_coeffs=None,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True,age=None,template=None):
         #print('Combining the weighted SSPs for this SFH')
+
         model_spec = self.synphot_model_spectra_pw(sfh_coeffs)[0]
         wave = self.template_obj_list[0].wave()
         model_spec = Spectrum(wave=wave,
-                    flux=model_spec,
-                    var=np.ones_like(model_spec))
+                              flux=model_spec,
+                              var=np.ones_like(model_spec))
+        if self.library=='BC03' and neb==True:
+            model_neb_wave, model_neb_flux = self.synphot_model_emlines(sfh_coeffs, logU=logU)
+            # print(model_neb_wave)
 
-        if neb:
-            model_neb_wave,model_neb_flux= self.synphot_model_emlines(sfh_coeffs,logU=logU)
-            #print(model_neb_wave)
+            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave * 10, model_neb_flux / 10, model_spec.wave())
+            # self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
+            model_spec = Spectrum(wave=model_spec.wave(), flux=model_spec.flux() + model_neb_flux_rebinned,
+                                  var=model_spec.var())
 
-            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave*10,model_neb_flux/10,model_spec.wave())
-            #self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
-            model_spec = Spectrum(wave=model_spec.wave(),flux = model_spec.flux() + model_neb_flux_rebinned,var = model_spec.var())
         #print('Going to redden my model spectrum')
         #self.model_spec = model_spec
         if not dust:

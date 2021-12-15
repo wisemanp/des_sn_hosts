@@ -46,8 +46,8 @@ def c_int_plus_dust(args,c_int_type,c_int_params):
         c_ints = c_int_gauss(c_int_params['mu'],c_int_params['sig'],n=len(args['E']))
     elif c_int_type=='asymm':
         c_ints = c_int_asymm(c_int_params['mu'],c_int_params['sig_minus'],c_int_params['sig_plus'],n=len(args['E']))
+
     args['c'] = args['E']+c_ints
+    
     args['c_int'] = c_ints
     return args
-
-

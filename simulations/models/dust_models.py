@@ -4,7 +4,8 @@ from scipy.stats import norm, expon
 law_Rvs ={
     'C00':4.05
 }
-def age_rv_step(age, rv_young=3.0, rv_old=2.0, rv_sig_young=0.5, rv_sig_old=0.5, age_split=3):
+
+def age_rv_step(age, rv_young=3.0, rv_old=2.0, rv_sig_young=0.5, rv_sig_old=0.5, age_split=3,rv_min=1.2):
     """
 
     :param age:
@@ -18,11 +19,11 @@ def age_rv_step(age, rv_young=3.0, rv_old=2.0, rv_sig_young=0.5, rv_sig_old=0.5,
     """
     norm_young = norm(rv_young, rv_sig_young)
     norm_old = norm(rv_old, rv_sig_old)
-    return (norm_young.rvs(size=len(age)) * (age < age_split)) + (
-                norm_old.rvs(size=len(age)) * (age > age_split))
+    return np.clip((norm_young.rvs(size=len(age)) * (age < age_split)) + (
+                norm_old.rvs(size=len(age)) * (age > age_split)),a_min=rv_min,a_max=None)
 
 
-def mass_rv_step(mass, rv_low=3.0, rv_high=2.0, rv_sig_low=0.5, rv_sig_high=0.5, mass_split=10):
+def mass_rv_step(mass, rv_low=3.0, rv_high=2.0, rv_sig_low=0.5, rv_sig_high=0.5, mass_split=10,rv_min=1.2):
     """
 
     :param age:
@@ -36,11 +37,11 @@ def mass_rv_step(mass, rv_low=3.0, rv_high=2.0, rv_sig_low=0.5, rv_sig_high=0.5,
     """
     norm_low = norm(rv_low, rv_sig_low)
     norm_high = norm(rv_high, rv_sig_high)
-    return (norm_low.rvs(size=len(mass)) * (mass < mass_split)) + (
-                norm_high.rvs(size=len(mass)) * (mass > mass_split))
+    return np.clip((norm_low.rvs(size=len(mass)) * (mass < mass_split)) + (
+                norm_high.rvs(size=len(mass)) * (mass > mass_split)),a_min=rv_min,a_max=None)
 
 
-def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, mass_fix_low=8, mass_fix_high=12):
+def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, mass_fix_low=8, mass_fix_high=12,rv_min=1.2):
     '''
     :param mass:
     :param Rv_low:
@@ -57,11 +58,11 @@ def mass_rv_linear(mass, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1,
     Rv_mus = Rv_low +((mass-mass_fix_low) *Rv_slope)
     Rv_sigs = Rv_sig_low+((mass - mass_fix_low)*sig_slope)
     Rvs = []
-    for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
+    for Rv_mu,Rv_sig in zip(Rv_mus,Rv_sigs):
         Rvs.append(np.random.normal(Rv_mu,Rv_sig))
-    return Rvs
+    return np.clip(np.array(Rvs),a_min=rv_min,a_max=None)
 
-def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, age_fix_low=0.1, age_fix_high=12):
+def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, age_fix_low=0.1, age_fix_high=12,rv_min=1.2):
     '''
     :param age:
     :param Rv_low:
@@ -73,14 +74,17 @@ def age_rv_linear(age, Rv_low=3.0, Rv_high=2.0, Rv_sig_low=0.5, Rv_sig_high=1, a
     :return: Rvs
     :rtype array
     '''
-    Rv_slope = (Rv_high-Rv_low) /(age_fix_high - age_fix_low)
-    sig_slope = (Rv_sig_high-Rv_sig_low) /(age_fix_high - age_fix_low)
-    Rv_mus = Rv_low +((age-age_fix_low) *Rv_slope)
-    Rv_sigs = Rv_sig_low+((age - age_fix_low)*sig_slope)
+    logage = np.log10(age)
+    log_age_fix_low = np.log10(age_fix_low)
+    log_age_fix_high = np.log10(age_fix_high)
+    Rv_slope = (Rv_high-Rv_low) /(log_age_fix_high - log_age_fix_low)
+    sig_slope = (Rv_sig_high-Rv_sig_low) /(log_age_fix_high - log_age_fix_low)
+    Rv_mus = Rv_low +((logage-log_age_fix_low) *Rv_slope)
+    Rv_sigs = Rv_sig_low+((logage - log_age_fix_low)*sig_slope)
     Rvs = []
     for rv_mu,rv_sig in zip(Rv_mus,Rv_sigs):
-        Rvs.append(np.random.normal(Rv_mu,Rv_sig))
-    return Rvs
+        Rvs.append(np.random.normal(rv_mu,rv_sig))
+    return np.clip(np.array(Rvs),a_min=rv_min,a_max=None)
 
 def E_exp(TauE,n=1):
     '''
@@ -134,7 +138,9 @@ def E_exp_age(age,Tau_low,Tau_high,age_split=3):
             E_high.rvs(size=len(age)) * (age > age_split))
 
 def random_rv(Rv_mu,Rv_sig,n):
-    return np.random.normal(Rv_mu,Rv_sig,size=n)
+    Rv_norm = norm(Rv_mu,Rv_sig)
+    return Rv_norm.rvs(size=n)
+
 def E_calc(Av,Rv):
     '''
 
@@ -188,4 +194,3 @@ def E_two_component(TauE_int, Av_host,Rv_host,Av_sig_host,Rv_sig_host,n=1):
     E_int = E_exp(TauE_int,n)
     E_host = E_from_host_random(Av_host,Av_sig_host,Rv_host,Rv_sig_host)
     return E_int + E_host
-

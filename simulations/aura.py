@@ -4,17 +4,18 @@ from astropy.table import Table
 import os
 from yaml import safe_load as yload
 import scipy.stats as stats
+from scipy.stats import norm
 import sys
 import pickle
 import warnings
 from astropy.utils.exceptions import AstropyWarning
 from astropy.cosmology import FlatLambdaCDM
 from scipy.optimize import minimize
-
+import time
 from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, single_schechter, double_schechter
 from .utils.plotter import *
-from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step
+from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
 
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
@@ -116,7 +117,7 @@ class Sim(SN_Model):
             self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
         if save_df:
             if savepath=='default':
-                savepath = self.root_dir +'/sims/'+ self.save_string +'_SN_sim.h5'
+                savepath = self.root_dir +'/sims/SNe/'+ self.save_string +'_SN_sim.h5'
             self.savepath=savepath
             self.sim_df.to_hdf(self.savepath,key='sim')
 
@@ -124,16 +125,23 @@ class Sim(SN_Model):
         if n_samples == 0:
             return pd.DataFrame(columns=self.sim_df.columns)
         args = {}
+
         args['n'] = int(n_samples)
         args['distmod'] = self.cosmo.distmod(z).value
-        z_df = self.multi_df.loc['%.2f' % z]
+
+        z_df = self.multi_df.loc['%.2f' % z].copy()
+
         z_df['N_total'].replace(0., np.NaN, inplace=True)
-        z_df = z_df.dropna(subset=['N_total'])
+        z_df.dropna(subset=['N_total'],inplace=True)
+
         z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
-        z_df['N_SN_int'] = z_df['N_SN_float'].astype(int)
+
+        z_df['N_SN_int'] = z_df.loc[:,'N_SN_float'].astype(int)
+
         # Now we set up some index arrays so that we can sample masses properly
         m_inds = ['%.2f' % m for m in z_df['mass'].unique()]
         m_rates = []
+
         for m in m_inds:
             m_df = z_df.loc[m]
             mav_inds = (m, '%.5f' % (m_df.Av.unique()[0]))
@@ -144,13 +152,16 @@ class Sim(SN_Model):
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
         # The stellar population arrays are identical no matter what the Av is.
         m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
-
         args['Av_grid'] = z_df.Av.unique()
         args['mass'] = z_df.loc[m_av0_samples].mass.values
+        args['ssfr'] = z_df.loc[m_av0_samples].ssfr.values
+        args['sfr'] = z_df.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
         args['mean_ages'] = z_df.loc[m_av0_samples].mean_age.values
+
         sn_ages = [np.random.choice(z_df.loc[i,'SN_ages'],p=z_df.loc[i,'SN_age_dist'].fillna(0)/z_df.loc[i,'SN_age_dist'].fillna(0).sum()) for i in m_av0_samples]
         args['SN_age'] = np.array(sn_ages)
         args['rv'] = self.rv_func(args,self.config['SN_rv_model']['params'])
+
 
         if  self.config['SN_E_model']['model'] in ['E_calc','E_from_host_random']:
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
@@ -162,14 +173,32 @@ class Sim(SN_Model):
 
         args['host_Av'] = self.host_Av_func(args,self.config['Host_Av_model']['params'])
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
+
         gal_df = z_df.loc[m_av_samples_inds]
-        args['U-R'] = gal_df['U_R'].values
+        args['U-R'] = gal_df['U'].values - gal_df['R'].values #gal_df['U_R'].values
+
         args['mean_ages'] = gal_df['mean_age'].values
+
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
         args = self.x1_func(args,self.config['x1_model']['params'])
-        args['mB'] = self.mb_func(args,self.config['mB_model']['params'])
-        args['mB_err'] =[np.max([0.03,np.random.normal(10**(0.4*(args['mB'][i]-1.5) - 10)+0.02,0.03)])
+        args['mB'],args['beta_SN'] = self.mb_func(args,self.config['mB_model']['params'])
+        args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.395*(args['mB'][i]-1.5) - 10)+0.03,np.max([0.003,0.003*(args['mB'][i]-20)]))])
                          for i in range(len(args['mB']))]
+
+        args['c_err'] = [np.max([0.02,np.random.normal((0.675*args['mB_err'][i] +0.005),0.003)])
+                         for i in range(len(args['mB']))]
+
+        args['c_noise'] =norm(0,args['c_err']).rvs(size=len(args['c']))
+        args['c'] = args['c'] + args['c_noise']
+
+        args['x1_err'] = [np.max([0.08,np.random.normal((14*args['mB_err'][i] -0.25 ),0.05)])
+                         for i in range(len(args['mB']))]
+        args['x1_noise'] =norm(0,args['x1_err']).rvs(size=len(args['x1']))
+        args['x1_int'] = args['x1'].copy()
+        args['x1'] = args['x1'] + args['x1_noise']
+        #C = np.cov([args['mB'],args['x1'],args['c']])
+
+        args['cov_mB_x1'],args['cov_mB_c'],args['cov_x1_c'] = 0,0,0 #Set covariance off-diagonal terms to 0 for now #C[0,1],C[0,2],C[1,2]
         self.args = args
         args['distmod'] = np.ones_like(args['c'])*args['distmod']
         del args['Av_grid']
@@ -190,7 +219,16 @@ class Sim(SN_Model):
         self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
         self.res = res
 
+    def fit_mu_res_nostep_old(self,params):
+        x0 =[0.1,3.1,-19.5]
+        res =minimize(chisq_mu_res_nostep_old,x0,args=[self.sim_df,params,self.cosmo])
+        self.alpha_fit,self.beta_fit,self.MB_fit = res['x'][0],res['x'][1],res['x'][2]
+        self.res = res
+
     def get_mu_res_nostep(self,res,params):
+        self.sim_df['mu_res'] = get_mu_res_nostep(res,self.sim_df,params,self.cosmo)
+        self.sim_df['mu_res_err'] = self.sim_df['mB_err']
+    def get_mu_res_nostep_old(self,res,params):
         self.sim_df['mu_res'] = get_mu_res_nostep(res,self.sim_df,params,self.cosmo)
         self.sim_df['mu_res_err'] = self.sim_df['mB_err']
 

@@ -3,7 +3,7 @@ from .dust_models import age_rv_step, mass_rv_step, age_rv_linear, mass_rv_linea
 from .colour_models import c_int_asymm, c_int_gauss, c_int_plus_dust
 from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix
 from .host_dust import choose_Av_SN_E_rv_fix, choose_Av_custom, choose_Av_SN_E_Rv_norm, choose_Av_SN_E_Rv_step
-from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta
+from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta,tripp_rv_two_beta_popns_age2
 class SN_Model():
     def __init__(self):
         '''
@@ -13,16 +13,16 @@ class SN_Model():
 
 
     def age_rv_step(self,args,params):
-        return age_rv_step(args['mean_ages']/1000, params['rv_young'], params['rv_old'], params['rv_sig_young'], params['rv_sig_old'], params['age_split'])
+        return age_rv_step(args['mean_ages']/1000, params['rv_young'], params['rv_old'], params['rv_sig_young'], params['rv_sig_old'], params['age_split'],params['rv_min'])
 
     def mass_rv_step(self,args,params):
-        return mass_rv_step(np.log10(args['mass']), params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_split'])
+        return mass_rv_step(np.log10(args['mass']), params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_split'],params['rv_min'])
 
     def mass_rv_linear(self,args,params ):
-        return mass_rv_linear(np.log10(args['mass']), params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_fix_low'], params['mass_fix_high'])
+        return mass_rv_linear(np.log10(args['mass']), params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['mass_fix_low'], params['mass_fix_high'],params['rv_min'])
 
     def age_rv_linear(self,args,params):
-        return age_rv_linear(args['SN_age']/1000, params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['age_fix_low'], params['age_fix_high'])
+        return age_rv_linear(args['SN_age'], params['rv_low'], params['rv_high'], params['rv_sig_low'], params['rv_sig_high'], params['age_fix_low'], params['age_fix_high'],params['rv_min'])
 
     def E_exp(self,args,params):
         return E_exp(params['TauE'],args['n'])
@@ -31,7 +31,7 @@ class SN_Model():
         return E_exp_mass(args['mass'],params['Tau_low'],params['Tau_high'],params['mass_split'])
 
     def E_exp_age(self,args,params):
-        return E_exp_age(args['age'],params['Tau_low'],params['Tau_high'],params['age_split'])
+        return E_exp_age(args['mean_ages']/1000,params['Tau_low'],params['Tau_high'],params['age_split'])
 
     def random_rv(self,args,params):
         return random_rv(params['Rv_mu'],params['Rv_sig'],args['n'])
@@ -91,7 +91,9 @@ class SN_Model():
         return tripp_rv_two_beta_age(params['alpha'],params['beta_young'],params['beta_old'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],args)
 
     def tripp_rv_two_beta_popns_age(self,args,params):
-        return tripp_rv_two_beta_popns_age(params['alpha'], params['beta_young'],params['sig_beta_young'], params['beta_old'], params['sig_beta_old'], params['M0'],
+        return tripp_rv_two_beta_popns_age(params['alpha'], params['mu_beta_young'],params['sig_beta_young'], params['mu_beta_old'], params['sig_beta_old'], params['M0'],
                                      params['sigma_int'], params['mass_step'], params['age_step'], args)
 
-
+    def tripp_rv_two_beta_popns_age2(self,args,params):
+        return tripp_rv_two_beta_popns_age2(params['alpha'], params['mu_beta_young'],params['sig_beta_young'], params['mu_beta_old'], params['sig_beta_old'], params['M0'],
+                                     params['sigma_int'], params['mass_step'], params['age_step'],args)
