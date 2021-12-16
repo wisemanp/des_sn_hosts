@@ -132,7 +132,7 @@ class Sim(SN_Model):
         args['n'] = int(n_samples)
         args['distmod'] = self.cosmo.distmod(z).value
 
-        z_df = self.multi_df.loc['%.2f' % z].copy()
+        z_df = self.multi_df.loc['%.3f' % z].copy()
 
         z_df['N_total'].replace(0., np.NaN, inplace=True)
         z_df.dropna(subset=['N_total'],inplace=True)
