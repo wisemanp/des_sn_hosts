@@ -74,7 +74,7 @@ class Sim(SN_Model):
 
     def _make_multi_index(self):
         ''' Convert the DataFrame to have a multi-index structure to enable us to easily select only one galaxy for each sample of [redshift, mass, Av]'''
-        z_str = self.flux_df['z'].apply(lambda x: '%.2f'%x)
+        z_str = self.flux_df['z'].apply(lambda x: '%.3f'%x)
         mass_str = self.flux_df['mass'].apply(lambda x: '%.2f'%x)
         Av_str = self.flux_df['Av'].apply(lambda x: '%.5f'%x)
         # We now have three levels to the index: z, mass, Av. For any given z and mass, the stellar populations are identical at any Av, but the output fluxes and colours are not.
