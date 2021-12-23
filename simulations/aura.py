@@ -42,6 +42,7 @@ class Sim(SN_Model):
         else:
             self.root_dir = root_dir
         self.fig_dir = os.path.join(self.root_dir,'figs/')
+        self.eff_dir = self.config['efficiency_dir']
         self.flux_df = self._load_flux_df(self.config['hostlib_fn'])
         self._calculate_absolute_rates()
         self._make_multi_index()

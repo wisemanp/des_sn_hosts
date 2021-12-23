@@ -1,6 +1,7 @@
 '''Galaxy-related functions'''
 import numpy as np
 import pandas as pd
+import os
 def double_schechter(logM,logM_star,phi_star_1,alpha_1,phi_star_2,alpha_2):#logM_star,phi_star_1,alpha_1,phi_star_2,alpha_2):
     if phi_star_1<0:
         phi_star_1 = 10**phi_star_1
@@ -42,7 +43,7 @@ def schechter(z,logM):
     elif z>=1 and z<1.25:
         return double_schechter_T14(logM,**zfourge[1])
 
-def ozdes_efficiency():
+def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
     import numpy.polynomial.polynomial as poly
     from scipy.interpolate import interp1d
     fs = ['C12','X12','S12','E12','C3','X3']
@@ -50,7 +51,7 @@ def ozdes_efficiency():
     efficiencies = {}
     for f in fs:
         for y in ys:
-            eff = pd.read_csv('/media/data3/wiseman/des/desdtd/efficiencies/eff_%s_Y%s.dat'%(f,y),sep=' ',skipinitialspace=True)
+            eff = pd.read_csv(os.path.join(dir,'efficiencies/eff_%s_Y%s.dat'%(f,y),sep=' ',skipinitialspace=True)
             coefs = poly.polyfit(eff['r_obs'],eff['HOSTEFF'], 13)
             slope_start = eff['r_obs'].loc[eff.sort_values('r_obs',ascending=False)['HOSTEFF'].idxmax()]
             slope_end = eff['r_obs'].loc[eff['HOSTEFF'].idxmin()]
