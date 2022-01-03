@@ -106,7 +106,7 @@ def run(args):
                 pred_rate_x1hi =np.sum(sfh_df['m_formed']*dtd_x1hi)
                 dtd_x1lo = phi_t_pl(sfh_df['stellar_age']/1000,0.04,beta_x1lo,norm_x1lo)
                 pred_rate_x1lo =np.sum(sfh_df['m_formed']*dtd_x1lo)
-                dtd_total =phi_t_pl(sfh_df['stellar_age']/1000,0.04,args.beta,dtd_norm)
+                dtd_total =phi_t_pl(sfh_df['stellar_age']/1000,0.04,-1*args.beta,dtd_norm)
                 SN_age_dist = sfh_df['m_formed']*dtd_total
                 pred_rate_total = np.sum(SN_age_dist)
                 ages = sfh_df['stellar_age']/1000
