@@ -51,7 +51,7 @@ def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
     efficiencies = {}
     for f in fs:
         for y in ys:
-            eff = pd.read_csv(os.path.join(dir,'efficiencies/eff_%s_Y%s.dat'%(f,y),sep=' ',skipinitialspace=True)
+            eff = pd.read_csv(os.path.join(dir,'efficiencies/eff_%s_Y%s.dat'%(f,y)),sep=' ',skipinitialspace=True)
             coefs = poly.polyfit(eff['r_obs'],eff['HOSTEFF'], 13)
             slope_start = eff['r_obs'].loc[eff.sort_values('r_obs',ascending=False)['HOSTEFF'].idxmax()]
             slope_end = eff['r_obs'].loc[eff['HOSTEFF'].idxmin()]

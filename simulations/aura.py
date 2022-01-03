@@ -42,7 +42,7 @@ class Sim(SN_Model):
         else:
             self.root_dir = root_dir
         self.fig_dir = os.path.join(self.root_dir,'figs/')
-        self.eff_dir = self.config['efficiency_dir']
+        self.eff_dir = self.config['config']['efficiency_dir']
         self.flux_df = self._load_flux_df(self.config['hostlib_fn'])
         self._calculate_absolute_rates()
         self._make_multi_index()
@@ -183,7 +183,7 @@ class Sim(SN_Model):
         args['U-R'] = gal_df['U'].values - gal_df['R'].values #gal_df['U_R'].values
         for band in ['g','r','i','z']:
             args['m_%s'%band] = z_df.loc[m_av0_samples]['m_%s'%band].values
-        mean_eff_func,std_eff_func = ozdes_efficiency()
+        mean_eff_func,std_eff_func = ozdes_efficiency(self.eff_dir)
         spec_eff = mean_eff_func(args['m_r'])
         spec_eff_std = std_eff_func(args['m_r'])
         effs = np.clip(np.random.normal(spec_eff,spec_eff_std),a_min=0,a_max=1)
