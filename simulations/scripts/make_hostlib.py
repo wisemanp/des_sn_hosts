@@ -40,7 +40,7 @@ def parser():
     parser.add_argument('-t','--templates',help='Template library to use [BC03, PEGASE]',default='BC03',type=str)
     parser.add_argument('-tf','--templates_fn',help='Filename of templates',type=str,default='None')
     parser.add_argument('-ne','--neb',action='store_true')
-    parser.add_argument('-b','--beta',help='Absolute value of the slope of the DTD',default=1.14)
+    parser.add_argument('-b','--beta',help='Absolute value of the slope of the DTD',default=1.14,type=float)
     args = parser.parse_args()
     return args
 
