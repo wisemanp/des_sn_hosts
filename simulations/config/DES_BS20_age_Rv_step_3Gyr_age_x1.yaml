@@ -2,6 +2,7 @@
 hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_BC03_z0.05_1.20_av0.00_1.50_rv_rand_full_age_dists_neb_U-2.00_res_2.h5
 config:
   root_dir: $AURA_DIR
+  efficiency_dir: /media/data3/wiseman/des/desdtd/efficiencies
 SN_rv_model:
   model: age_rv_step
   params:
