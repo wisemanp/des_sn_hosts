@@ -28,6 +28,9 @@ dtd_norm = 2.08E-13
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-z','--z',help='Redshift',default=0.5,type=str)
+    parser.add_argument('-zl','--zlo',help='Redshift lower end',default=0.15,type=float)
+    parser.add_argument('-zh','--zhi',help='Redshift upper end',default=1.25,type=float)
+    parser.add_argument('-zs','--zstep',help='Redshift step',default=0.15,type=float)
     parser.add_argument('-al','--av_lo',help='Lowest Av',default=0,type=float)
     parser.add_argument('-ah','--av_hi',help='Highest Av',default=1,type=float)
     parser.add_argument('-na','--n_av',help='Av step',default=20,type=int)
@@ -81,7 +84,8 @@ def run(args):
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
     results = []
-    z_array = [float(z) for z in args.z.split(',')]
+    #z_array = [float(z) for z in args.z.split(',')]
+    z_array = np.arange(args.zlo,args.zhi,args.zstep)
     if args.av_step_type == 'lin':
         av_arr = np.linspace(args.av_lo,args.av_hi,args.n_av)
     elif args.av_step_type == 'log':
