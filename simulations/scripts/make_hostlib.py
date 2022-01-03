@@ -37,6 +37,7 @@ def parser():
     parser.add_argument('-t','--templates',help='Template library to use [BC03, PEGASE]',default='BC03',type=str)
     parser.add_argument('-tf','--templates_fn',help='Filename of templates',type=str,default='None')
     parser.add_argument('-ne','--neb',action='store_true')
+    parser.add_argument('-b','--beta',help='Absolute value of the slope of the DTD',default=1.14)
     args = parser.parse_args()
     return args
 
@@ -101,7 +102,7 @@ def run(args):
                 pred_rate_x1hi =np.sum(sfh_df['m_formed']*dtd_x1hi)
                 dtd_x1lo = phi_t_pl(sfh_df['stellar_age']/1000,0.04,beta_x1lo,norm_x1lo)
                 pred_rate_x1lo =np.sum(sfh_df['m_formed']*dtd_x1lo)
-                dtd_total =phi_t_pl(sfh_df['stellar_age']/1000,0.04,beta,dtd_norm)
+                dtd_total =phi_t_pl(sfh_df['stellar_age']/1000,0.04,args.beta,dtd_norm)
                 SN_age_dist = sfh_df['m_formed']*dtd_total
                 pred_rate_total = np.sum(SN_age_dist)
                 ages = sfh_df['stellar_age']/1000
@@ -146,7 +147,7 @@ def run(args):
     #flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
     #flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
     flux_df['g_r'] = flux_df['m_g'] - flux_df['m_r']
-    flux_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i.h5'%(args.templates,z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res),key='main')
+    flux_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),key='main')
     print("Done!")
 if __name__=="__main__":
     args = parser()
