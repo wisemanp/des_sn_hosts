@@ -263,7 +263,7 @@ def plot_x1s(sim,df,des5yr,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,si
     plt.subplots_adjust(wspace=0)
     for ax in [ax1,ax2]:
         ax.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
-    plt.savefig(sim.fig_dir +'SN_x1_hosts_%s'%sim.save_string)
+    plt.savefig(sim.fig_dir +'SN_x1_hosts_%s.png'%sim.save_string)
     plt.savefig(sim.fig_dir +'SN_x1_hosts_%s.pdf'%sim.save_string)
 
     return f, ax1, ax2
