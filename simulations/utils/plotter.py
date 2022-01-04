@@ -234,7 +234,10 @@ def plot_x1s(sim,df,des5yr,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,si
             #ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=sim_colour,marker=None,ls='none')
     for counter, (n,g) in enumerate(des5yr.groupby(pd.cut(des5yr['U-R'],bins=np.linspace(-0.5,2.5,30)))):
         if len(g)>1 and nplot==0:
-
+            label=None
+            if lcounter==0:
+                label = 'DES5YR mean'
+                lcounter+=1
             ax2.scatter(n.mid,g['x1'].mean(),color=data_colour,edgecolor='grey',linewidth=1,marker='s',s=100)
             ax2.errorbar(n.mid,g['x1'].mean(),yerr=np.std(g['x1'])/np.sqrt(len(g['x1'])),c=data_colour,marker=None,ls='none')
 
