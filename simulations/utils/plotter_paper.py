@@ -278,8 +278,8 @@ def plot_model_hists(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,ax
     return f,axc, axx1
 
 def plot_sample_hists_multi(sims,labels,des5yr,plot_data_means = True):
-    colours = itertools.cycle(sns.color_palette('colorblind',n_colors=3))
-    linestyles = itertools.cycle(['-','--',':'])
+    colours = itertools.cycle(sns.color_palette('colorblind',n_colors=len(sims)))
+    linestyles = itertools.cycle(['-','--',':','-.'])
     f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
 
     bin_centers_c,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))

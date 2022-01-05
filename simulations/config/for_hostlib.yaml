@@ -1,6 +1,7 @@
 
 hostlib_fn: /Users/pwise/data/SNe/DTD_Stretch/all_model_params_BC03_z0.10_1.22_av0.00_1.50_rv_rand_full_age_dists_neb_U-2.00_res_2.h5
 config:
+  efficiency_dir: $AURA_DIR
   root_dir: $AURA_DIR
 SN_rv_model:
   model: age_rv_step
