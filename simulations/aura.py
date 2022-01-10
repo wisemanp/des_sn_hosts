@@ -216,7 +216,7 @@ class Sim(SN_Model):
 
         args['U-R'] = gals_df['U'].values - gals_df['R'].values #gal_df['U_R'].values
         for band in ['g','r','i','z']:
-            args['m_%s'%band] = gals_df['m_%s'%band].values
+            args['m_%s'%band] = gals_df['m_%s'%band].values-1
         mean_eff_func,std_eff_func = ozdes_efficiency(self.eff_dir)
         spec_eff = mean_eff_func(args['m_r'])
         spec_eff_std = std_eff_func(args['m_r'])
