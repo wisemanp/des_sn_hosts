@@ -64,7 +64,7 @@ def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
             completeness_func = interp1d(x_new,ffit)
             efficiencies[f+'_Y'+y] = completeness_func
 
-    mags = np.linspace(13,39,100)
+    mags = np.linspace(10,39,500)
     eff_df = pd.DataFrame(index=mags)
     for y in ['Y123','Y4','Y5']:
         for f in ['X12','C12','S12','E12','X3','C3']:
