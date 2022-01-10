@@ -13,7 +13,7 @@ from astropy.cosmology import FlatLambdaCDM
 from scipy.optimize import minimize
 import time
 from .models.sn_model import SN_Model
-from .utils.gal_functions import schechter, single_schechter, double_schechter, ozdes_efficiency
+from .utils.gal_functions import schechter, single_schechter, double_schechter, ozdes_efficiency, interpolate_zdf
 #from .utils.plotter import *
 from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
 
