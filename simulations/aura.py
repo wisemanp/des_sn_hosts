@@ -142,28 +142,64 @@ class Sim(SN_Model):
 
         z_df['N_SN_int'] = z_df.loc[:,'N_SN_float'].astype(int)
 
-        # Now we set up some index arrays so that we can sample masses properly
-        m_inds = ['%.2f' % m for m in z_df['mass'].unique()]
+        resampled_df = pd.DataFrame()
+        marr= np.logspace(6,11.6,100)
+        for av in z_df.Av.unique():
+            av_df =z_df.loc[idx[:, '%.5f'%av, :]]
+            #print(av_df)
+            av_df = interpolate_zdf(av_df,marr)
+            resampled_df = resampled_df.append(av_df)
+        #print(resampled_df.columns)
+        Av_str = resampled_df['Av'].apply(lambda x: '%.5f'%x)
+        mass_str = resampled_df['mass'].apply(lambda x: '%.2f'%x)
+        new_zdf = resampled_df.set_index([mass_str,Av_str])
+        m_inds = ['%.2f' % m for m in new_zdf['mass'].unique()]
+
         m_rates = []
-
+        m_rates_float = []
         for m in m_inds:
-            m_df = z_df.loc[m]
+            m_df = new_zdf.loc[m]
             mav_inds = (m, '%.5f' % (m_df.Av.unique()[0]))
-            m_rates.append(z_df.loc[mav_inds]['N_SN_int'])
+            #print(new_zdf.loc[mav_inds,'N_SN_int'])
+            m_rates.append(new_zdf.loc[mav_inds,'N_SN_int'])
+            m_rates_float.append(new_zdf.loc[m,'N_SN_float'])
+        c=next(palette)
 
-        # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
         m_samples = np.random.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
         # The stellar population arrays are identical no matter what the Av is.
-        m_av0_samples = [(m, '%.5f' % (np.random.choice(z_df.loc[m].Av.values))) for m in m_samples]
-        args['Av_grid'] = z_df.Av.unique()
-        args['mass'] = z_df.loc[m_av0_samples].mass.values
-        args['ssfr'] = z_df.loc[m_av0_samples].ssfr.values
-        args['sfr'] = z_df.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
+        m_av0_samples = [(m, '%.5f' % (np.random.choice(new_zdf.loc[m].Av.values))) for m in m_samples]
+        new_zdf['SN_ages'] = [age_grid for i in range(len(new_zdf))]
+        new_zdf['SN_age_dist'] = [np.zeros(len(age_grid)) for i in range(len(new_zdf))]
 
-        args['mean_ages'] = z_df.loc[m_av0_samples].mean_age.values
+        age_dists = []
+        for n,g in z_df.groupby(pd.cut(z_df['mass'],bins=marr)):
+            age_df = pd.DataFrame(index=age_grid_index)
+            if len(g)>0:
+                g_Av_0 =  g.loc[idx[:, '0.00000', :]]
+                for k in g_Av_0.index:
+                    sub_gb = g_Av_0.loc[k]
+                    age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
+                    age_df.loc[age_inds,'%.2f'%(g_Av_0['mass'].mean())] = sub_gb['SN_age_dist'].values
+                age_df.fillna(0,inplace=True)
+                for av in g.Av.unique():
+                    age_dists.append(np.nanmean(age_df,axis=1))
+            else:
+                pass
 
-        sn_ages = [np.random.choice(z_df.loc[i,'SN_ages'],p=z_df.loc[i,'SN_age_dist'].fillna(0)/z_df.loc[i,'SN_age_dist'].fillna(0).sum()) for i in m_av0_samples]
+        new_zdf['SN_age_dist']=age_dists
+        # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
+        gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total']]
+
+        sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']/new_zdf.loc[i,'SN_age_dist'].sum()) for i in m_av0_samples]
+        gals_df['SN_age'] = np.array(sn_ages)
+        args['Av_grid'] = new_zdf.Av.unique()
+        args['mass'] = new_zdf.loc[m_av0_samples].mass.values
+        args['ssfr'] = new_zdf.loc[m_av0_samples].ssfr.values
+        args['sfr'] = new_zdf.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
+
+        args['mean_ages'] = new_zdf.loc[m_av0_samples].mean_age.values
+
         args['SN_age'] = np.array(sn_ages)
         args['rv'] = self.rv_func(args,self.config['SN_rv_model']['params'])
 
