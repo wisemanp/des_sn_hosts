@@ -166,7 +166,7 @@ class Sim(SN_Model):
             #print(new_zdf.loc[mav_inds,'N_SN_int'])
             m_rates.append(new_zdf.loc[mav_inds,'N_SN_int'])
             m_rates_float.append(new_zdf.loc[m,'N_SN_float'])
-        
+
 
         m_samples = np.random.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
@@ -199,14 +199,10 @@ class Sim(SN_Model):
         args['Av_grid'] = new_zdf.Av.unique()
         args['mass'] = new_zdf.loc[m_av0_samples].mass.values
         args['ssfr'] = new_zdf.loc[m_av0_samples].ssfr.values
-        args['sfr'] = new_zdf.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
-
+        args['sfr'] = new_zdf.loc[m_av0_samples].mass.values*new_zdf.loc[m_av0_samples].ssfr.values
         args['mean_ages'] = new_zdf.loc[m_av0_samples].mean_age.values
-
         args['SN_age'] = np.array(sn_ages)
         args['rv'] = self.rv_func(args,self.config['SN_rv_model']['params'])
-
-
         if  self.config['SN_E_model']['model'] in ['E_calc','E_from_host_random']:
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
             args['E'] = self.E_func(args, self.config['SN_E_model']['params'])
@@ -218,10 +214,9 @@ class Sim(SN_Model):
         args['host_Av'] = self.host_Av_func(args,self.config['Host_Av_model']['params'])
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
 
-        gal_df = z_df.loc[m_av_samples_inds]
-        args['U-R'] = gal_df['U'].values - gal_df['R'].values #gal_df['U_R'].values
+        args['U-R'] = gals_df['U'].values - gals_df['R'].values #gal_df['U_R'].values
         for band in ['g','r','i','z']:
-            args['m_%s'%band] = z_df.loc[m_av0_samples]['m_%s'%band].values
+            args['m_%s'%band] = gals_df['m_%s'%band].values
         mean_eff_func,std_eff_func = ozdes_efficiency(self.eff_dir)
         spec_eff = mean_eff_func(args['m_r'])
         spec_eff_std = std_eff_func(args['m_r'])
