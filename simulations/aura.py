@@ -25,7 +25,10 @@ from tqdm import tqdm
 
 
 aura_dir = os.environ['AURA_DIR']
+idx = pd.IndexSlice
 
+age_grid = np.arange(0,13.7,0.0005)
+age_grid_index = ['%.4f'%a for a in age_grid]
 class Sim(SN_Model):
     def __init__(self,conf_path,cosmo='default'):
         '''

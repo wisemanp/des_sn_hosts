@@ -74,3 +74,11 @@ def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
     std_eff_func =  interp1d(mags,eff_df.std(axis=1))
 
     return mean_eff_func,std_eff_func
+
+def interpolate_zdf(zdf,marr):
+    '''Function to iterpolate SFH data frame onto a log-linear mass grid '''
+
+    gb =zdf.groupby(pd.cut(zdf['mass'],bins=marr)).agg(np.mean)
+    gb.dropna(subset=['mass'],inplace=True)
+    gb.reset_index(drop=True,inplace=True)
+    return gb
