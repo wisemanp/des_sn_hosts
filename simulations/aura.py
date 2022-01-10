@@ -166,7 +166,7 @@ class Sim(SN_Model):
             #print(new_zdf.loc[mav_inds,'N_SN_int'])
             m_rates.append(new_zdf.loc[mav_inds,'N_SN_int'])
             m_rates_float.append(new_zdf.loc[m,'N_SN_float'])
-        c=next(palette)
+        
 
         m_samples = np.random.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
         # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
