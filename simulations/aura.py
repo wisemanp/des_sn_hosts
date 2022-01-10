@@ -199,7 +199,7 @@ class Sim(SN_Model):
         args['Av_grid'] = new_zdf.Av.unique()
         args['mass'] = new_zdf.loc[m_av0_samples].mass.values
         args['ssfr'] = new_zdf.loc[m_av0_samples].ssfr.values
-        args['sfr'] = new_zdf.loc[m_av0_samples].mass.values*new_zdf.loc[m_av0_samples].ssfr.values
+        args['sfr'] = args['mass']*args['ssfr']
         args['mean_ages'] = new_zdf.loc[m_av0_samples].mean_age.values
         args['SN_age'] = np.array(sn_ages)
         args['rv'] = self.rv_func(args,self.config['SN_rv_model']['params'])
