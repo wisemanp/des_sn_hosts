@@ -179,7 +179,8 @@ class Sim(SN_Model):
         for n,g in z_df.groupby(pd.cut(z_df['mass'],bins=marr)):
             age_df = pd.DataFrame(index=age_grid_index)
             if len(g)>0:
-                g_Av_0 =  g.loc[idx[:, '0.00000', :]]
+                min_av = g.Av.astype(float).min()
+                g_Av_0 =  g.loc[idx[:, '%.5f'%min_av, :]]
                 for k in g_Av_0.index:
                     sub_gb = g_Av_0.loc[k]
                     age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
