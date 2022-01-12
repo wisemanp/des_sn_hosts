@@ -184,18 +184,19 @@ class Sim(SN_Model):
                 for k in g_Av_0.index:
                     sub_gb = g_Av_0.loc[k]
                     age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
-                    age_df.loc[age_inds,'%.2f'%(g_Av_0['mass'].mean())] = sub_gb['SN_age_dist'].values
+                    age_df.loc[age_inds,'%.2f'%(float(k))] = sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values)
                 age_df.fillna(0,inplace=True)
                 for av in g.Av.unique():
                     age_dists.append(np.nanmean(age_df,axis=1))
             else:
                 pass
-
+        new_zdf.index.names = ['mass_index','Av_index']
+        new_zdf.sort_values(by='mass',inplace=True)
         new_zdf['SN_age_dist']=age_dists
         # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
         gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total']]
 
-        sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']/new_zdf.loc[i,'SN_age_dist'].sum()) for i in m_av0_samples]
+        sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples]
         gals_df['SN_age'] = np.array(sn_ages)
         args['Av_grid'] = new_zdf.Av.unique()
         args['mass'] = gals_df.mass.values
