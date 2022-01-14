@@ -64,3 +64,5 @@ class x1_twogauss_age():
         else:
             return x1s
 
+def x1_int_linear_gauss(ages):
+    x1s = np.random.normal(-1*np.log10(ages),0.5)
