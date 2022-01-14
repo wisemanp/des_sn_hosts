@@ -52,6 +52,7 @@ class SN_Model():
     def x1_int_linear_gauss(self,args,params):
         args['x1'] = x1_int_linear_gauss(args['SN_age'])
         args['prog_age'] = 'Young'
+        return args
 
     def x1_twogauss_fix(self,args,params):
         args['x1'] = x1_twogauss_fix(params['mu_low'],params['sig_low'],params['mu_high'],params['sig_high'],params['frac_low'],args['n'])
