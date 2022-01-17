@@ -50,7 +50,7 @@ class SN_Model():
         return args
 
     def x1_int_linear_gauss(self,args,params):
-        args['x1'] = x1_int_linear_gauss(args['SN_age'])
+        args['x1'] = x1_int_linear_gauss(args['SN_age'],args['slope'],)
         args['prog_age'] = 'Young'
         return args
 
