@@ -64,6 +64,6 @@ class x1_twogauss_age():
         else:
             return x1s
 
-def x1_int_linear_gauss(ages,slope):
-    x1s = np.random.normal(float(slope)*np.log10(ages),0.5)
+def x1_int_linear_gauss(ages,slope,width=0.5):
+    x1s = np.random.normal(float(slope)*np.log10(ages),width)
     return x1s
