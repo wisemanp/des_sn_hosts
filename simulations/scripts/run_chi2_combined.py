@@ -70,6 +70,10 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                             chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(rv_lo,rv_hi,age_step,BBC))))
                         elif BBC=='0D':
                             chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(rv_lo,rv_hi,age_step,BBC))))
+                        elif BBC=='4D':
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='4D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(rv_lo,rv_hi,age_step,BBC))))
+
+
                         else:
                             chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(rv_lo,rv_hi,age_step,BBC))))
                     else:
@@ -77,6 +81,9 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                             chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(rv_lo,rv_hi,age_step,BBC)))
                         elif BBC=='0D':
                             chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(rv_lo,rv_hi,age_step,BBC)))
+                        elif BBC=='4D':
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='4D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(rv_lo,rv_hi,age_step,BBC)))
+
                         else:
                             chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(rv_lo,rv_hi,age_step,BBC)))
 
