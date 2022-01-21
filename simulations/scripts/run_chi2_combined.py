@@ -57,6 +57,9 @@ for i, rv_lo in tqdm(enumerate(Rv_lo_grid)):
                     elif BBC =='0D':
                         from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/0D/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
                                           delimiter='\s+', comment='#')
+                    elif BBC =='4D':
+                        from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/4D/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
+                                          delimiter='\s+', comment='#')
                     else:
 
                         from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
