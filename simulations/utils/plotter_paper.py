@@ -1616,7 +1616,7 @@ def plot_mu_res_paper_combined_multi(sims,sim_names,obs=True,label_ext='',colour
               }
 
         chisq = get_red_chisq_interp_split_multi(splits)
-        axMASS.text(-0.15,0.05+(0.1-0.05*sim_counter),r'$\chi^2_{\nu}$(%s)$=%.2f$'%(sim_name,chisq),size=14,color=sim_colours[sim_counter])
+        axMASS.text(0,0.05+(0.1-0.05*sim_counter),r'$\chi^2_{\nu}=%.2f$'%(sim_name,chisq),size=14,color=sim_colours[sim_counter])
         if 'M' in chi_plots:
             chis.append(chisq)
 
@@ -1688,7 +1688,7 @@ def plot_mu_res_paper_combined_multi(sims,sim_names,obs=True,label_ext='',colour
               }
 
         chisq = get_red_chisq_interp_split_multi(splits)
-        axUR.text(-0.15,0.05+(0.1-0.05*sim_counter),r'$\chi^2_{\nu}$(%s)$=%.2f$'%(sim_name,chisq),size=14,color=sim_colours[sim_counter])
+        axUR.text(0,0.05+(0.1-0.05*sim_counter),r'$\chi^2_{\nu}=%.2f$'%(sim_name,chisq),size=14,color=sim_colours[sim_counter])
         if 'UR' in chi_plots:
             chis.append(chisq)
         axUR.set_xlabel('$c$',size=24)
