@@ -67,3 +67,10 @@ class x1_twogauss_age():
 def x1_int_linear_gauss(ages,slope,width=0.5,offset=0):
     x1s = np.random.normal((float(slope)*np.log10(ages))+float(offset),width)
     return x1s
+
+def x1_int_linear_gauss_plus_delta(ages,slope,width=0.5,offset=0,SD_mean=0.2,frac_SD=0.2):
+    x1s = np.random.normal((float(slope)*np.log10(ages))+float(offset),width)
+    x1_SD = np.random.normal(SD_mean,0.1,size=len(ages)*frac_SD)
+    inds = np.random.randint(0,len(x1s)-1,size=len(x1_SD))
+    x1s[inds] = x1_SD
+    return x1s
