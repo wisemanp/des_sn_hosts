@@ -55,7 +55,7 @@ class SN_Model():
         return args
 
     def x1_int_linear_gauss_plus_delta(self,args,params):
-        args['x1'] = x1_int_linear_gauss_plus_delta(args['SN_age'],params['slope'],params['width'],params['offset'],params['SD_mean'],params['frac_SD'])
+        args['x1'] = x1_int_linear_gauss_plus_delta(args['SN_age'],params['slope'],params['width'],params['offset'],params['SD_mean'],params['frac_SD'],params['SD_width'])
         args['prog_age'] = 'Young'
         return args
 
