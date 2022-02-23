@@ -72,8 +72,7 @@ def x1_int_linear_gauss_plus_delta(ages,slope,width=0.5,offset=0,SD_mean=0.2,fra
     x1s = np.random.normal((float(slope)*np.log10(ages))+float(offset),width)
     x1_SD = np.random.normal(SD_mean,SD_width,size=int(len(ages)*frac_SD))
     inds = np.random.randint(0,len(x1s)-1,size=len(x1_SD))
-    prog_type=np.ones_like(x1s,dtype='str')
-    prog_type[:] = 'DD'
+    prog_type=np.full(len(x1s),'DD')
     prog_type[inds] = 'SD'
     x1s[inds] = x1_SD
     return x1s, prog_type
