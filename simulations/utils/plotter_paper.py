@@ -1549,7 +1549,7 @@ def plot_mu_res_paper_combined_multi(sims,sim_names,obs=True,label_ext='',colour
 
     #linestyles = [['-','-'],['--','--'],[':',':'],['-.','-.']]
     pal = sns.color_palette('colorblind',n_colors=8)
-    sim_colours = [pal[2],pal[3]]
+    sim_colours = [pal[0],pal[3]]
 
     for sim_counter, sim in enumerate(sims):
 
