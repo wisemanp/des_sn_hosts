@@ -1548,8 +1548,9 @@ def plot_mu_res_paper_combined_multi(sims,sim_names,obs=True,label_ext='',colour
     fMASSUR,(axMASS,axUR)=plt.subplots(1,2,figsize=(13,6.6),sharey=True)
 
     #linestyles = [['-','-'],['--','--'],[':',':'],['-.','-.']]
-    sim_colours = sns.color_palette('hls',n_colors=5)
-    sim_colours[3] = sim_colours[4]
+    pal = sns.color_palette('hls',n_colors=8)
+    sim_colours = [pal[0],pal[5]]
+    
     for sim_counter, sim in enumerate(sims):
 
 
