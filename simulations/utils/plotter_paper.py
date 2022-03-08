@@ -1548,9 +1548,9 @@ def plot_mu_res_paper_combined_multi(sims,sim_names,obs=True,label_ext='',colour
     fMASSUR,(axMASS,axUR)=plt.subplots(1,2,figsize=(13,6.6),sharey=True)
 
     #linestyles = [['-','-'],['--','--'],[':',':'],['-.','-.']]
-    pal = sns.color_palette('hls',n_colors=8)
-    sim_colours = [pal[0],pal[5]]
-    
+    pal = sns.color_palette('colorblind',n_colors=8)
+    sim_colours = [pal[3],pal[4]]
+
     for sim_counter, sim in enumerate(sims):
 
 
@@ -1576,12 +1576,12 @@ def plot_mu_res_paper_combined_multi(sims,sim_names,obs=True,label_ext='',colour
                 pass
 
         axMASS.plot(model_c_mids_lo ,model_hr_mids_lo,c=sim_colours[sim_counter],lw=1,label='%s'%sim_name,ls='-')
-        if sim_counter==0:
-            axMASS.fill_between(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=sim_colours[sim_counter],lw=0.5,ls=':',alpha=0.05)
+        #if sim_counter==0:
+        axMASS.fill_between(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=sim_colours[sim_counter],lw=0.5,ls=':',alpha=0.05)
 
         axMASS.plot(model_c_mids_hi ,model_hr_mids_hi,c=sim_colours[sim_counter],lw=1,ls='--')
-        if sim_counter==0:
-            axMASS.fill_between(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),color=sim_colours[sim_counter],lw=0.5,ls=':',alpha=0.05)
+        #if sim_counter==0:
+        axMASS.fill_between(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),color=sim_colours[sim_counter],lw=0.5,ls=':',alpha=0.05)
 
 
 
@@ -1649,11 +1649,11 @@ def plot_mu_res_paper_combined_multi(sims,sim_names,obs=True,label_ext='',colour
                 pass
 
         axUR.plot(model_c_mids_lo ,model_hr_mids_lo,c=sim_colours[sim_counter],lw=1,label='%s'%sim_name,ls='-')
-        if sim_counter==0:
-            axUR.fill_between(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=sim_colours[sim_counter],lw=0.5,ls=':',alpha=0.05)
+        #if sim_counter==0:
+        axUR.fill_between(model_c_mids_lo ,np.array(model_hr_mids_lo)-np.array(model_hr_errs_lo),np.array(model_hr_mids_lo)+np.array(model_hr_errs_lo),color=sim_colours[sim_counter],lw=0.5,ls=':',alpha=0.05)
         axUR.plot(model_c_mids_hi ,model_hr_mids_hi,c=sim_colours[sim_counter],lw=1,ls='--')
-        if sim_counter==0:
-            axUR.fill_between(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),color=sim_colours[sim_counter],lw=0.5,ls=':',alpha=0.05)
+        #if sim_counter==0:
+        axUR.fill_between(model_c_mids_hi ,np.array(model_hr_mids_hi)-np.array(model_hr_errs_hi),np.array(model_hr_mids_hi)+np.array(model_hr_errs_hi),color=sim_colours[sim_counter],lw=0.5,ls=':',alpha=0.05)
 
 
 
