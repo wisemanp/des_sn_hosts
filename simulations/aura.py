@@ -231,7 +231,7 @@ class Sim(SN_Model):
         args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.395*(args['mB'][i]-1.5) - 10)+0.03,np.max([0.003,0.003*(args['mB'][i]-20)]))])
                          for i in range(len(args['mB']))]
 
-        args['c_err'] = [np.max([0.02,np.random.normal((0.675*args['mB_err'][i] +0.005),0.003)])
+        args['c_err'] = [np.max([0.02,np.random.normal((0.725*args['mB_err'][i] +0.005),0.003)])
                          for i in range(len(args['mB']))]
 
         args['c_noise'] =norm(0,args['c_err']).rvs(size=len(args['c']))
