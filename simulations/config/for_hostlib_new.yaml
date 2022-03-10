@@ -1,5 +1,6 @@
 
-hostlib_fn: /Users/pwise/data/SNe/DTD_Stretch/all_model_params_BC03_z0.15_0.85_av0.00_1.00_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.14.h5
+hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_BC03_z0.15_1.22_av0.00_1.00_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.14.h5
+
 config:
   efficiency_dir: $AURA_DIR
   root_dir: $AURA_DIR

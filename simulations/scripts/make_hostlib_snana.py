@@ -7,7 +7,7 @@ import seaborn as sns
 sns.set_color_codes(palette='colorblind')
 import itertools
 from des_sn_hosts.simulations import aura
-sim = aura.Sim('/Users/pwise/des_sn_hosts/simulations/config/for_hostlib_new.yaml')
+sim = aura.Sim('/home/wiseman/code/des_sn_hosts/simulations/config/for_hostlib_new.yaml')
 n_samples=100000
 hostlib_df = pd.DataFrame()
 palette = itertools.cycle(sns.color_palette('viridis',n_colors=len(sim.multi_df.z.unique())))
