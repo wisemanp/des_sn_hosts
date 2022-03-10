@@ -75,9 +75,6 @@ for z in tqdm(sim.multi_df.z.unique()[:1]):
 
     age_dists = []
 
-    ax=next(axes)
-
-
     #print(new_zdf.tail(20))
     for n,g in z_df.groupby(pd.cut(z_df['mass'],bins=marr)):
         age_df = pd.DataFrame(index=age_grid_index)
@@ -126,10 +123,7 @@ for z in tqdm(sim.multi_df.z.unique()[:1]):
     #args['sfr'] = z_df.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
     #args['mean_ages'] = z_df.loc[m_av0_samples].mean_age.values
     #ax=next(axes)
-
-    ax.set_yscale('log')
     sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples] #/new_zdf.loc[i,'SN_age_dist'].sum()
-    ax.hist(sn_ages,bins=200,density=True,histtype='step')
     gals_df['SN_age'] = np.array(sn_ages)
     hostlib_df=hostlib_df.append(gals_df)
 hostlib_df['a0_Sersic'] = ((np.array([np.max([0.185,np.random.normal(-0.18*m+5,0.3)]) for m in hostlib_df['m_r']]))*(hostlib_df['m_r']>17.5) )+ ((np.array([np.max([1,np.random.normal(3.5,2)]) for i in hostlib_df['m_r']])*(hostlib_df['m_r']<=17.5)))
