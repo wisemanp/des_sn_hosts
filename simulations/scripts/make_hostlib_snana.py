@@ -8,7 +8,7 @@ sns.set_color_codes(palette='colorblind')
 import itertools
 from des_sn_hosts.simulations import aura
 sim = aura.Sim('/home/wiseman/code/des_sn_hosts/simulations/config/for_hostlib_new.yaml')
-n_samples=100000
+n_samples=1000
 hostlib_df = pd.DataFrame()
 palette = itertools.cycle(sns.color_palette('viridis',n_colors=len(sim.multi_df.z.unique())))
 from tqdm import tqdm
@@ -129,14 +129,18 @@ for z in tqdm(sim.multi_df.z.unique()[:1]):
 hostlib_df['a0_Sersic'] = ((np.array([np.max([0.185,np.random.normal(-0.18*m+5,0.3)]) for m in hostlib_df['m_r']]))*(hostlib_df['m_r']>17.5) )+ ((np.array([np.max([1,np.random.normal(3.5,2)]) for i in hostlib_df['m_r']])*(hostlib_df['m_r']<=17.5)))
 
 hostlib_df['b0_Sersic'] = ((np.array([np.max([0.12,np.random.normal(-0.14*m+3.8,0.15)]) for m in hostlib_df['m_r']]))*(hostlib_df['m_r']>17.5) )+ ((np.array([np.max([1,np.random.normal(2.8,1)]) for i in hostlib_df['m_r']])*(hostlib_df['m_r']<=17.5)))
-
+hostlib_df['n0_Sersic'] = 0.5
+hostlib_df['obs_gr'] = hostlib_df['m_g'] - hostlib_df['m_r']
+hostlib_df['LOGMASS_ERR'] = 0
+hostlib_df['LOG_sSFR_ERR'] = 0
+hostlib_df['a_rot'] = 0
 hostlib_df['VARNAMES:'] = 'GAL'
 
 
 hostlib_df.reset_index(inplace=True)
 
 
-hostlib_df.rename(columns={'index':'GALID','m_g':'g_obs','m_r':'r_obs','m_i':'i_obs','m_z':'z_obs'},inplace=True)
+hostlib_df.rename(columns={'index:':'GALID','index':'GALID','m_g':'g_obs','m_r':'r_obs','m_i':'i_obs','m_z':'z_obs'},inplace=True)
 
 
 field_centres = np.array([[54.2743, -27.1116],
@@ -160,7 +164,7 @@ ax.scatter(radecs[:,0],radecs[:,1])
 hostlib_df['RA'] = radecs[:,0]
 hostlib_df['DEC'] = radecs[:,1]
 
-hostlib_df.rename(columns={'z':'ZTRUE'},inplace=True)
+hostlib_df.rename(columns={'z':'ZTRUE','mass':'LOGMASS','ssfr':'LOG_sSFR'},inplace=True)
 hostlib_df['ZERR'] = 0
 hostlib_df=hostlib_df[['VARNAMES:','GALID', 'RA','DEC','ZTRUE', 'g_obs', 'r_obs', 'i_obs', 'z_obs',
             'n0_Sersic','a0_Sersic', 'b0_Sersic', 'a_rot',
