@@ -9,7 +9,7 @@ sns.set_color_codes(palette='colorblind')
 import itertools
 from des_sn_hosts.simulations import aura
 sim = aura.Sim('/home/wiseman/code/des_sn_hosts/simulations/config/for_hostlib_new.yaml')
-n_samples=1000
+n_samples=100000
 hostlib_df = pd.DataFrame()
 palette = itertools.cycle(sns.color_palette('viridis',n_colors=len(sim.multi_df.z.unique())))
 from tqdm import tqdm
@@ -25,7 +25,7 @@ age_grid = np.arange(0,13.7,0.0005)
 age_grid_index = ['%.4f'%a for a in age_grid]
 #f,(axes)=plt.subplots(len(sim.multi_df.z.unique()),figsize=(16,25))
 #axes = itertools.cycle(axes)
-for z in tqdm(sim.multi_df.z.unique()[:1]):
+for z in tqdm(sim.multi_df.z.unique()):
     print(z)
 
 
