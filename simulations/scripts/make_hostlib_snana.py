@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib import ticker
 import seaborn as sns
+import os
 sns.set_color_codes(palette='colorblind')
 import itertools
 from des_sn_hosts.simulations import aura
