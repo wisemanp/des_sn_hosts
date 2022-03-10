@@ -133,12 +133,14 @@ hostlib_df['n0_Sersic'] = 0.5
 hostlib_df['obs_gr'] = hostlib_df['m_g'] - hostlib_df['m_r']
 hostlib_df['LOGMASS_ERR'] = 0
 hostlib_df['LOG_sSFR_ERR'] = 0
+hostlib_df['LOG_SFR'] = hostlib_df['mass']*hostlib_df['ssfr']
+hostlib_df['LOG_SFR_ERR'] = 0
 hostlib_df['a_rot'] = 0
 hostlib_df['VARNAMES:'] = 'GAL'
 
 
 hostlib_df.reset_index(inplace=True)
-
+hostlib_df.reset_index(inplace=True)
 
 hostlib_df.rename(columns={'index:':'GALID','index':'GALID','m_g':'g_obs','m_r':'r_obs','m_i':'i_obs','m_z':'z_obs'},inplace=True)
 
