@@ -24,7 +24,7 @@ age_grid = np.arange(0,13.7,0.0005)
 age_grid_index = ['%.4f'%a for a in age_grid]
 #f,(axes)=plt.subplots(len(sim.multi_df.z.unique()),figsize=(16,25))
 #axes = itertools.cycle(axes)
-for z in tqdm(sim.multi_df.z.unique()):
+for z in tqdm(sim.multi_df.z.unique()[:1]):
     print(z)
 
 
@@ -173,5 +173,5 @@ hostlib_df=hostlib_df[['VARNAMES:','GALID', 'RA','DEC','ZTRUE', 'g_obs', 'r_obs'
             'LOGMASS','LOGMASS_ERR','LOG_SFR', 'LOG_SFR_ERR', 'LOG_sSFR','obs_gr',
        'U', 'B', 'V', 'R', 'I', 'U_R', 'mean_age', 'Av', 'pred_rate_total',
        'SN_age',     ]]
-hostlib_df.to_hdf('Phil_Hostlib.h5',key='main',index=False)
-hostlib_df.to_csv('Phil_Hostlib.csv',)
+hostlib_df.to_hdf(os.path.join(sim.root_dir,'sims/hostlibs/Phil_Hostlib.h5'),key='main',index=False)
+hostlib_df.to_csv(os.path.join(sim.root_dir,'sims/hostlibs/Phil_Hostlib.csv'),)
