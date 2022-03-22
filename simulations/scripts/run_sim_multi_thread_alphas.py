@@ -71,7 +71,7 @@ def sim_worker(args):
         c = yload(f)
     c['mB_model']['params']['mu_alpha_young'] = float(alpha_young)
     c['mB_model']['params']['mu_alpha_old'] = float(alpha_old)
-    c['mB_model']['params']['mass_step']['mag'] = float(age_step)
+    c['mB_model']['params']['age_step']['mag'] = float(age_step)
     sim.config = c
     #n_samples_arr = sim._get_z_dist(des5yr['zHD'],n=cfg['n_samples'])
     zs = np.linspace(0,1,100)
