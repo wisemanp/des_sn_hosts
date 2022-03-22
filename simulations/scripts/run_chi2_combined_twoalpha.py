@@ -33,7 +33,7 @@ model_config = os.path.split(pth)[-1]
 model_name = model_config.split('.')[0]
 
 n=0
-#chis = np.zeros((len(age_young_grid),len(age_old_grid),len(age_step_grid)),dtype=float)
+#chis = np.zeros((len(alpha_young_grid),len(alpha_old_grid),len(age_step_grid)),dtype=float)
 chis = []
 from tqdm import tqdm
 from des_sn_hosts.simulations.utils.plotter_paper import *
@@ -70,25 +70,25 @@ for i, alpha_young in tqdm(enumerate(alpha_young_grid)):
                     #try:
                     if args.save_sum:
                         if BBC=='5D':
-                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC))))
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(alpha_young,alpha_old,age_step,BBC))))
                         elif BBC=='0D':
-                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC))))
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(alpha_young,alpha_old,age_step,BBC))))
                         elif BBC=='4D':
-                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='4D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC))))
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='4D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(alpha_young,alpha_old,age_step,BBC))))
 
 
                         else:
-                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC))))
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(alpha_young,alpha_old,age_step,BBC))))
                     else:
                         if BBC=='5D':
-                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC)))
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(alpha_young,alpha_old,age_step,BBC)))
                         elif BBC=='0D':
-                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC)))
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(alpha_young,alpha_old,age_step,BBC)))
                         elif BBC=='4D':
-                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='4D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC)))
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='4D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(alpha_young,alpha_old,age_step,BBC)))
 
                         else:
-                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC)))
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(alpha_young,alpha_old,age_step,BBC)))
 
                     #except:
                         #chis[i][j].append(-9999)
