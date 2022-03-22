@@ -57,7 +57,7 @@ class SN_Model():
     def x1_int_linear_gauss_plus_delta(self,args,params):
         args['x1'],args['prog_type'] = x1_int_linear_gauss_plus_delta(args['SN_age'],params['slope'],params['width'],params['offset'],params['SD_mean'],params['frac_SD'],params['SD_width'])
         args['prog_age'] = 'Young'
-        
+
         return args
 
     def x1_twogauss_fix(self,args,params):
@@ -100,6 +100,11 @@ class SN_Model():
 
     def tripp_rv_two_beta_age(self,args,params):
         return tripp_rv_two_beta_age(params['alpha'],params['beta_young'],params['beta_old'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],args)
+
+    def tripp_rv_age_alpha_popn_beta(self,args,params):
+        return tripp_rv_age_alpha_popn_beta(params['mu_alpha_young'],params['sig_alpha_young'],params['mu_alpha_old'],params['sig_alpha_old'],
+                    params['mu_beta'],params['sig_beta'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],args)
+
 
     def tripp_rv_two_beta_popns_age(self,args,params):
         return tripp_rv_two_beta_popns_age(params['alpha'], params['mu_beta_young'],params['sig_beta_young'], params['mu_beta_old'], params['sig_beta_old'], params['M0'],
