@@ -5,40 +5,48 @@ import sys
 import matplotlib
 matplotlib.rc('figure', max_open_warning = 0)
 # read in the BBC output files and calculate the chi-squared to the HR-vs-colour split by mass plot
-# read in the BBC output files and calculate the chi-squared to the HR-vs-colour split by mass plot
-
-
 from yaml import safe_load as yload
-cpath = sys.argv[1]
-try:
-    BBC = sys.argv[2]
-except:
-    BBC = '1D'
-try:
-    chi_plots = sys.argv[3].split(',')
-except:
-    chi_plots = ['M','UR']
+import argparse
+
+def parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c','--cpath',help='Config file',type=str)
+    parser.add_argument('-b','--BBC',help='BiasCor',default='1D',type=str)
+    parser.add_argument('-p','--plots',help='Which plots to do',default='M,UR',type=str)
+    parser.add_argument('-s','--save_sum',help='Save the sum of chi squared?',action='store_true')
+    parser.add_argument('-x','--step_par',help='Step parameter',default='age')
+    args = parser.parse_args()
+    return args
+
+args = parser()
+cpath = args.cpath
+BBC = args.BBC
+chi_plots = args.plots.split(',')
+step = args.step_par
 with open(cpath,'r') as f:
     cfg =  yload(f)
 alpha_young_grid = np.arange(cfg['alpha_young']['lo'],cfg['alpha_young']['hi'],cfg['alpha_young']['step'])
 alpha_old_grid = np.arange(cfg['alpha_old']['lo'],cfg['alpha_old']['hi'],cfg['alpha_old']['step'])
-age_step_grid = np.arange(cfg['age_step']['lo'],cfg['age_step']['hi'],cfg['age_step']['step'])
+age_step_grid = np.arange(cfg['%s_step'%step]['lo'],cfg['%s_step'%step]['hi'],cfg['%s_step'%step]['step'])
 pth = cfg['config_path']
 model_config = os.path.split(pth)[-1]
 model_name = model_config.split('.')[0]
 
 n=0
-chis = np.zeros((len(Rv_lo_grid),len(Rv_hi_grid),len(mass_step_grid)),dtype=float)
-
+#chis = np.zeros((len(age_young_grid),len(age_old_grid),len(age_step_grid)),dtype=float)
+chis = []
 from tqdm import tqdm
 from des_sn_hosts.simulations.utils.plotter_paper import *
 sim = aura.Sim(pth)
 
 with open(pth,'r') as f:
     c = yload(f)
-for i,alpha_young in tqdm(enumerate(alpha_young_grid)):
-    for j,alpha_old in tqdm(enumerate(alpha_old_grid)):
-        for k,age_step in tqdm(enumerate(age_step_grid)):
+for i, alpha_young in tqdm(enumerate(alpha_young_grid)):
+        chis.append([])
+        for j,alpha_old in tqdm(enumerate(alpha_old_grid)):
+            chis[i].append([])
+            for k,age_step in enumerate(age_step_grid):
+
                     c['mB_model']['params']['mu_alpha_young'] = float(alpha_young)
                     c['mB_model']['params']['mu_alpha_old'] = float(alpha_old)
                     c['mB_model']['params']['age_step']['mag'] = float(age_step)
@@ -49,20 +57,43 @@ for i,alpha_young in tqdm(enumerate(alpha_young_grid)):
                     elif BBC =='0D':
                         from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/0D/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
                                           delimiter='\s+', comment='#')
+                    elif BBC =='4D':
+                        from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/BBC4D/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
+                                          delimiter='\s+', comment='#')
                     else:
 
                         from_bbc = pd.read_csv('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/FITOPT%03d_MUOPT000.FITRES.gz'%(cfg['save']['dir'],n),
                                           delimiter='\s+', comment='#')
                     sim.sim_df = from_bbc
                     sim.sim_df.rename(columns={'U_R':'U-R','MURES':'mu_res','MUERR':'mu_res_err','mBERR':'mB_err'},inplace=True)
-                    try:
+
+                    #try:
+                    if args.save_sum:
                         if BBC=='5D':
-                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots))
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC))))
                         elif BBC=='0D':
-                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots))
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC))))
+                        elif BBC=='4D':
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,y5data='4D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC))))
+
+
                         else:
-                            chis[i,j,k] =np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots))
-                    except:
-                        chis[i,j,k] =-9999
+                            chis[i][j].append(np.sum(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC))))
+                    else:
+                        if BBC=='5D':
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='5D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC)))
+                        elif BBC=='0D':
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='0D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC)))
+                        elif BBC=='4D':
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,y5data='4D',chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC)))
+
+                        else:
+                            chis[i][j].append(plot_mu_res_paper_combined_new(sim,chi_plots = chi_plots,label_ext='%.2f_%.2f_%.2f_%s'%(age_young,age_old,age_step,BBC)))
+
+                    #except:
+                        #chis[i][j].append(-9999)
                     n +=1
-np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_combined_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
+if args.save_sum:
+    np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_combined_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
+else:
+    np.save('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/%s/chis_separate_BBC%s.npy'%(cfg['save']['dir'],BBC),chis)
