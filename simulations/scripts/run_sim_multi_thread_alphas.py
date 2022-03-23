@@ -99,8 +99,10 @@ def sim_worker(args):
         '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,alpha_young,alpha_old,age_step)),key='sim')
 
 def multi_sim(args):
-
-    pool_size = 8
+    if not sys.argv[2]:
+        pool_size=8
+    else:
+        pool_size= float(sys.argv[2])
     pool = MyPool(processes=pool_size)
     for _ in tqdm(pool.imap_unordered(sim_worker,args),total=len(args)):
         pass
