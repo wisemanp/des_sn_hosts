@@ -102,7 +102,7 @@ def multi_sim(args):
     if not sys.argv[2]:
         pool_size=8
     else:
-        pool_size= float(sys.argv[2])
+        pool_size= int(sys.argv[2])
     pool = MyPool(processes=pool_size)
     for _ in tqdm(pool.imap_unordered(sim_worker,args),total=len(args)):
         pass
