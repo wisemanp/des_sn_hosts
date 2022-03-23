@@ -48,7 +48,6 @@ def tripp_rv_age_alpha_popn_beta(mu_alpha_young,sig_alpha_young,mu_alpha_old,sig
                                         mu_beta,sig_beta,M0,sigma_int,mass_step,age_step,args):
     args['prog_age'] = np.array(args['prog_age'])
     alpha = np.array((norm(mu_alpha_old,sig_alpha_old).rvs(size=len(args['c'])) * (args['prog_age']=='old')) + (norm(mu_alpha_young,sig_alpha_young).rvs(size=len(args['c'])) * (args['prog_age']=='young')))
-    print("alpha: ",alpha)
     beta = norm(mu_beta, sig_beta).rvs(size=len(args['c']))
     #FIXME!!!
     return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + beta*args['c_int'] - alpha*args['x1'] + (args['rv']+1)*args['E'] + \
