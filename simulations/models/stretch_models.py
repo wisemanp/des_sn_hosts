@@ -91,7 +91,7 @@ class x1_linear_plus_old():
     def _set_norm_old(self,mu_old,sig_old):
         self.norm_old = norm(mu_old,sig_old)
     def _set_norm_linear(self,slope,width,offset,ages):
-        self.norm_linear = norm(float(slope)*np.log10(ages))+float(offset),width
+        self.norm_linear = norm(float(slope)*np.log10(ages)+float(offset),width)
 
     def sample(self,ages,old_probs=[],return_prog_age=True):
         if len(old_probs)==0:
