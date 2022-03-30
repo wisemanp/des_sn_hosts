@@ -69,7 +69,7 @@ class SN_Model():
         args['x1'],args['prog_age'] =  sampler.sample(args['SN_age'])
         return args
     def x1_linear_plus_old(self,args,params):
-        sampler = x1_linear_plus_old(params['slope'],params['width'],params['offset'],params['mu_old'],params['sig_old'],params['age_step_loc'],params['old_prob'])
+        sampler = x1_linear_plus_old(params['slope'],params['width'],params['offset'],params['mu_old'],params['sig_old'],params['age_step_loc'],args['SN_age'],params['old_prob'])
         args['x1'],args['prog_age'] =  sampler.sample(args['SN_age'])
         return args
     def choose_Av_SN_E_rv_fix(self,args,params):
