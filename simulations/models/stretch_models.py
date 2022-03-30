@@ -100,11 +100,11 @@ class x1_linear_plus_old():
         prog_age_choices = []
         for counter,age in enumerate(ages):
             if age > self.age_step_loc:
-                x1_rand = {'old':self.norm_old.rvs(),'linear':self.norm_linear.rvs()}
-                prog_age_choice = np.random.choice(['old','linear'],p=old_probs)
+                x1_rand = {'old':self.norm_old.rvs(),'young':self.norm_linear.rvs()}
+                prog_age_choice = np.random.choice(['old','young'],p=old_probs)
                 x1s.append(x1_rand[prog_age_choice])
             elif age <= self.age_step_loc:
-                prog_age_choice = 'linear'
+                prog_age_choice = 'young'
                 x1s.append(self.norm_linear.rvs())
             prog_age_choices.append(prog_age_choice)
         if return_prog_age:
