@@ -1,7 +1,7 @@
 import numpy as np
 from .dust_models import age_rv_step, mass_rv_step, age_rv_linear, mass_rv_linear, E_exp, E_exp_mass, E_exp_age, random_rv, E_calc, E_from_host_random, E_two_component
 from .colour_models import c_int_asymm, c_int_gauss, c_int_plus_dust
-from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix, x1_int_linear_gauss, x1_int_linear_gauss_plus_delta
+from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix, x1_int_linear_gauss, x1_int_linear_gauss_plus_delta,x1_linear_plus_old
 from .host_dust import choose_Av_SN_E_rv_fix, choose_Av_custom, choose_Av_SN_E_Rv_norm, choose_Av_SN_E_Rv_step
 from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta,tripp_rv_two_beta_popns_age2,tripp_rv_age_alpha_popn_beta
 class SN_Model():
@@ -66,6 +66,10 @@ class SN_Model():
 
     def x1_twogauss_age(self,args,params):
         sampler = x1_twogauss_age(params['mu_old'],params['sig_old'],params['mu_young'],params['sig_young'],params['age_step_loc'],params['old_prob'])
+        args['x1'],args['prog_age'] =  sampler.sample(args['SN_age'])
+        return args
+    def x1_linear_plus_old(self,args,params):
+        sampler = x1_linear_plus_old(params['slope'],params['width'],params['offset'],params['mu_old'],params['sig_old'],params['age_step_loc'],params['old_prob'])
         args['x1'],args['prog_age'] =  sampler.sample(args['SN_age'])
         return args
     def choose_Av_SN_E_rv_fix(self,args,params):
