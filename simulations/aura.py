@@ -224,7 +224,7 @@ class Sim(SN_Model):
         spec_eff_std = std_eff_func(args['m_r'])
         effs = np.clip(np.random.normal(spec_eff,spec_eff_std),a_min=0,a_max=1)
         args['eff_mask'] = [np.random.choice([0,1],p=[1-effs[i],effs[i]]) for i in range(len(effs))]
-
+        print(args['SN_age'])
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
         args = self.x1_func(args,self.config['x1_model']['params'])
         print(args['x1'])
