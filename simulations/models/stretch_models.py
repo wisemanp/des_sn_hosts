@@ -87,10 +87,13 @@ class x1_linear_plus_old():
         self._set_norm_old(mu_old,sig_old)
         self.age_step_loc = age_step_loc
         self.old_prob = old_prob
+        self.slope= slope
+        self.offset = offset
+        self.width = width
     def _set_norm_old(self,mu_old,sig_old):
         self.norm_old = norm(mu_old,sig_old)
-    def _set_norm_linear(self,slope,width,offset,age):
-        self.norm_linear = norm(float(slope)*np.log10(age)+float(offset),width)
+    def _set_norm_linear(self,age):
+        self.norm_linear = norm(float(self.slope)*np.log10(age)+float(self.offset),self.width)
 
     def sample(self,ages,old_probs=[],return_prog_age=True):
         if len(old_probs)==0:
@@ -98,7 +101,7 @@ class x1_linear_plus_old():
         x1s = []
         prog_age_choices = []
         for counter,age in enumerate(ages):
-            self._set_norm_linear(slope,width,offset,age)
+            self._set_norm_linear(age)
             if age > self.age_step_loc:
 
 
