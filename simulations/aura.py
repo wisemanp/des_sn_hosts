@@ -224,13 +224,9 @@ class Sim(SN_Model):
         spec_eff_std = std_eff_func(args['m_r'])
         effs = np.clip(np.random.normal(spec_eff,spec_eff_std),a_min=0,a_max=1)
         args['eff_mask'] = [np.random.choice([0,1],p=[1-effs[i],effs[i]]) for i in range(len(effs))]
-        print(args['SN_age'])
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
         args = self.x1_func(args,self.config['x1_model']['params'])
-        print(args['x1'])
-        print(args['prog_age'])
         args['mB'],args['alpha_SN'],args['beta_SN'] = self.mb_func(args,self.config['mB_model']['params'])
-        print(args['mB'])
         args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.395*(args['mB'][i]-1.5) - 10)+0.03,np.max([0.003,0.003*(args['mB'][i]-20)]))])
                          for i in range(len(args['mB']))]
 
