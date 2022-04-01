@@ -256,7 +256,7 @@ def plot_x1s(sim,df,des5yr,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,si
     ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
 
-    ax1.set_xlabel(r'Host $\log(M_*/\mathrm{M}_{\odot})',size=20)
+    ax1.set_xlabel(r'Host $\log(M_*/\mathrm{M}_{\odot})$',size=20)
     ax1.set_xlim(7.8,11.8)
     if scatter_all:
         ax1.set_ylim(-3,3)
