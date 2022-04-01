@@ -248,7 +248,7 @@ def plot_x1s(sim,df,des5yr,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,si
 
     ax1.legend(fontsize=16)
 
-    ax1.set_ylabel('$x_1$',size=20)
+    ax1.set_ylabel(r'SN stretch $(x_1)$',size=20)
 
     ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     ax2.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
@@ -256,13 +256,13 @@ def plot_x1s(sim,df,des5yr,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,si
     ax1.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     ax2.xaxis.set_minor_locator(ticker.MultipleLocator(0.25))
 
-    ax1.set_xlabel('Stellar Mass',size=20)
+    ax1.set_xlabel(r'Host $\log(M_*/\mathrm{M}_{\odot})',size=20)
     ax1.set_xlim(7.8,11.8)
     if scatter_all:
         ax1.set_ylim(-3,3)
     else:
         ax1.set_ylim(-1.5,1.5)
-    ax2.set_xlabel('$U-R$',size=20)
+    ax2.set_xlabel(r'Host $U-R$ colour',size=20)
     ax2.set_xlim(0,2.5)
     plt.tight_layout()
     plt.subplots_adjust(wspace=0)
