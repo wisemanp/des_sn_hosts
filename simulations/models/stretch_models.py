@@ -98,6 +98,7 @@ class x1_linear_plus_old():
         x1s = []
         prog_age_choices = []
         for counter,age in enumerate(ages):
+            self._set_norm_linear(slope,width,offset,age)
             if age > self.age_step_loc:
 
 
@@ -106,7 +107,7 @@ class x1_linear_plus_old():
                 x1s.append(x1_rand[prog_age_choice])
             elif age <= self.age_step_loc:
                 prog_age_choice = 'young'
-                self._set_norm_linear(slope,width,offset,age)
+
                 x1s.append(self.norm_linear.rvs())
             prog_age_choices.append(prog_age_choice)
         if return_prog_age:
