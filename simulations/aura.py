@@ -217,8 +217,9 @@ class Sim(SN_Model):
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
         gals_df = new_zdf.loc[m_av_samples_inds]
         args['U-R'] = gals_df['U'].values - gals_df['R'].values #gal_df['U_R'].values
-        #for band in ['g','r','i','z']:
-        #    args['m_%s'%band] = gals_df['m_%s'%band].values-1
+        for band in ['g','r','i','z']:
+            args['m_%s'%band] = gals_df['m_%s'%band].values
+
         mean_eff_func,std_eff_func = ozdes_efficiency(self.eff_dir)
         spec_eff = mean_eff_func(args['m_r'])
         spec_eff_std = std_eff_func(args['m_r'])
