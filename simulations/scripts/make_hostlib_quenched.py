@@ -111,8 +111,8 @@ def run(args):
                     dtd_total =phi_t_pl(sfh_iter_df['stellar_age']/1000,0.04,-1*args.beta,dtd_norm)
                     SN_age_dist = sfh_iter_df['m_formed']*dtd_total
                     pred_rate_total = np.sum(SN_age_dist)
-                    ages = sfh_df['stellar_age']/1000
-                    mwsa = np.average(sfh_df['stellar_age'],weights=sfh_iter_df['m_formed']/mtot)
+                    ages = sfh_iter_df['stellar_age']/1000
+                    mwsa = np.average(sfh_iter_df['stellar_age'],weights=sfh_iter_df['m_formed']/mtot)
                     if np.log10(mtot)<=9.5:
                         mu_Rv = 2.61
                     elif 9.5 <np.log10(mtot)<=10.5:
