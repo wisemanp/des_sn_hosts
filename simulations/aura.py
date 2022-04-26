@@ -181,8 +181,11 @@ class Sim(SN_Model):
             if len(g)>0:
                 min_av = g.Av.astype(float).min()
                 g_Av_0 =  g.loc[idx[:, '%.5f'%min_av, :]]
-                for k in g_Av_0.index:
+                for k in g_Av_0.index.unique():
                     sub_gb = g_Av_0.loc[k]
+                    if type(sub_gb)==pd.DataFrame:
+                        j =np.random.randint(0,len(sub_gb))
+                        sub_gb = sub_gb.iloc[j]
                     age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
                     age_df.loc[age_inds,'%.2f'%(float(k))] = sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values)
                 age_df.fillna(0,inplace=True)
