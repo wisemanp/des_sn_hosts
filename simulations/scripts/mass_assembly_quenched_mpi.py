@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 from astropy.cosmology import z_at_value
-from astropy.cosmology import WMAP9 as cosmo
+from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(70,0.3)
 import os
 from scipy.special import erf
 from astropy import units as u
@@ -9,6 +10,7 @@ import numpy as np
 from tqdm import tqdm
 import argparse
 import yaml
+from des_sn_hosts.utils.utils import MyPool
 
 
 def phi_t(t,tp,alpha,s):
@@ -139,6 +141,74 @@ def parser():
     args = parser.parse_args()
     return args
 
+def script_worker(worker_args):
+    tf, args = [worker_args[i] for i in range(len(worker_args))]
+    dt = args.dt
+    N=args.n
+
+    ages = np.arange(0,tf+dt,dt)
+    m = [1E+6 for _ in range(N)]
+    m_formed = [ [] for _ in range(N) ]
+    m_lost_tot = [[0] for _ in range(N)]
+    m_arr = [ [] for _ in range(N) ]
+    is_quenched = [False for _ in range(N)]
+    ts = []
+    zs = []
+    mqs = [0 for _ in range(N)]
+    for counter,age in enumerate(tqdm(ages)):
+        t = tf-age
+        ts.append(t)
+        #print("Current epoch: %.f Myr"%t, 'Age: ',age)
+        try:
+            z_t = z_at_value(cosmo.lookback_time,t*u.Myr,zmin=0)
+        except:
+            z_t = 0
+        zs.append(z_t)
+        #print("current redshift: %.2f"%z_t)
+        m_created, is_quenched,mqs = sfr_Mz_alt(m,z_t,is_quenched,mqs)
+        m_created = np.array(m_created)*dt*1E+6
+        [m_formed[n].append(m_created[n]) for n in range(N)]
+        #print("Mass formed in the last %3f Myr: %2g Msun"%(dt,m_created))
+        #print("Mass formed at each epoch so far: ",m_formed)
+        taus = ages[:counter+1][::-1]
+        #print("Time since epochs of star formation: ",taus)
+        f_ml= fml_t(taus)
+        #print("Fractional mass lost since each epoch",f_ml)
+        ml = f_ml * np.array([m_formed[n] for n in range(N)])
+        #m_lost_tot = np.concatenate([m_lost_tot,[0]])
+
+        if counter>1:
+            #print('trying to subtract m_lost_tot',m_lost_tot,'from ml ',ml)
+            new_ml = [np.sum(ml[n][:counter]- m_lost_tot[n]) for n in range(N)]
+        else:
+            new_ml = [np.sum(ml[n]) for n in range(N)]
+        #print("New mass loss this cycle",new_ml)
+        m_lost_tot = [ml[n] for n in range(N)]
+        #print("Current array of masses lost",[ "{:0.2e}".format(x) for x in m_lost_tot ])
+        #ml_tot = ml - m_lost
+        #m_lost = ml_tot
+        m = [m[n] + m_created[n] - new_ml[n] for n in range(N)]
+        #print("Final mass of this epoch: %.1e"%m)
+        #print("#"*100)
+        [m_arr[n].append(m[n]) for n in range(N)]
+    #print (m_formed)
+    #print(m_lost_tot)
+
+    final_age_weights = [m_formed[n] - m_lost_tot[n] for n in range(N)]
+
+    #print([np.log10(m_arr[n][-1]) for n in range(N)])
+
+    print("Saving to: ",os.path.join(save_dir,'SFHs_alt_%.1f_Qerf_1.1_newQmass_test.h5'%dt))
+    df = pd.DataFrame()
+    #print(track)
+
+    for n in range(N):
+
+        track = np.array([ts,zs,ages,m_formed[n],final_age_weights[n],m_arr[n]]).T
+
+        df = df.append(pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot'],index=[n]*len(ages)))
+    pd.DataFrame(df,columns=['t','z','age','m_formed','final_age_weights','m_tot']).to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_quenched.h5'%dt),key='%3.0f'%tf)
+
 def main(args):
     config=yaml.load(open(args.config))
     save_dir = config['rates_root']+'SFHs/'
@@ -150,71 +220,14 @@ def main(args):
         tfs = np.concatenate([np.arange(args.tstart,10000,args.late_step),np.arange(10000,13000,args.early_step)])
     else:
         tfs = np.arange(args.tstart,13000,args.early_step)
-    for tf in tqdm(tfs):
-        print("Starting epoch: %.f Myr "%tf)
 
-        ages = np.arange(0,tf+dt,dt)
-        m = [1E+6 for _ in range(N)]
-        m_formed = [ [] for _ in range(N) ]
-        m_lost_tot = [[0] for _ in range(N)]
-        m_arr = [ [] for _ in range(N) ]
-        is_quenched = [False for _ in range(N)]
-        ts = []
-        zs = []
-        mqs = [0 for _ in range(N)]
-        for counter,age in enumerate(tqdm(ages)):
-            t = tf-age
-            ts.append(t)
-            #print("Current epoch: %.f Myr"%t, 'Age: ',age)
-            try:
-                z_t = z_at_value(cosmo.lookback_time,t*u.Myr,zmin=0)
-            except:
-                z_t = 0
-            zs.append(z_t)
-            #print("current redshift: %.2f"%z_t)
-            m_created, is_quenched,mqs = sfr_Mz_alt(m,z_t,is_quenched,mqs)
-            m_created = np.array(m_created)*dt*1E+6
-            [m_formed[n].append(m_created[n]) for n in range(N)]
-            #print("Mass formed in the last %3f Myr: %2g Msun"%(dt,m_created))
-            #print("Mass formed at each epoch so far: ",m_formed)
-            taus = ages[:counter+1][::-1]
-            #print("Time since epochs of star formation: ",taus)
-            f_ml= fml_t(taus)
-            #print("Fractional mass lost since each epoch",f_ml)
-            ml = f_ml * np.array([m_formed[n] for n in range(N)])
-            #m_lost_tot = np.concatenate([m_lost_tot,[0]])
-
-            if counter>1:
-                #print('trying to subtract m_lost_tot',m_lost_tot,'from ml ',ml)
-                new_ml = [np.sum(ml[n][:counter]- m_lost_tot[n]) for n in range(N)]
-            else:
-                new_ml = [np.sum(ml[n]) for n in range(N)]
-            #print("New mass loss this cycle",new_ml)
-            m_lost_tot = [ml[n] for n in range(N)]
-            #print("Current array of masses lost",[ "{:0.2e}".format(x) for x in m_lost_tot ])
-            #ml_tot = ml - m_lost
-            #m_lost = ml_tot
-            m = [m[n] + m_created[n] - new_ml[n] for n in range(N)]
-            #print("Final mass of this epoch: %.1e"%m)
-            #print("#"*100)
-            [m_arr[n].append(m[n]) for n in range(N)]
-        #print (m_formed)
-        #print(m_lost_tot)
-
-        final_age_weights = [m_formed[n] - m_lost_tot[n] for n in range(N)]
-
-        #print([np.log10(m_arr[n][-1]) for n in range(N)])
-
-        print("Saving to: ",os.path.join(save_dir,'SFHs_alt_%.1f_Qerf_1.1_newQmass_test.h5'%dt))
-        df = pd.DataFrame()
-        #print(track)
-
-        for n in range(N):
-
-            track = np.array([ts,zs,ages,m_formed[n],final_age_weights[n],m_arr[n]]).T
-
-            df = df.append(pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot'],index=[n]*len(ages)))
-        pd.DataFrame(df,columns=['t','z','age','m_formed','final_age_weights','m_tot']).to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_quenched.h5'%dt),key='%3.0f'%tf)
+    worker_args = [[args,tf] for tf in tfs]
+    pool_size = 16
+    pool = MyPool(processes=pool_size)
+    for _ in tqdm(pool.imap_unordered(script_worker,worker_args),total=len(worker_args)):
+        pass
+    pool.close()
+    pool.join()
 
 if __name__=="__main__":
     main(parser())
