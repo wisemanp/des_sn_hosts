@@ -142,7 +142,7 @@ def parser():
     return args
 
 def script_worker(worker_args):
-    args,tf = [worker_args[i] for i in range(len(worker_args))]
+    args,tf,save_dir = [worker_args[i] for i in range(len(worker_args))]
     dt = args.dt
     N=args.n
 
@@ -221,7 +221,7 @@ def main(args):
     else:
         tfs = np.arange(args.tstart,13000,args.early_step)
 
-    worker_args = [[args,tf] for tf in tfs]
+    worker_args = [[args,tf,save_dir] for tf in tfs]
     pool_size = 16
     pool = MyPool(processes=pool_size)
     for _ in tqdm(pool.imap_unordered(script_worker,worker_args),total=len(worker_args)):
