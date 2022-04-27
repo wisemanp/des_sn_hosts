@@ -142,7 +142,7 @@ def parser():
     return args
 
 def script_worker(worker_args):
-    tf, args = [worker_args[i] for i in range(len(worker_args))]
+    args,tf = [worker_args[i] for i in range(len(worker_args))]
     dt = args.dt
     N=args.n
 
