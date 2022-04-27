@@ -206,9 +206,9 @@ def script_worker(worker_args):
 
         track = np.array([ts,zs,ages,m_formed[n],final_age_weights[n],m_arr[n]]).T
         new_df = pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot'],index=[n]*len(ages))
-        
+
         df = df.append(new_df)
-    df.to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_quenched.h5'%dt),key='%3.0f'%tf)
+    df.to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_quenched_all.h5'%dt),key='%3.0f'%tf)
 
 def main(args):
     config=yaml.load(open(args.config))
