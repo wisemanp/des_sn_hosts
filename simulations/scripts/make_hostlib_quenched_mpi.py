@@ -101,8 +101,7 @@ def sed_worker(worker_args):
                                             'm_g','m_r','m_i','m_z','U','B','V','R','I'])
     df['g_r'] = df['m_g'] - df['m_r']
 
-    df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
-        key='%3.0f'%tf)
+
 
 def run(args):
     # DES filter objects
@@ -161,10 +160,13 @@ def run(args):
                 worker_args.append([sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array])
         pool_size = 16
         pool = MyPool(processes=pool_size)
-        for _ in tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)):
-            pass
+        results_df = pd.DataFrame
+        for res_df in tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)):
+            results_df= results_df.append(res_df)
         pool.close()
         pool.join()
+        df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
+            key='main')
     print("Done!")
 if __name__=="__main__":
     args = parser()
