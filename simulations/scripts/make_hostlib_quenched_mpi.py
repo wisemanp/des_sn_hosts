@@ -47,7 +47,7 @@ def parser():
 
 def sed_worker(worker_args):
     sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array = [worker_args[i] for i in range(7)]
-
+    results = []
     for i in tqdm(sfh_df.index.unique()):
         sfh_iter_df = sfh_df.loc[i]
         mtot=sfh_iter_df['m_tot'].iloc[-1]
