@@ -81,7 +81,7 @@ def run(args):
         s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/templates/',neb=args.neb)
 
         neb=args.neb
-    store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_10.0_Qerf_1.1_newQmass_test.h5','r')
+    store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_quenched_all.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
     results = []
     #z_array = [float(z) for z in args.z.split(',')]
@@ -101,7 +101,7 @@ def run(args):
                     mtot=sfh_iter_df['m_tot'].iloc[-1]
                     age = sfh_iter_df['age'].iloc[-1]
                     print('Mass: ',np.log10(mtot),'age: ',age)
-                    ssfr = np.sum(sfh_iter_df['m_formed'].iloc[-25:])/((250*1E+6)*mtot)
+                    ssfr = np.sum(sfh_iter_df['m_formed'].iloc[-500:])/((250*1E+6)*mtot)
                     sfr = ssfr*mtot
                     sfh_iter_df['stellar_age'] = sfh_iter_df.age.values[::-1]
                     dtd_x1hi = phi_t_pl(sfh_iter_df['stellar_age']/1000,0.04,beta_x1hi,norm_x1hi)
