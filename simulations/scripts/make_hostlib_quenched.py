@@ -83,7 +83,7 @@ def run(args):
         neb=args.neb
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_quenched_all.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
-    results = []
+
     #z_array = [float(z) for z in args.z.split(',')]
     z_array = np.arange(args.zlo,args.zhi,args.zstep)
     if args.av_step_type == 'lin':
@@ -95,6 +95,7 @@ def run(args):
         for tf in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]):   # Iterate through the SFHs for galaxies of different final masses
             sfh_df = store['/'+str(tf)]
             sfh_df = sfh_df[sfh_df['z']>z]
+            results = []
             if len(sfh_df)>0:
                 for i in tqdm(sfh_df.index.unique()):
                     sfh_iter_df = sfh_df.loc[i]
@@ -142,18 +143,15 @@ def run(args):
                                                                 neb=neb,logU=args.logU,mtot=mtot,age=age)
                         obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
                         U,B,V,R,I = (colours[i] for i in colours.keys())
-                        results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
 
-    flux_df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
-                                            'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
-                                            'm_g','m_r','m_i','m_z','U','B','V','R','I'])
-    #zp_fluxes = np.array([2.207601113629584299e-06,1.880824499994395390e-06,1.475307638780991749e-06,1.014740352137762549e-06])
-    default_des_syserrs = np.array([0.03, 0.02, 0.02, 0.03])
-    #mags,fuJys=convert_escma_fluxes_to_griz_mags(flux_df[['f_g','f_r','f_i','f_z']],zp_fluxes)
-    #flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
-    #flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
-    flux_df['g_r'] = flux_df['m_g'] - flux_df['m_r']
-    flux_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),key='main')
+                        results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
+                df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
+                                                        'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
+                                                        'm_g','m_r','m_i','m_z','U','B','V','R','I'])
+                df['g_r'] = df['m_g'] - df['m_r']
+
+                df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
+                    key='%3.0f'%tf)
     print("Done!")
 if __name__=="__main__":
     args = parser()
