@@ -160,7 +160,7 @@ def run(args):
                 worker_args.append([sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array])
         pool_size = 16
         pool = MyPool(processes=pool_size)
-        results_df = pd.DataFrame
+        results_df = pd.DataFrame()
         for res_df in tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)):
             results_df= results_df.append(res_df)
         pool.close()
