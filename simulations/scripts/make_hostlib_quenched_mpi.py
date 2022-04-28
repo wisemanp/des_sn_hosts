@@ -4,6 +4,7 @@ from tqdm import tqdm
 from dust_extinction.parameter_averages import F19
 from des_sn_hosts.simulations.spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH,interpolate_SFH_pegase
 from des_sn_hosts.simulations.synspec import SynSpec, phi_t_pl
+from des_sn_hosts.utils.utils import MyPool
 import argparse
 from astropy.cosmology import FlatLambdaCDM
 import warnings
