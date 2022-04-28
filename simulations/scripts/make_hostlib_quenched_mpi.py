@@ -100,7 +100,7 @@ def sed_worker(worker_args):
                                             'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
                                             'm_g','m_r','m_i','m_z','U','B','V','R','I'])
     df['g_r'] = df['m_g'] - df['m_r']
-
+    return df
 
 
 def run(args):
