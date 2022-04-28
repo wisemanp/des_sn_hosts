@@ -44,7 +44,7 @@ def psi_Mz_alt(M,z):
 def logMQ_z_alt_init(z):
 
     #print ("Quenching masses: \n",10.077 + 0.636*z)
-    return (13.077 + 0.636*z) * (z<=2) + (13.077 + 0.636*2) * (z>2)
+    return (13.577 + 0.636*z) * (z<=2) + (13.577 + 0.636*2) * (z>2)
 
 
 def pQ_Mz_alt_init(M,z):
@@ -59,7 +59,7 @@ def logMQ_z_alt(z):
 def pQ_Mz_alt(M,z,Mq):
 
     #print("Quenching function: \n",0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.5)))
-    return (1-erf((np.log10(M)-(np.log10(Mq)-0.85))/0.5)) #0.5*
+    return (1-erf((np.log10(M)-(np.log10(Mq)-0.85))/0.75)) #0.5*
 
 def draw_pQ(M,z):
     p_arr = [False,True]
