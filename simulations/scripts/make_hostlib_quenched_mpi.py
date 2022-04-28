@@ -45,7 +45,7 @@ def parser():
     return args
 
 def sed_worker(worker_args):
-    sfh_df,args,av_arr,z,tf = [worker_args[i] for i in range(5)]
+    sfh_df,args,av_arr,z,tf,s = [worker_args[i] for i in range(6)]
 
     for i in tqdm(sfh_df.index.unique()):
         sfh_iter_df = sfh_df.loc[i]
@@ -157,13 +157,13 @@ def run(args):
             sfh_df = sfh_df[sfh_df['z']>z]
             results = []
             if len(sfh_df)>0:
-                worker_args.append([sfh_df,args,av_arr,z,tf])
-    pool_size = 16
-    pool = MyPool(processes=pool_size)
-    for _ in tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)):
-        pass
-    pool.close()
-    pool.join()
+                worker_args.append([sfh_df,args,av_arr,z,tf,s])
+        pool_size = 16
+        pool = MyPool(processes=pool_size)
+        for _ in tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)):
+            pass
+        pool.close()
+        pool.join()
     print("Done!")
 if __name__=="__main__":
     args = parser()
