@@ -96,11 +96,11 @@ def run(args):
             sfh_df = store['/'+str(tf)]
             sfh_df = sfh_df[sfh_df['z']>z]
             if len(sfh_df)>0:
-                for i in sfh_df.index.unique():
+                for i in tqdm(sfh_df.index.unique()):
                     sfh_iter_df = sfh_df.loc[i]
                     mtot=sfh_iter_df['m_tot'].iloc[-1]
                     age = sfh_iter_df['age'].iloc[-1]
-                    print('Mass: ',np.log10(mtot),'age: ',age)
+                    #print('Mass: ',np.log10(mtot),'age: ',age)
                     ssfr = np.sum(sfh_iter_df['m_formed'].iloc[-500:])/((250*1E+6)*mtot)
                     sfr = ssfr*mtot
                     sfh_iter_df['stellar_age'] = sfh_iter_df.age.values[::-1]
