@@ -59,7 +59,7 @@ def logMQ_z_alt(z):
 def pQ_Mz_alt(M,z,Mq):
 
     #print("Quenching function: \n",0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.5)))
-    return (1-erf((np.log10(M)-(np.log10(Mq)-0.85))/0.75)) #0.5*
+    return (1-erf((np.log10(M)-(np.log10(Mq)-0.85))/0.65)) #0.5*
 
 def draw_pQ(M,z):
     p_arr = [False,True]

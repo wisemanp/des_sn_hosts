@@ -59,7 +59,21 @@ class Sim(SN_Model):
         with open(conf_path,'r') as f:
             return yload(f)
     def _load_flux_df(self,fn):
-        return pd.read_hdf(fn)
+
+        with pd.HDFStore(fn) as store:
+            keys=store.keys()
+            if 'main' in keys and len(keys)==1:
+                return pd.read_hdf(fn)
+            else:
+                full_df = pd.DataFrame()
+                if 'main' in keys:
+                    store.remove('main')
+                ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
+        for tf in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),1)]):   # Iterate through the SFHs for galaxies of different final masses
+            with pd.HDFStore(fn,'r') as store:
+                df = store['/'+str(tf)]
+                full_df = full_df.append(df)
+        return full_df
 
     def _calculate_absolute_rates(self):
         '''For each simulated galaxy, we calculate the expected rate of SNe Ia by multplying it with the stellar mass density at that stellar mass
