@@ -198,7 +198,7 @@ def script_worker(worker_args):
 
     #print([np.log10(m_arr[n][-1]) for n in range(N)])
 
-    print("Saving to: ",os.path.join(save_dir,'SFHs_alt_%.1f_Qerf_1.1_newQmass_test.h5'%dt))
+    print("Saving to: ",os.path.join(save_dir,'SFHs_alt_%.1f_quenched_all.h5'%dt))
     df = pd.DataFrame()
     #print(track)
 
