@@ -212,7 +212,7 @@ def script_worker(worker_args):
 
 def main(args):
     config=yaml.load(open(args.config))
-    save_dir = config['rates_root']+'SFHs/'
+    save_dir = config['rates_root']+'SFHs/tests/'
     dt = args.dt
     N=args.n
     if args.tstart ==0:
