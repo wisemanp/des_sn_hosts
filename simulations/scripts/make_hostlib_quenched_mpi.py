@@ -53,64 +53,67 @@ def sed_worker(worker_args):
     results = []
     i = np.random.randint(0,len(sfh_df.index.unique()))
     sfh_iter_df = sfh_df.loc[i]
-    mtot=sfh_iter_df['m_tot'].iloc[-1]
-    age = sfh_iter_df['age'].iloc[-1]
-    #print('Mass: ',np.log10(mtot),'age: ',age)
-    ssfr = np.sum(sfh_iter_df['m_formed'].iloc[-500:])/((250*1E+6)*mtot)
-    sfr = ssfr*mtot
-    sfh_iter_df['stellar_age'] = sfh_iter_df.age.values[::-1]
-    ages = sfh_iter_df['stellar_age']/1000
-    dtd_x1hi = phi_t_pl(ages,0.04,beta_x1hi,norm_x1hi)
-    pred_rate_x1hi =np.sum(sfh_iter_df['m_formed']*dtd_x1hi)
-    dtd_x1lo = phi_t_pl(ages,0.04,beta_x1lo,norm_x1lo)
-    pred_rate_x1lo =np.sum(sfh_iter_df['m_formed']*dtd_x1lo)
-    dtd_total =phi_t_pl(ages,0.04,-1*args.beta,dtd_norm)
-    SN_age_dist = sfh_iter_df['m_formed']*dtd_total
-    pred_rate_total = np.sum(SN_age_dist)
+    try:
+        mtot=sfh_iter_df['m_tot'].iloc[-1]
+        age = sfh_iter_df['age'].iloc[-1]
+        #print('Mass: ',np.log10(mtot),'age: ',age)
+        ssfr = np.sum(sfh_iter_df['m_formed'].iloc[-500:])/((250*1E+6)*mtot)
+        sfr = ssfr*mtot
+        sfh_iter_df['stellar_age'] = sfh_iter_df.age.values[::-1]
+        ages = sfh_iter_df['stellar_age']/1000
+        dtd_x1hi = phi_t_pl(ages,0.04,beta_x1hi,norm_x1hi)
+        pred_rate_x1hi =np.sum(sfh_iter_df['m_formed']*dtd_x1hi)
+        dtd_x1lo = phi_t_pl(ages,0.04,beta_x1lo,norm_x1lo)
+        pred_rate_x1lo =np.sum(sfh_iter_df['m_formed']*dtd_x1lo)
+        dtd_total =phi_t_pl(ages,0.04,-1*args.beta,dtd_norm)
+        SN_age_dist = sfh_iter_df['m_formed']*dtd_total
+        pred_rate_total = np.sum(SN_age_dist)
 
-    mwsa = np.average(sfh_iter_df['stellar_age'],weights=sfh_iter_df['m_formed']/mtot)
-    if np.log10(mtot)<=9.5:
-        mu_Rv = 2.61
-    elif 9.5 <np.log10(mtot)<=10.5:
-        mu_Rv = 2.99
-        #avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
-    else:
-        mu_Rv = 3.47
-        #avs_SBL = np.clip(np.random.normal(av_means_mlo,av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
-    if args.templates == 'BC03':
-        sfh_coeffs_PW21 = interpolate_SFH(sfh_iter_df,mtot,bc03_logt_float_array)
-        template=None
-    elif args.templates =='PEGASE':
-        if args.templates_fn =='None':
-            templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5',key='main')
+        mwsa = np.average(sfh_iter_df['stellar_age'],weights=sfh_iter_df['m_formed']/mtot)
+        if np.log10(mtot)<=9.5:
+            mu_Rv = 2.61
+        elif 9.5 <np.log10(mtot)<=10.5:
+            mu_Rv = 2.99
+            #avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
         else:
-            templates = pd.read_hdf(args.templates_fn,key='main')
-        sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_iter_df,templates['time'],mtot,templates['m_star'])
-    arr = np.zeros((len(ages),2))
-    arr[:,0] = ages
-    arr[:,1] = SN_age_dist
-    np.savetxt('/media/data3/wiseman/des/AURA/sims/hostlibs/SN_ages/all_model_params_quench_%s_z_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.1f.dat'%(args.templates,z,args.logU,args.time_res,args.beta,tf),arr)
-    for Av in av_arr:
-        Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
-        delta='None'
-        #if args.templates =='PEGASE':
-        #    sfh_coeffs_PW21 = None
-        #    template = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_orig_%i.h5' % tf,
-        #                           key='main')
-        U_R,fluxes,colours= s.calculate_model_fluxes_pw(z,sfh_coeffs_PW21,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
-                                                neb=args.neb,logU=args.logU,mtot=mtot,age=age)
-        obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
-        U,B,V,R,I = (colours[i] for i in colours.keys())
+            mu_Rv = 3.47
+            #avs_SBL = np.clip(np.random.normal(av_means_mlo,av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
+        if args.templates == 'BC03':
+            sfh_coeffs_PW21 = interpolate_SFH(sfh_iter_df,mtot,bc03_logt_float_array)
+            template=None
+        elif args.templates =='PEGASE':
+            if args.templates_fn =='None':
+                templates = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates.h5',key='main')
+            else:
+                templates = pd.read_hdf(args.templates_fn,key='main')
+            sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_iter_df,templates['time'],mtot,templates['m_star'])
+        arr = np.zeros((len(ages),2))
+        arr[:,0] = ages
+        arr[:,1] = SN_age_dist
+        np.savetxt('/media/data3/wiseman/des/AURA/sims/hostlibs/SN_ages/all_model_params_quench_%s_z_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.1f.dat'%(args.templates,z,args.logU,args.time_res,args.beta,tf),arr)
+        for Av in av_arr:
+            Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
+            delta='None'
+            #if args.templates =='PEGASE':
+            #    sfh_coeffs_PW21 = None
+            #    template = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_orig_%i.h5' % tf,
+            #                           key='main')
+            U_R,fluxes,colours= s.calculate_model_fluxes_pw(z,sfh_coeffs_PW21,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
+                                                    neb=args.neb,logU=args.logU,mtot=mtot,age=age)
+            obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
+            U,B,V,R,I = (colours[i] for i in colours.keys())
 
-        results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,pred_rate_total,tf],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
+            results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,pred_rate_total,tf],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
 
-    df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
-                                            'pred_rate_x1_lo','pred_rate_total','t_f',
-                                            'm_g','m_r','m_i','m_z','U','B','V','R','I',])
-    #df['g_r'] = df['m_g'] - df['m_r']
-    df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
-        key='%.2f/%i'%(z,tf))
-    
+        df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
+                                                'pred_rate_x1_lo','pred_rate_total','t_f',
+                                                'm_g','m_r','m_i','m_z','U','B','V','R','I',])
+        #df['g_r'] = df['m_g'] - df['m_r']
+        df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
+            key='%.2f/%i'%(z,tf))
+    except:
+        pass
+
     return
 
 
