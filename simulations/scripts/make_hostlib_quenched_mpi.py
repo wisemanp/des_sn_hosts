@@ -105,6 +105,7 @@ def sed_worker(worker_args):
                                             'pred_rate_x1_lo','pred_rate_total','t_f',
                                             'm_g','m_r','m_i','m_z','U','B','V','R','I',])
     #df['g_r'] = df['m_g'] - df['m_r']
+    print('Returning',tf)
     return df
 
 
@@ -158,10 +159,10 @@ def run(args):
     for z in z_array:
         distance_factor = 10.0**(0.4*cosmo.distmod(z).value)
         worker_args = []
-        for tf in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]):   # Iterate through the SFHs for galaxies of different final masses
+        for tf in ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]:   # Iterate through the SFHs for galaxies of different final masses
             sfh_df = store['/'+str(tf)]
             sfh_df = sfh_df[sfh_df['z']>z]
-            results = []
+
             if len(sfh_df)>0:
                 worker_args.append([sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array])
         pool_size = 16
