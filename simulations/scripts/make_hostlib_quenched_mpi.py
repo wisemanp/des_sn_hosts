@@ -105,8 +105,9 @@ def sed_worker(worker_args):
                                             'pred_rate_x1_lo','pred_rate_total','t_f',
                                             'm_g','m_r','m_i','m_z','U','B','V','R','I',])
     #df['g_r'] = df['m_g'] - df['m_r']
-    print('Returning',tf)
-    return df
+    results_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
+        key='%.2f/%i'%(z,tf))
+
 
 
 def run(args):
@@ -157,7 +158,7 @@ def run(args):
         av_arr = np.logspace(args.av_lo,args.av_hi,args.n_av)
 
     for z in z_array:
-        distance_factor = 10.0**(0.4*cosmo.distmod(z).value)
+        print('Making hostlib for z=%.2f'%z)
         worker_args = []
         for tf in ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]:   # Iterate through the SFHs for galaxies of different final masses
             sfh_df = store['/'+str(tf)]
@@ -168,12 +169,11 @@ def run(args):
         pool_size = 16
         pool = MyPool(processes=pool_size)
         results_df = pd.DataFrame()
-        for res_df in tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)):
-            results_df= results_df.append(res_df)
+        for _ in tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)):
+
         pool.close()
         pool.join()
-        results_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
-            key='%.2f'%z)
+
     print("Done!")
 if __name__=="__main__":
     args = parser()
