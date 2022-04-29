@@ -104,7 +104,7 @@ def sed_worker(worker_args):
     df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
                                             'pred_rate_x1_lo','pred_rate_total',
                                             'm_g','m_r','m_i','m_z','U','B','V','R','I'])
-    df['g_r'] = df['m_g'] - df['m_r']
+    #df['g_r'] = df['m_g'] - df['m_r']
     return df
 
 
