@@ -68,10 +68,10 @@ class Sim(SN_Model):
                 full_df = pd.DataFrame()
                 if 'main' in keys:
                     store.remove('main')
-                ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
+                ordered_keys = np.sort(x for x in store.keys()])
         for z in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),1)]):   # Iterate through the SFHs for galaxies of different final masses
             with pd.HDFStore(fn,'r') as store:
-                df = store['/'+str(z)]
+                df = store['/'+z]
                 full_df = full_df.append(df)
         return full_df
 
@@ -195,12 +195,34 @@ class Sim(SN_Model):
             if len(g)>0:
                 min_av = g.Av.astype(float).min()
                 g_Av_0 =  g.loc[idx[:, '%.5f'%min_av, :]]
+
                 for k in g_Av_0.index.unique():
                     sub_gb = g_Av_0.loc[k]
+                    #print(sub_gb)
+
                     if type(sub_gb)==pd.DataFrame:
+                        tf = sub_gb['t_f'].iloc[0]
+
+
                         j =np.random.randint(0,len(sub_gb))
-                        sub_gb = sub_gb.iloc[j]
+                        split_z = os.path.split(sim.config['hostlib_fn'])[1].split('z')
+                        split_rv = os.path.split(sim.config['hostlib_fn'])[1].split('rv')
+                        ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-3]+'_%.1f_'%tf+'.dat'
+                        new_fn = os.path.join(os.path.split(sim.config['hostlib_fn'])[0],'SN_ages',ext)
+                        sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
+                    else:
+                        tf = sub_gb['t_f']
+                        split_z = os.path.split(sim.config['hostlib_fn'])[1].split('z')
+                        split_rv = os.path.split(sim.config['hostlib_fn'])[1].split('rv')
+                        ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-3]+'_%.1f'%tf+'.dat'
+                        new_fn = os.path.join(os.path.split(sim.config['hostlib_fn'])[0],'SN_ages',ext)
+
+                        sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
+
+
                     age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
+
+
                     age_df.loc[age_inds,'%.2f'%(float(k))] = sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values)
                 age_df.fillna(0,inplace=True)
                 for av in g.Av.unique():
