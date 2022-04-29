@@ -159,7 +159,7 @@ def run(args):
     elif args.av_step_type == 'log':
         av_arr = np.logspace(args.av_lo,args.av_hi,args.n_av)
 
-    for z in z_array:
+    for z in tqdm(z_array):
         print('Making hostlib for z=%.2f'%z)
         worker_args = []
         for tf in ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]:   # Iterate through the SFHs for galaxies of different final masses
