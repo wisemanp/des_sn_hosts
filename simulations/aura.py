@@ -73,6 +73,11 @@ class Sim(SN_Model):
             with pd.HDFStore(fn,'r') as store:
                 df = store['/'+z]
                 full_df = full_df.append(df)
+        for col in full_df.columns:
+            try:
+                full_df[col]=full_df[col].astype(float)
+            except:
+                print(col)
         return full_df
 
     def _calculate_absolute_rates(self):
