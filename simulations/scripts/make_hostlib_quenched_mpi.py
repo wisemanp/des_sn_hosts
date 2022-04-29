@@ -170,7 +170,7 @@ def run(args):
         pool = MyPool(processes=pool_size)
         results_df = pd.DataFrame()
         for _ in tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)):
-
+            pass
         pool.close()
         pool.join()
 
