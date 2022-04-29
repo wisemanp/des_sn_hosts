@@ -48,7 +48,8 @@ def parser():
     return args
 
 def sed_worker(worker_args):
-    sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array = [worker_args[i] for i in range(7)]
+    sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array,counter= [worker_args[i] for i in range(8)]
+    print('Starting: ',counter)
     results = []
     i = np.random.randint(0,len(sfh_df.index.unique()))
     sfh_iter_df = sfh_df.loc[i]
@@ -109,7 +110,8 @@ def sed_worker(worker_args):
     #df['g_r'] = df['m_g'] - df['m_r']
     df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
         key='%.2f/%i'%(z,tf))
-
+    print('Returning: ',counter)
+    return
 
 
 def run(args):
@@ -162,12 +164,12 @@ def run(args):
     for z in tqdm(z_array):
         print('Making hostlib for z=%.2f'%z)
         worker_args = []
-        for tf in ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]:   # Iterate through the SFHs for galaxies of different final masses
+        for counter,tf in enumerate(ordered_keys[::-1][np.arange(0,len(ordered_keys),args.time_res)]):   # Iterate through the SFHs for galaxies of different final masses
             sfh_df = store['/'+str(tf)]
             sfh_df = sfh_df[sfh_df['z']>z]
 
             if len(sfh_df)>0:
-                worker_args.append([sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array])
+                worker_args.append([sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array,counter])
         pool_size = 16
         pool = MyPool(processes=pool_size)
 
