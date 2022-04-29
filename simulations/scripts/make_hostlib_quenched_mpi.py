@@ -56,14 +56,15 @@ def sed_worker(worker_args):
         ssfr = np.sum(sfh_iter_df['m_formed'].iloc[-500:])/((250*1E+6)*mtot)
         sfr = ssfr*mtot
         sfh_iter_df['stellar_age'] = sfh_iter_df.age.values[::-1]
-        dtd_x1hi = phi_t_pl(sfh_iter_df['stellar_age']/1000,0.04,beta_x1hi,norm_x1hi)
+        ages = sfh_iter_df['stellar_age']/1000
+        dtd_x1hi = phi_t_pl(ages,0.04,beta_x1hi,norm_x1hi)
         pred_rate_x1hi =np.sum(sfh_iter_df['m_formed']*dtd_x1hi)
-        dtd_x1lo = phi_t_pl(sfh_iter_df['stellar_age']/1000,0.04,beta_x1lo,norm_x1lo)
+        dtd_x1lo = phi_t_pl(ages,0.04,beta_x1lo,norm_x1lo)
         pred_rate_x1lo =np.sum(sfh_iter_df['m_formed']*dtd_x1lo)
-        dtd_total =phi_t_pl(sfh_iter_df['stellar_age']/1000,0.04,-1*args.beta,dtd_norm)
+        dtd_total =phi_t_pl(ages,0.04,-1*args.beta,dtd_norm)
         SN_age_dist = sfh_iter_df['m_formed']*dtd_total
         pred_rate_total = np.sum(SN_age_dist)
-        ages = sfh_iter_df['stellar_age']/1000
+
         mwsa = np.average(sfh_iter_df['stellar_age'],weights=sfh_iter_df['m_formed']/mtot)
         if np.log10(mtot)<=9.5:
             mu_Rv = 2.61
@@ -82,7 +83,10 @@ def sed_worker(worker_args):
             else:
                 templates = pd.read_hdf(args.templates_fn,key='main')
             sfh_coeffs_PW21 = interpolate_SFH_pegase(sfh_iter_df,templates['time'],mtot,templates['m_star'])
-
+        arr = np.zeros((len(ages),2))
+        arr[:,0] = ages
+        arr[:,1] = SN_age_dist
+        np.savetxt('/media/data3/wiseman/des/AURA/sims/hostlibs/SN_ages/all_model_params_quench_%s_z_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.1f_%i.dat'%(args.templates,z,args.logU,args.time_res,args.beta,tf,i),arr)
         for Av in av_arr:
             Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
             delta='None'
@@ -95,9 +99,10 @@ def sed_worker(worker_args):
             obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
             U,B,V,R,I = (colours[i] for i in colours.keys())
 
-            results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
+            results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
+
     df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
-                                            'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
+                                            'pred_rate_x1_lo','pred_rate_total',
                                             'm_g','m_r','m_i','m_z','U','B','V','R','I'])
     df['g_r'] = df['m_g'] - df['m_r']
     return df
@@ -149,6 +154,7 @@ def run(args):
         av_arr = np.linspace(args.av_lo,args.av_hi,args.n_av)
     elif args.av_step_type == 'log':
         av_arr = np.logspace(args.av_lo,args.av_hi,args.n_av)
+
     for z in z_array:
         distance_factor = 10.0**(0.4*cosmo.distmod(z).value)
         worker_args = []
@@ -166,7 +172,7 @@ def run(args):
         pool.close()
         pool.join()
         results_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
-            key='main')
+            key='%.2f'%z)
     print("Done!")
 if __name__=="__main__":
     args = parser()
