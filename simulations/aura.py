@@ -69,9 +69,9 @@ class Sim(SN_Model):
                 if 'main' in keys:
                     store.remove('main')
                 ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
-        for tf in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),1)]):   # Iterate through the SFHs for galaxies of different final masses
+        for z in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),1)]):   # Iterate through the SFHs for galaxies of different final masses
             with pd.HDFStore(fn,'r') as store:
-                df = store['/'+str(tf)]
+                df = store['/'+str(z)]
                 full_df = full_df.append(df)
         return full_df
 
