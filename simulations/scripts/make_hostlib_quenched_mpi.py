@@ -9,6 +9,8 @@ import argparse
 from astropy.cosmology import FlatLambdaCDM
 import warnings
 from astropy.utils.exceptions import AstropyWarning
+from tables import NaturalNameWarning
+warnings.filterwarnings('ignore', category=NaturalNameWarning)
 
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
