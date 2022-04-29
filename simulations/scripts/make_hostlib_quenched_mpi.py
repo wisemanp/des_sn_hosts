@@ -151,7 +151,7 @@ def run(args):
         s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/templates/',neb=args.neb)
 
         neb=args.neb
-    store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_quenched_all.h5','r')
+    store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/tests/SFHs_alt_0.5_quenched_all.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
 
     #z_array = [float(z) for z in args.z.split(',')]
