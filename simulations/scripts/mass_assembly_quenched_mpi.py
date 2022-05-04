@@ -11,8 +11,6 @@ from tqdm import tqdm
 import argparse
 import yaml
 from des_sn_hosts.utils.utils import MyPool
-
-
 def phi_t(t,tp,alpha,s):
     '''Functional form of the delay time distribution'''
     return (t/tp)**alpha / ((t/tp)**(alpha-s)+1)
@@ -44,7 +42,7 @@ def psi_Mz_alt(M,z):
 def logMQ_z_alt_init(z):
 
     #print ("Quenching masses: \n",10.077 + 0.636*z)
-    return (13.577 + 0.636*z) * (z<=2) + (13.577 + 0.636*2) * (z>2)
+    return 12.6
 
 
 def pQ_Mz_alt_init(M,z):
@@ -55,11 +53,11 @@ def pQ_Mz_alt_init(M,z):
 def logMQ_z_alt(z):
 
     #print ("Quenching masses: \n",10.077 + 0.636*z)
-    return (10.077 + 0.636*z) * (z<=2) + (10.077 + 0.636*2) * (z>2)
-def pQ_Mz_alt(M,z,Mq):
+    return (10.077 + 0.636*z) #* (z<=2) + (10.077 + 0.636*2) * (z>2)
+def pQ_Mz_alt(M,z):
 
     #print("Quenching function: \n",0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.5)))
-    return (1-erf((np.log10(M)-(np.log10(Mq)-0.85))/0.55)) #0.5*
+    return 0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/0.9)) #0.5*
 
 def draw_pQ(M,z):
     p_arr = [False,True]
@@ -70,9 +68,18 @@ def draw_pQ(M,z):
     #print(z,np.log10(M),pq,isq)
     return isq
 
+def draw_pQ_alt(M,z,f):
+    p_arr = [False,True]
+
+    pq = np.max([np.min([1,pQ_Mz_alt(M,z)+f]),pmin_z(z)])
+
+    isq = np.random.choice(p_arr,p=[pq,1-pq])
+    #print(z,np.log10(M),pq,isq)
+    return isq
+
 
 def pmin_z(z):
-    return 1-((z-10)/10)**2
+    return np.max([0.05,(1+((z-10)/10))/2])
 
 def pQ_Mz_ft(M,z,isq,mqs):
     pq = []
@@ -110,7 +117,8 @@ def pQ_Mz_ft2(M,z,isq):
             pq.append(pmin_z(z))
             isqs.append(True)
         else:
-            new_isq = draw_pQ(m,z)
+            current_isq_frac = np.sum(isq[:counter+1])/(counter+1)
+            new_isq = draw_pQ_alt(m,z,current_isq_frac)
             if new_isq:
                 pq.append(pmin_z(z))
                 isqs.append(True)
@@ -125,9 +133,9 @@ def pQ_Mz_ft2(M,z,isq):
 def fml_t(t):
     return 0.046*np.log((t/0.276)+1)
 
-def sfr_Mz_alt(M,z,isq,mqs):
-    isqs,pqs,mqs = pQ_Mz_ft(M,z,isq,mqs)
-    return pqs * psi_Mz_alt(M,z), isqs,mqs
+def sfr_Mz_alt(M,z,isq):
+    isqs,pqs = pQ_Mz_ft2(M,z,isq)
+    return pqs * psi_Mz_alt(M,z), isqs
 
 
 def parser():
@@ -154,7 +162,7 @@ def script_worker(worker_args):
     is_quenched = [False for _ in range(N)]
     ts = []
     zs = []
-    mqs = [0 for _ in range(N)]
+
     for counter,age in enumerate(tqdm(ages)):
         t = tf-age
         ts.append(t)
@@ -165,7 +173,7 @@ def script_worker(worker_args):
             z_t = 0
         zs.append(z_t)
         #print("current redshift: %.2f"%z_t)
-        m_created, is_quenched,mqs = sfr_Mz_alt(m,z_t,is_quenched,mqs)
+        m_created, is_quenched = sfr_Mz_alt(m,z_t,is_quenched)
         m_created = np.array(m_created)*dt*1E+6
         [m_formed[n].append(m_created[n]) for n in range(N)]
         #print("Mass formed in the last %3f Myr: %2g Msun"%(dt,m_created))
