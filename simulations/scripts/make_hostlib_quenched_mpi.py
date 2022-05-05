@@ -50,7 +50,7 @@ def parser():
 
 def sed_worker(worker_args):
     sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array,counter= [worker_args[i] for i in range(8)]
-
+    print('Starting %i'%counter)
     try:
         results = []
         i = np.random.randint(0,len(sfh_df.index.unique()))
@@ -114,9 +114,10 @@ def sed_worker(worker_args):
 
     except:
         return
-
+    print('Saving %i'%counter)
     df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.2f_%i.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta,z,tf),
         key='main')
+    print('Returning %i'%counter)
     return
 
 
@@ -178,8 +179,8 @@ def run(args):
                 worker_args.append([sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array,counter])
         pool_size = 16
         pool = MyPool(processes=pool_size)
-
-        list(tqdm(pool.imap_unordered(sed_worker,worker_args),total=len(worker_args)))
+        print('Sending %i jobs'%len(worker_args))
+        pool.imap_unordered(sed_worker,worker_args)
 
         pool.close()
         pool.join()
