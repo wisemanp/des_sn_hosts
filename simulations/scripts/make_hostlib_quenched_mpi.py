@@ -51,10 +51,11 @@ def parser():
 def sed_worker(worker_args):
     sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array,counter= [worker_args[i] for i in range(8)]
 
-    results = []
-    i = np.random.randint(0,len(sfh_df.index.unique()))
-    sfh_iter_df = sfh_df.loc[i]
     try:
+        results = []
+        i = np.random.randint(0,len(sfh_df.index.unique()))
+        sfh_iter_df = sfh_df.loc[i]
+        
         mtot=sfh_iter_df['m_tot'].iloc[-1]
         age = sfh_iter_df['age'].iloc[-1]
         #print('Mass: ',np.log10(mtot),'age: ',age)
