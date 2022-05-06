@@ -269,6 +269,7 @@ class Sim(SN_Model):
 
 
         args['host_Av'] = self.host_Av_func(args,self.config['Host_Av_model']['params'])
+        print(args['host_Av'])
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
         gals_df = new_zdf.loc[m_av_samples_inds]
         args['U-R'] = gals_df['U'].values - gals_df['R'].values #gal_df['U_R'].values
