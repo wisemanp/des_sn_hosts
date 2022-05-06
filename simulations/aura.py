@@ -217,14 +217,14 @@ class Sim(SN_Model):
                         j =np.random.randint(0,len(sub_gb))
                         split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
                         split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
-                        ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-3]+'_%.1f_'%tf+'.dat'
+                        ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f_'%tf+'_combined.dat'
                         new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0],'SN_ages',ext)
                         sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
                     else:
                         tf = sub_gb['t_f']
                         split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
                         split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
-                        ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-3]+'_%.1f'%tf+'.dat'
+                        ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                         new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0],'SN_ages',ext)
 
                         sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
