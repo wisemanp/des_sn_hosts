@@ -83,7 +83,12 @@ class Sim(SN_Model):
     def _load_flux_df(self,fn):
 
         df = pd.read_hdf(fn)
-        return full_df
+        for col in df.columns:
+            try:
+                df[col]=df[col].astype(float)
+            except:
+                print(col)
+        return df
 
     def _calculate_absolute_rates(self):
         '''For each simulated galaxy, we calculate the expected rate of SNe Ia by multplying it with the stellar mass density at that stellar mass
