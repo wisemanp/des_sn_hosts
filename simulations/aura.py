@@ -58,8 +58,8 @@ class Sim(SN_Model):
     def _get_config(self,conf_path):
         with open(conf_path,'r') as f:
             return yload(f)
-    def _load_flux_df(self,fn):
-
+    def _load_flux_df_old(self,fn):
+        '''Deprecated'''
         with pd.HDFStore(fn) as store:
             keys=store.keys()
             if 'main' in keys and len(keys)==1:
@@ -78,6 +78,11 @@ class Sim(SN_Model):
                 full_df[col]=full_df[col].astype(float)
             except:
                 print(col)
+        return full_df
+
+    def _load_flux_df(self,fn):
+
+        df = pd.read_hdf(fn)
         return full_df
 
     def _calculate_absolute_rates(self):
