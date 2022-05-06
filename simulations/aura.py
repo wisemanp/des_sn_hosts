@@ -253,6 +253,7 @@ class Sim(SN_Model):
         sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples]
         gals_df['SN_age'] = np.array(sn_ages)
         args['Av_grid'] = new_zdf.Av.unique()
+        print(args['Av_grid'])
         args['mass'] = gals_df.mass.values
         args['ssfr'] = gals_df.ssfr.values
         args['sfr'] = args['mass']*args['ssfr']
