@@ -28,6 +28,8 @@ age_grid = np.arange(0,13.7,0.0005)
 age_grid_index = ['%.4f'%a for a in age_grid]
 #f,(axes)=plt.subplots(len(sim.multi_df.z.unique()),figsize=(16,25))
 #axes = itertools.cycle(axes)
+print('Doing these redshifts: ')
+print(sim.multi_df.z.unique())
 for z in tqdm(sim.multi_df.z.unique()):
     print(z)
 
