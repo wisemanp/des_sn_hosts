@@ -210,15 +210,10 @@ class Sim(SN_Model):
             if len(g)>0:
                 min_av = g.Av.astype(float).min()
                 g_Av_0 =  g.loc[idx[:, '%.5f'%min_av, :]]
-
                 for k in g_Av_0.index.unique():
                     sub_gb = g_Av_0.loc[k]
-                    #print(sub_gb)
-
                     if type(sub_gb)==pd.DataFrame:
                         tf = sub_gb['t_f'].iloc[0]
-
-
                         j =np.random.randint(0,len(sub_gb))
                         split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
                         split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
@@ -231,13 +226,8 @@ class Sim(SN_Model):
                         split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
                         ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                         new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0],'SN_ages',ext)
-
                         sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
-
-
                     age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
-
-
                     age_df.loc[age_inds,'%.2f'%(float(k))] = sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values)
                 age_df.fillna(0,inplace=True)
                 for av in g.Av.unique():
