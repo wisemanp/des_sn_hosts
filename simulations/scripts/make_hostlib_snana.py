@@ -23,7 +23,7 @@ def interpolate_zdf(zdf,marr):
     gb.dropna(subset=['mass'],inplace=True)
     gb.reset_index(drop=True,inplace=True)
     return gb
-save_dir = os.path.join(sim.root_dir,'sims/hostlibs/%s'%sys.argv[2])
+savedir = os.path.join(sim.root_dir,'sims/hostlibs/%s'%sys.argv[2])
 os.mkdir(savedir)
 age_grid = np.arange(0,13.7,0.0005)
 age_grid_index = ['%.4f'%a for a in age_grid]
