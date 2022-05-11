@@ -75,55 +75,47 @@ for z in tqdm(sim.multi_df.z.unique()):
     new_zdf['SN_age_dist'] = [np.zeros(len(age_grid)) for i in range(len(new_zdf))]
 
     age_dists = []
-
-    #print(new_zdf.tail(20))
     for n,g in z_df.groupby(pd.cut(z_df['mass'],bins=marr)):
         age_df = pd.DataFrame(index=age_grid_index)
         if len(g)>0:
-            g_Av_0 =  g.loc[idx[:, '0.00000', :]]
-            #print(g_Av_0.index)
-            for k in g_Av_0.index:
+            min_av = g.Av.astype(float).min()
+            g_Av_0 =  g.loc[idx[:, '%.5f'%min_av, :]]
+            for k in g_Av_0.index.unique():
                 sub_gb = g_Av_0.loc[k]
+                if type(sub_gb)==pd.DataFrame:
+                    tf = sub_gb['t_f'].iloc[0]
+
+
+                    j =np.random.randint(0,len(sub_gb))
+                    split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
+                    split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
+                    ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                    new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0],'SN_ages',ext)
+                    sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
+                else:
+                    tf = sub_gb['t_f']
+                    split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
+                    split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
+                    ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                    new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0],'SN_ages',ext)
+                    sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
                 age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
-                #print(age_inds)
-                age_df.loc[age_inds,'%.2f'%(float(k))] =  sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values)#sub_gb['SN_age_dist'].values
-                #print(np.log10(float(k)))
-                #if float(k)<1E+9:
-                    #print('plotting')
-                    #print(sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values))
-                    #print(len(sub_gb['SN_age_dist']))
-                    #print(sub_gb['SN_age_dist'])
-                #    ax.plot(sub_gb['SN_ages'], sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values),c='c',alpha=1)
-                #elif 1E+9<float(k)<1E+10:
-                    #print('plotting')
-                    #print(sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values))
-                    #print(len(sub_gb['SN_age_dist']))
-                    #print(sub_gb['SN_age_dist'])
-                #    ax.plot(sub_gb['SN_ages'], sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values),c='r',alpha=1)
+                age_df.loc[age_inds,'%.2f'%(float(k))] = sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values)
             age_df.fillna(0,inplace=True)
-            #print('this many avs',len(g.Av.unique()),g.Av.unique())
             for av in g.Av.unique():
-                #print(age_df.iloc[100:200])
-                #new_zdf.loc[('%.2f'%g['mass'].mean(),'%.5f'%av),'SN_ages'] = list(age_grid)#[pd.Series(age_grid,dtype='object')]
-                #print(new_zdf.loc[('%.2f'%g['mass'].mean(),'%.5f'%av),'SN_age_dist'])
-                #print(np.nanmean(age_df,axis=1),np.max(np.nanmean(age_df,axis=1)))
                 age_dists.append(np.nanmean(age_df,axis=1))
 
         else:
 
             pass
-                #new_zdf.loc[('%.2f'%g['mass'].mean(),'%.5f'%av),'SN_age_dist'] = np.nanmean(age_df,axis=1)
-        #print(new_zdf.loc[('%.2f'%g['mass'].mean(),'%.5f'%av),'SN_age_dist'])
-    #print(np.max(m_rates_float))
+
     new_zdf.index.names = ['mass_index','Av_index']
     new_zdf.sort_values(by='mass',inplace=True)
     new_zdf['SN_age_dist']=age_dists
     # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
 
     gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total']]
-    #args['sfr'] = z_df.loc[m_av0_samples].mass.values*z_df.loc[m_av0_samples].ssfr.values
-    #args['mean_ages'] = z_df.loc[m_av0_samples].mean_age.values
-    #ax=next(axes)
+
     sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples] #/new_zdf.loc[i,'SN_age_dist'].sum()
     gals_df['SN_age'] = np.array(sn_ages)
     hostlib_df=hostlib_df.append(gals_df)
