@@ -24,7 +24,7 @@ def interpolate_zdf(zdf,marr):
     gb.reset_index(drop=True,inplace=True)
     return gb
 save_dir = os.path.join(sim.root_dir,'sims/hostlibs/%s'%sys.argv[2])
-os.path.mkdir(savedir)
+os.mkdir(savedir)
 age_grid = np.arange(0,13.7,0.0005)
 age_grid_index = ['%.4f'%a for a in age_grid]
 #f,(axes)=plt.subplots(len(sim.multi_df.z.unique()),figsize=(16,25))
