@@ -8,12 +8,10 @@ import os
 sns.set_color_codes(palette='colorblind')
 import itertools
 from des_sn_hosts.simulations import aura
-<<<<<<< HEAD
-sim = aura.Sim('/home/wiseman/code/des_sn_hosts/simulations/config/for_hostlib_new_lowz.yaml')
-=======
+
 import sys
 sim = aura.Sim(sys.argv[1])
->>>>>>> 41eb033605626de1023b571282fe6995e3e2a586
+
 n_samples=100000
 hostlib_df = pd.DataFrame()
 palette = itertools.cycle(sns.color_palette('viridis',n_colors=len(sim.multi_df.z.unique())))
