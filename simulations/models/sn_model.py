@@ -1,7 +1,7 @@
 import numpy as np
 from .dust_models import age_rv_step, mass_rv_step, age_rv_linear, mass_rv_linear, E_exp, E_exp_mass, E_exp_age, random_rv, E_calc, E_from_host_random, E_two_component
 from .colour_models import c_int_asymm, c_int_gauss, c_int_plus_dust
-from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix, x1_int_linear_gauss, x1_int_linear_gauss_plus_delta,x1_linear_plus_old
+from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix, x1_int_linear_gauss, x1_int_linear_gauss_plus_delta,x1_linear_plus_old,x1_linear_plus_young
 from .host_dust import choose_Av_SN_E_rv_fix, choose_Av_custom, choose_Av_SN_E_Rv_norm, choose_Av_SN_E_Rv_step
 from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta,tripp_rv_two_beta_popns_age2,tripp_rv_age_alpha_popn_beta
 class SN_Model():
