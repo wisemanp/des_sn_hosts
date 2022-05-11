@@ -42,11 +42,12 @@ x1_model:
   model: x1_twogauss_age
   params:
     mu_young: 0.25
-    sig_young: 0.55
-    mu_old: -1.1
-    sig_old: 0.6
-    age_step_loc: 0.75
+    sig_young: 0.61
+    mu_old: -1.22
+    sig_old: 0.5
+    age_step_loc: 0.5
     old_prob: 0.75
+
 mB_model:
   model: tripp_rv_popn_alpha_beta
   params:

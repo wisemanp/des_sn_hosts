@@ -3,14 +3,13 @@ config:
   root_dir: $AURA_DIR
   efficiency_dir: /media/data3/wiseman/des/desdtd/
 SN_rv_model:
-  model: age_rv_linear
+  model: age_rv_step
   params:
-    rv_low: 3.5
-    rv_high: 1.5
-    rv_sig_low: 1
-    rv_sig_high: 1
-    age_fix_low: 0.1
-    age_fix_high: 10
+    rv_young: 3.75
+    rv_old: 1.5
+    rv_sig_young: 1.0
+    rv_sig_old: 1.0
+    age_split: 3
     rv_min: 1.2
 Host_Av_model:
   model: choose_Av_SN_E_Rv_step
@@ -42,27 +41,28 @@ x1_model:
   model: x1_twogauss_age
   params:
     mu_young: 0.25
-    sig_young: 0.55
-    mu_old: -1.1
+    sig_young: 0.6
+    mu_old: -1.2
     sig_old: 0.6
     age_step_loc: 0.75
     old_prob: 0.75
+
+
 mB_model:
-  model: tripp_rv_two_beta_popns_age2
+  model: tripp_rv_popn_alpha_beta
   params:
-    alpha: 0.2
-    mu_beta_young: 2.0
-    sig_beta_young: 0.35
-    mu_beta_old: 2.0
-    sig_beta_old: 0.35
+    mu_alpha: 0.21
+    sig_alpha: 0.0001
+    mu_beta: 2.0
+    sig_beta: 0.35
     M0: -19.375
     sigma_int: 0.
     mass_step:
-      mag: 0
-      loc: 1
+      mag: 0.0
+      loc: 10
     age_step:
-      mag: 0.15
-      loc: 0.8
+      mag: 0.0
+      loc: 0.6
 
 mu_res_fitter:
   fitter: fit_mu_res_nostep

@@ -3,15 +3,14 @@ config:
   root_dir: $AURA_DIR
   efficiency_dir: /media/data3/wiseman/des/desdtd/
 SN_rv_model:
-  model: age_rv_linear
+  model: mass_rv_step
   params:
-    rv_low: 3.5
-    rv_high: 1.5
-    rv_sig_low: 1
-    rv_sig_high: 1
-    age_fix_low: 0.1
-    age_fix_high: 10
-    rv_min: 1.2
+    rv_low: 3.2323901
+    rv_high: 1.65167972
+    rv_sig_low: 0.95962879
+    rv_sig_high: 1.27678934
+    mass_split: 10
+    rv_min: 0.5
 Host_Av_model:
   model: choose_Av_SN_E_Rv_step
   params:
@@ -23,46 +22,47 @@ Host_Av_model:
     mass_split: 10
 
 SN_E_model:
-  model: E_exp_age
+  model: E_exp_mass
   params:
-    Tau_low: 0.10
-    Tau_high: 0.14
-    age_split: 3
+    Tau_low: 0.13770023
+    Tau_high: 0.13986979
+    mass_split: 3
 
 SN_colour_model:
   model: c_int_plus_dust
   params:
     c_int_type: norm
     c_int_params:
-      mu: -0.075
-      sig: 0.042
+      mu: -0.05090641
+      sig: 0.05282635
       e_noise: 0.03
 
 x1_model:
   model: x1_twogauss_age
   params:
     mu_young: 0.25
-    sig_young: 0.55
-    mu_old: -1.1
+    sig_young: 0.6
+    mu_old: -1.2
     sig_old: 0.6
     age_step_loc: 0.75
     old_prob: 0.75
+
+
 mB_model:
-  model: tripp_rv_two_beta_popns_age2
+  model: tripp_rv_popn_alpha_beta
   params:
-    alpha: 0.2
-    mu_beta_young: 2.0
-    sig_beta_young: 0.35
-    mu_beta_old: 2.0
-    sig_beta_old: 0.35
+    mu_alpha: 0.21
+    sig_alpha: 0.0001
+    mu_beta: 1.51045692
+    sig_beta: 0.47675452
     M0: -19.375
     sigma_int: 0.
     mass_step:
-      mag: 0
-      loc: 1
+      mag: 0.0
+      loc: 10
     age_step:
-      mag: 0.15
-      loc: 0.8
+      mag: 0.0
+      loc: 0.6
 
 mu_res_fitter:
   fitter: fit_mu_res_nostep

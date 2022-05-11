@@ -8,7 +8,7 @@ import os
 sns.set_color_codes(palette='colorblind')
 import itertools
 from des_sn_hosts.simulations import aura
-sim = aura.Sim('/home/wiseman/code/des_sn_hosts/simulations/config/for_hostlib_new.yaml')
+sim = aura.Sim('/home/wiseman/code/des_sn_hosts/simulations/config/for_hostlib_new_lowz.yaml')
 n_samples=100000
 hostlib_df = pd.DataFrame()
 palette = itertools.cycle(sns.color_palette('viridis',n_colors=len(sim.multi_df.z.unique())))
@@ -160,9 +160,6 @@ fields = np.random.choice(range(10),size=len(hostlib_df))
 
 
 radecs = np.random.uniform(field_centres[fields]-1.5,field_centres[fields]+1.5)
-
-f,ax=plt.subplots()
-ax.scatter(radecs[:,0],radecs[:,1])
 
 hostlib_df['RA'] = radecs[:,0]
 hostlib_df['DEC'] = radecs[:,1]
