@@ -13,7 +13,6 @@ import sys
 sim = aura.Sim(sys.argv[1])
 
 n_samples=100000
-hostlib_df = pd.DataFrame()
 palette = itertools.cycle(sns.color_palette('viridis',n_colors=len(sim.multi_df.z.unique())))
 from tqdm import tqdm
 idx = pd.IndexSlice
@@ -24,12 +23,15 @@ def interpolate_zdf(zdf,marr):
     gb.dropna(subset=['mass'],inplace=True)
     gb.reset_index(drop=True,inplace=True)
     return gb
+save_dir = os.path.join(sim.root_dir,'sims/hostlibs/%s'%sys.argv[2])
+os.path.mkdir(savedir)
 age_grid = np.arange(0,13.7,0.0005)
 age_grid_index = ['%.4f'%a for a in age_grid]
 #f,(axes)=plt.subplots(len(sim.multi_df.z.unique()),figsize=(16,25))
 #axes = itertools.cycle(axes)
 print('Doing these redshifts: ')
 print(sim.multi_df.z.unique())
+
 for z in tqdm(sim.multi_df.z.unique()):
     print(z)
 
@@ -94,14 +96,20 @@ for z in tqdm(sim.multi_df.z.unique()):
                     j =np.random.randint(0,len(sub_gb))
                     split_z = os.path.split(sim.config['hostlib_fn'])[1].split('z')
                     split_rv = os.path.split(sim.config['hostlib_fn'])[1].split('rv')
-                    ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                    if z <0.14:
+                        ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][:12]+'%.1f'%tf+'_combined.dat'
+                    else:
+                        ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                     new_fn = os.path.join(os.path.split(sim.config['hostlib_fn'])[0],'SN_ages',ext)
                     sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
                 else:
                     tf = sub_gb['t_f']
                     split_z = os.path.split(sim.config['hostlib_fn'])[1].split('z')
                     split_rv = os.path.split(sim.config['hostlib_fn'])[1].split('rv')
-                    ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                    if z <0.14:
+                        ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][:12]+'%.1f'%tf+'_combined.dat'
+                    else:
+                        ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                     new_fn = os.path.join(os.path.split(sim.config['hostlib_fn'])[0],'SN_ages',ext)
                     sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
                 age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
@@ -123,7 +131,15 @@ for z in tqdm(sim.multi_df.z.unique()):
 
     sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples] #/new_zdf.loc[i,'SN_age_dist'].sum()
     gals_df['SN_age'] = np.array(sn_ages)
-    hostlib_df=hostlib_df.append(gals_df)
+
+    gals_df.to_hdf(os.path.join(savedir,'%s.h5'%sys.argv[2]),key='%.5f'%z,index=False)
+
+hostlib_df = pd.DataFrame()
+with pd.HDFStore(os.path.join(savedir,'%s.h5'%sys.argv[2])) as store:
+
+    for z in tqdm(sim.multi_df.z.unique()):
+
+        hostlib_df=hostlib_df.append(store['/%.5f'%z])
 hostlib_df['a0_Sersic'] = ((np.array([np.max([0.185,np.random.normal(-0.18*m+5,0.3)]) for m in hostlib_df['m_r']]))*(hostlib_df['m_r']>17.5) )+ ((np.array([np.max([1,np.random.normal(3.5,2)]) for i in hostlib_df['m_r']])*(hostlib_df['m_r']<=17.5)))
 
 hostlib_df['b0_Sersic'] = ((np.array([np.max([0.12,np.random.normal(-0.14*m+3.8,0.15)]) for m in hostlib_df['m_r']]))*(hostlib_df['m_r']>17.5) )+ ((np.array([np.max([1,np.random.normal(2.8,1)]) for i in hostlib_df['m_r']])*(hostlib_df['m_r']<=17.5)))
@@ -168,5 +184,5 @@ hostlib_df=hostlib_df[['VARNAMES:','GALID', 'RA','DEC','ZTRUE', 'g_obs', 'r_obs'
             'LOGMASS','LOGMASS_ERR','LOG_SFR', 'LOG_SFR_ERR', 'LOG_sSFR','obs_gr',
        'U', 'B', 'V', 'R', 'I', 'U_R', 'mean_age', 'Av', 'pred_rate_total',
        'SN_age',     ]]
-hostlib_df.to_hdf(os.path.join(sim.root_dir,'sims/hostlibs/%s.h5'%sys.argv[2]),key='main',index=False)
-hostlib_df.to_csv(os.path.join(sim.root_dir,'sims/hostlibs/%s.csv'%sys.argv[2]),)
+hostlib_df.to_hdf(os.path.join(savedir,'%s_combined.h5'%sys.argv[2]),key='main',index=False)
+hostlib_df.to_csv(os.path.join(savedir,'%s_combined.csv'%sys.argv[2]),)
