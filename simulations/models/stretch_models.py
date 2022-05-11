@@ -124,7 +124,7 @@ class x1_linear_plus_young():
 
     '''
     def __init__(self,slope,width,offset,mu_young,sig_young,age_step_loc,ages,young_prob=0.5):
-        self._set_norm_old(mu_old,sig_old)
+        self._set_norm_young(mu_young,sig_young)
         self.age_step_loc = age_step_loc
         self.young_prob = young_prob
         self.slope= slope
