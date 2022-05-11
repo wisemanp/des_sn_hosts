@@ -8,7 +8,8 @@ import os
 sns.set_color_codes(palette='colorblind')
 import itertools
 from des_sn_hosts.simulations import aura
-sim = aura.Sim('/home/wiseman/code/des_sn_hosts/simulations/config/for_hostlib_new.yaml')
+import sys
+sim = aura.Sim(sys.argv[1])
 n_samples=100000
 hostlib_df = pd.DataFrame()
 palette = itertools.cycle(sns.color_palette('viridis',n_colors=len(sim.multi_df.z.unique())))
@@ -166,5 +167,5 @@ hostlib_df=hostlib_df[['VARNAMES:','GALID', 'RA','DEC','ZTRUE', 'g_obs', 'r_obs'
             'LOGMASS','LOGMASS_ERR','LOG_SFR', 'LOG_SFR_ERR', 'LOG_sSFR','obs_gr',
        'U', 'B', 'V', 'R', 'I', 'U_R', 'mean_age', 'Av', 'pred_rate_total',
        'SN_age',     ]]
-hostlib_df.to_hdf(os.path.join(sim.root_dir,'sims/hostlibs/Phil_Hostlib.h5'),key='main',index=False)
-hostlib_df.to_csv(os.path.join(sim.root_dir,'sims/hostlibs/Phil_Hostlib.csv'),)
+hostlib_df.to_hdf(os.path.join(sim.root_dir,'sims/hostlibs/%s.h5'%sys.argv[2]),key='main',index=False)
+hostlib_df.to_csv(os.path.join(sim.root_dir,'sims/hostlibs/%s.csv'%sys.argv[2]),)
