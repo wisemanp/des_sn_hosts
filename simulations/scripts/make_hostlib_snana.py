@@ -111,7 +111,7 @@ for z in tqdm(sim.multi_df.z.unique()):
                         split_z = os.path.split(sim.config['hostlib_fn'])[1].split('z')
                         split_rv = os.path.split(sim.config['hostlib_fn'])[1].split('rv')
                         if z <0.14:
-                            ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][-:12]+'_%.1f'%tf+'_combined.dat'
+                            ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                         else:
                             ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                         new_fn = os.path.join(os.path.split(sim.config['hostlib_fn'])[0],'SN_ages',ext)
