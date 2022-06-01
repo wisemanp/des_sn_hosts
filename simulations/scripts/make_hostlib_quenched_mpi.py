@@ -92,7 +92,7 @@ def sed_worker(worker_args):
         arr = np.zeros((len(ages),2))
         arr[:,0] = ages
         arr[:,1] = SN_age_dist
-        np.savetxt('/media/data3/wiseman/des/AURA/sims/hostlibs/SN_ages/all_model_params_noquench_%s_z_%.3f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.1f.dat'%(args.templates,z,args.logU,args.time_res,args.beta,tf),arr)
+        np.savetxt('/media/data3/wiseman/des/AURA/sims/hostlibs/SN_ages/all_model_params_quench_%s_z_%.3f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.1f.dat'%(args.templates,z,args.logU,args.time_res,args.beta,tf),arr)
         for Av in av_arr:
             Rv = np.min([np.max([2.0,np.random.normal(mu_Rv,0.5)]),6.0])
             delta='None'
@@ -115,7 +115,7 @@ def sed_worker(worker_args):
     except:
         return
     print('Saving %i'%counter)
-    df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_noquench_%s_z%.3f_%.3f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.3f_%i.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta,z,tf),
+    df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.3f_%.3f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.3f_%i.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta,z,tf),
         key='main')
     print('Returning %i'%counter)
     return
