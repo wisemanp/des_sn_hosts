@@ -497,11 +497,11 @@ def interpolate_SFH(sfh,mtot,t_arr):
     sfh['stellar_age'] = sfh.age.values[::-1]
     gb =sfh.groupby(pd.cut(sfh['stellar_age'],bins=np.concatenate([[0],10**(t_arr)/(1E+6)]))).agg(np.sum)
     gb.fillna(0,inplace=True)
-    return gb['final_age_weights'].values/mtot
+    return gb['m_formed'].values/mtot
 
 
 def interpolate_SFH_pegase(sfh, ages, mtot,marr):
     sfh['stellar_age'] = sfh.age.values[::-1]
     gb = sfh.groupby(pd.cut(sfh['stellar_age'], bins=np.concatenate([ages, [20001]]))).agg(np.sum)
     gb.fillna(0,inplace=True)
-    return gb['final_age_weights'].values / (mtot)
+    return gb['m_formed'].values / (mtot)
