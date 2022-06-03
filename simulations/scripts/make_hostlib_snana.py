@@ -12,7 +12,7 @@ from des_sn_hosts.simulations import aura
 import sys
 sim = aura.Sim(sys.argv[1])
 
-n_samples=100000
+n_samples=10000
 palette = itertools.cycle(sns.color_palette('viridis',n_colors=len(sim.multi_df.z.unique())))
 from tqdm import tqdm
 idx = pd.IndexSlice
@@ -32,7 +32,7 @@ age_grid_index = ['%.4f'%a for a in age_grid]
 #axes = itertools.cycle(axes)
 print('Doing these redshifts: ')
 print(sim.multi_df.z.unique())
-with pd.HDFStore('/media/data3/wiseman/des/AURA/sims/hostlibs/Phil_Hostlib_Allz/Phil_Hostlib_Allz_nonquenched.h5') as store:
+with pd.HDFStore(os.path.join(savedir,'%s.h5'%sys.argv[2])) as store:
     store_keys = store.keys()
 for z in tqdm(sim.multi_df.z.unique()):
     print(z)
@@ -45,10 +45,12 @@ for z in tqdm(sim.multi_df.z.unique()):
 
         z_df['N_total'].replace(0., np.NaN, inplace=True)
         z_df.dropna(subset=['N_total'],inplace=True)
+
         #print('#########')
         #print(z)
         #print('N total min',z_df['N_total'].min())
         #print('Rate min',z_df['pred_rate_total'].min())
+       
         z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
 
         z_df['N_SN_int'] = z_df.loc[:,'N_SN_float'].astype(int)
@@ -63,6 +65,7 @@ for z in tqdm(sim.multi_df.z.unique()):
             av_df = interpolate_zdf(av_df,marr)
             resampled_df = resampled_df.append(av_df)
         #print(resampled_df.columns)
+        
         Av_str = resampled_df['Av'].apply(lambda x: '%.5f'%x)
         mass_str = resampled_df['mass'].apply(lambda x: '%.2f'%x)
         new_zdf = resampled_df.set_index([mass_str,Av_str])
@@ -102,9 +105,9 @@ for z in tqdm(sim.multi_df.z.unique()):
                         split_z = os.path.split(sim.config['hostlib_fn'])[1].split('z')
                         split_rv = os.path.split(sim.config['hostlib_fn'])[1].split('rv')
                         if z <0.14:
-                            ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                            ext = split_z[0]+'z_'+'%.5f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                         else:
-                            ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                            ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                         new_fn = os.path.join(os.path.split(sim.config['hostlib_fn'])[0],'SN_ages',ext)
                         sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
                     else:
@@ -112,9 +115,9 @@ for z in tqdm(sim.multi_df.z.unique()):
                         split_z = os.path.split(sim.config['hostlib_fn'])[1].split('z')
                         split_rv = os.path.split(sim.config['hostlib_fn'])[1].split('rv')
                         if z <0.14:
-                            ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                            ext = split_z[0]+'z_'+'%.5f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                         else:
-                            ext = split_z[0]+'z_'+'%.2f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                            ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                         new_fn = os.path.join(os.path.split(sim.config['hostlib_fn'])[0],'SN_ages',ext)
                         sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
                     age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]

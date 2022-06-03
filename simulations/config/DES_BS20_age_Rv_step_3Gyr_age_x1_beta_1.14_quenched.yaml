@@ -24,8 +24,8 @@ Host_Av_model:
 SN_E_model:
   model: E_exp_age
   params:
-    Tau_low: 0.13
-    Tau_high: 0.13
+    Tau_low: 0.12
+    Tau_high: 0.15
     age_split: 3
 
 SN_colour_model:

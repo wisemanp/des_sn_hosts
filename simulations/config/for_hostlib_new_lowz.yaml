@@ -1,6 +1,5 @@
 
-hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_BC03_z0.01_0.15_av0.00_1.00_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.14.h5
-
+hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_BC03_z0.0005_1.400_av0.00_1.50_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.14_combined.h5
 config:
   efficiency_dir: $AURA_DIR
   root_dir: $AURA_DIR
