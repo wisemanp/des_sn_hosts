@@ -80,10 +80,10 @@ def sim_worker(args):
     sim.config = c
     #n_samples_arr = sim._get_z_dist(des5yr['zHD'],n=cfg['n_samples'])
     zs = np.linspace(0,1,100)
-    zs_cubed = zs**1.3
+    zs_cubed = zs**2.5
     numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=cfg['n_samples'])
-    n_samples_arr = sim._get_z_dist(numbers,n=cfg['n_samples'],frac_low_z=0.)
-    zarr=[0.05,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.8]
+    zarr = np.arange(0.14,0.84,0.04)
+    n_samples_arr = sim._get_z_dist(numbers,n=cfg['n_samples'],frac_low_z=0.,zbins=zarr+0.02)
 
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'])):
         os.mkdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir']))
