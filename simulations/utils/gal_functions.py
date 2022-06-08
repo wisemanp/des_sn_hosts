@@ -26,22 +26,29 @@ def single_schechter(logM,logM_star,phi_star,alpha,):
                 np.exp(-10**(logM-logM_star)))
 
 zfourge = {
-    0.2: {'logM_star':10.78,'phi_star_1':-2.54,'alpha_1':-0.98,'phi_star_2':-4.29,'alpha_2':-1.9},
-    0.5: {'logM_star':10.7,'phi_star_1':-2.55,'alpha_1':-0.39,'phi_star_2':-3.15,'alpha_2':-1.53},
-    0.75: {'logM_star':10.66,'phi_star_1':-2.56,'alpha_1':-0.37,'phi_star_2':-3.49,'alpha_2':-1.62},
-    1: {'logM_star':10.54,'phi_star_1':-2.72,'alpha_1':0.3,'phi_star_2':-3.17,'alpha_2':-1.45},
+    0:{  #Star forming
+    0.2: {'logM_star':10.59,'phi_star_1':-2.67,'alpha_1':-1.08,'phi_star_2':-4.46,'alpha_2':-2.0},
+    0.5: {'logM_star':10.765,'phi_star_1':-2.97,'alpha_1':-0.97,'phi_star_2':-3.34,'alpha_2':-1.58},
+    0.75: {'logM_star':10.56,'phi_star_1':-2.81,'alpha_1':-0.46,'phi_star_2':-3.36,'alpha_2':-1.61},
+    1: {'logM_star':10.44,'phi_star_1':-2.98,'alpha_1':0.53,'phi_star_2':-3.12,'alpha_2':-1.44},
+    },
+    1:{  # Quench
+    0.2: {'logM_star':10.75,'phi_star_1':-2.76,'alpha_1':-0.47,'phi_star_2':-5.21,'alpha_2':-1.97},
+    0.5: {'logM_star':10.68,'phi_star_1':-2.67,'alpha_1':-0.10,'phi_star_2':-4.29,'alpha_2':-1.69},
+    0.75: {'logM_star':10.63,'phi_star_1':-2.81,'alpha_1':0.04,'phi_star_2':-4.40,'alpha_2':-1.51},
+    1: {'logM_star':10.63,'phi_star_1':-3.03,'alpha_1':0.11,'phi_star_2':-4.80,'alpha_2':-1.57},
+    }
 }
 
-def schechter(z,logM):
+def schechter(z,logM,SF):
     if z<0.5:
-
-        return double_schechter_T14(logM,**zfourge[0.2])
+        return double_schechter_T14(logM,**zfourge[SF][0.2])
     elif z>=0.5 and z<0.75:
-        return double_schechter_T14(logM,**zfourge[0.5])
+        return double_schechter_T14(logM,**zfourge[SF][0.5])
     elif z>=0.75 and z<1:
-        return double_schechter_T14(logM,**zfourge[0.75])
+        return double_schechter_T14(logM,**zfourge[SF][0.75])
     elif z>=1 and z<1.25:
-        return double_schechter_T14(logM,**zfourge[1])
+        return double_schechter_T14(logM,**zfourge[SF][1])
 
 def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
     import numpy.polynomial.polynomial as poly
