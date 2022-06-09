@@ -10,6 +10,7 @@ import numpy as np
 from tqdm import tqdm
 import argparse
 import yaml
+import glob
 from des_sn_hosts.utils.utils import MyPool
 def phi_t(t,tp,alpha,s):
     '''Functional form of the delay time distribution'''
@@ -207,7 +208,7 @@ def script_worker(worker_args):
 
     #print([np.log10(m_arr[n][-1]) for n in range(N)])
 
-    print("Saving to: ",os.path.join(save_dir,'SFHs_alt_%.1f_quenched_all.h5'%dt))
+    print("Saving to: ",os.path.join(save_dir,'SFHs_alt_%3.0f_%.1f_quenched_all.h5'%(tf,dt)))
     df = pd.DataFrame()
     #print(track)
 
