@@ -145,7 +145,7 @@ def parser():
     parser.add_argument('-ls','--late_step',help='Late Universe T_F step (Myr)',default=50, type=float)
     parser.add_argument('-ts','--tstart',help='Epoch to start the tracks (working backwards) (yr)',default = 0,type=float)
     parser.add_argument('-c','--config',help='Config filename',default='/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')
-    parser.add_argument('-n','--n',help='Number of iterations of each galaxy',default=100,type=float)
+    parser.add_argument('-n','--n',help='Number of iterations of each galaxy',default=100,type=int)
     parser.add_argument('-t','--test',help='Is this a test?',action='store_true')
     args = parser.parse_args()
     return args
