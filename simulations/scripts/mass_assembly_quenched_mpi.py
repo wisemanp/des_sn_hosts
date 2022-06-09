@@ -146,6 +146,7 @@ def parser():
     parser.add_argument('-ts','--tstart',help='Epoch to start the tracks (working backwards) (yr)',default = 0,type=float)
     parser.add_argument('-c','--config',help='Config filename',default='/home/wiseman/code/des_sn_hosts/config/config_rates.yaml')
     parser.add_argument('-n','--n',help='Number of iterations of each galaxy',default=100,type=float)
+    parser.add_argument('-t','--test',help='Is this a test?',action='store_true')
     args = parser.parse_args()
     return args
 
@@ -221,6 +222,10 @@ def script_worker(worker_args):
 def main(args):
     config=yaml.load(open(args.config))
     save_dir = config['rates_root']+'SFHs/'
+    if args.test:
+        save_dir=save_dir+'test/'
+    if not os.path.isdir(save_dir):
+        os.mkdir(save_dir)
     dt = args.dt
     N=args.n
     if args.tstart ==0:
