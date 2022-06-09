@@ -217,7 +217,7 @@ def script_worker(worker_args):
         new_df = pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot'],index=[n]*len(ages))
 
         df = df.append(new_df)
-    df.to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_quenched_all.h5'%dt),key='%3.0f'%tf)
+    df.to_hdf(os.path.join(save_dir,'SFHs_alt_%3.0f_%.1f_quenched_all.h5'%(tf,dt)),key='main')
 
 def main(args):
     config=yaml.load(open(args.config))
@@ -242,6 +242,10 @@ def main(args):
         pass
     pool.close()
     pool.join()
-
+    main_df =pd.DataFrame()
+    for fn in glob.glob(os.path.join(save_dir,'SFHs_alt_*_%.1f_quenched_all.h5'%dt)):
+        df=pd.read_hdf(fn)
+        tf = os.path.split(fn)[-1].split('_')[2]
+        df.to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_quenched_all.h5'%dt),key='%.3f'%tf)
 if __name__=="__main__":
     main(parser())
