@@ -136,7 +136,7 @@ def fml_t(t):
 
 def sfr_Mz_alt(M,z,isq):
     isqs,pqs = pQ_Mz_ft2(M,z,isq)
-    return pqs * psi_Mz_alt(M,z), isqs
+    return pqs * psi_Mz_alt(M,z) + np.random.choice([0,1],p=[0.95,0.05])*psi_Mz_alt(M,z), isqs
 
 
 def parser():
@@ -243,10 +243,10 @@ def main(args):
         pass
     pool.close()
     pool.join()
-    main_df =pd.DataFrame()
-    for fn in glob.glob(os.path.join(save_dir,'SFHs_alt_*_%.1f_quenched_all.h5'%dt)):
+    df =pd.DataFrame()
+    for fn in glob.glob(os.path.join(save_dir,'SFHs_alt_*_%.1f_quenched_all_bursts.h5'%dt)):
         df=pd.read_hdf(fn)
         tf = os.path.split(fn)[-1].split('_')[2]
-        df.to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_quenched_all.h5'%dt),key='%.3f'%tf)
+        df.to_hdf(os.path.join(save_dir,'SFHs_alt_%.1f_quenched_all_bursts.h5'%dt),key='%s'%tf)
 if __name__=="__main__":
     main(parser())
