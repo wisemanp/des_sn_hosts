@@ -54,7 +54,7 @@ def pQ_Mz_alt_init(M,z):
 def logMQ_z_alt(z):
 
     #print ("Quenching masses: \n",10.077 + 0.636*z)
-    return (10.577 + 0.636*z) * (z<=2) + (10.577 + 0.636*2) * (z>2)
+    return (10.377 + 0.636*z) * (z<=2) + (10.377 + 0.636*2) * (z>2)
 def pQ_Mz_alt(M,z):
 
     #print("Quenching function: \n",0.5*(1-erf((np.log10(M)-logMQ_z_alt(z))/1.5)))
@@ -80,7 +80,7 @@ def draw_pQ_alt(M,z,f):
 
 
 def pmin_z(z):
-    return np.max([0.05,(1+((z-10)/10))/2])
+    return np.max([0.03,(1+((z-10)/10))/2])
 
 def pQ_Mz_ft(M,z,isq,mqs):
     pq = []
@@ -136,7 +136,7 @@ def fml_t(t):
 
 def sfr_Mz_alt(M,z,isq):
     isqs,pqs = pQ_Mz_ft2(M,z,isq)
-    return pqs * psi_Mz_alt(M,z) + np.random.choice([0,1],p=[0.95,0.05])*psi_Mz_alt(M,z), isqs
+    return pqs * psi_Mz_alt(M,z) + np.random.choice([0,1],p=[0.98,0.02])*psi_Mz_alt(M,z), isqs
 
 
 def parser():
