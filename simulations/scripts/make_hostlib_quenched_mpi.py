@@ -180,7 +180,7 @@ def run(args):
         pool_size = 16
         pool = MyPool(processes=pool_size)
         print('Sending %i jobs'%len(worker_args))
-        pool.imap_unordered(sed_worker,worker_args)
+        results =pool.map_async(sed_worker,worker_args)
 
         pool.close()
         pool.join()
