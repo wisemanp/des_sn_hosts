@@ -208,7 +208,7 @@ def script_worker(worker_args):
 
     #print([np.log10(m_arr[n][-1]) for n in range(N)])
 
-    print("Saving to: ",os.path.join(save_dir,'SFHs_alt_%3.0f_%.1f_quenched_all.h5'%(tf,dt)))
+    print("Saving to: ",os.path.join(save_dir,'SFHs_alt_%3.0f_%.1f_quenched_all_bursts.h5'%(tf,dt)))
     df = pd.DataFrame()
     #print(track)
 
@@ -218,7 +218,7 @@ def script_worker(worker_args):
         new_df = pd.DataFrame(track,columns=['t','z','age','m_formed','final_age_weights','m_tot'],index=[n]*len(ages))
 
         df = df.append(new_df)
-    df.to_hdf(os.path.join(save_dir,'SFHs_alt_%3.0f_%.1f_quenched_all.h5'%(tf,dt)),key='main')
+    df.to_hdf(os.path.join(save_dir,'SFHs_alt_%3.0f_%.1f_quenched_all_bursts.h5'%(tf,dt)),key='main')
 
 def main(args):
     config=yaml.load(open(args.config))
