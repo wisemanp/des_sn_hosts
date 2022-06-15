@@ -100,8 +100,8 @@ class Sim(SN_Model):
         #alpha_2=-1.47
         #mstar = 10.66
         #self.flux_df['phi']= self.flux_df['mass'].apply(lambda x: double_schechter(np.log10(x),mstar,phi_star_1,alpha_1,phi_star_2,alpha_2))
-        self.flux_df['SF'] = (np.repeat([0],len(self.flux_df['ssfr']))) * (np.log10(self.flux_df['ssfr'].values)>-10.5) + (np.repeat([1],len(self.flux_df['ssfr']))) * \
-                        (np.log10(self.flux_df['ssfr'].values)<=-10.5)
+        self.flux_df['SF'] = (np.repeat([0],len(self.flux_df['ssfr']))) * (np.log10(self.flux_df['ssfr'].values)>-10.0) + (np.repeat([1],len(self.flux_df['ssfr']))) * \
+                        (np.log10(self.flux_df['ssfr'].values)<=-10.)
         self.flux_df['phi']= self.flux_df[['z','mass','SF']].apply(lambda x: schechter(x[0],np.log10(x[1]),x[2]),axis=1)
         self.flux_df['N_x1_lo'] = self.flux_df['pred_rate_x1_lo']*self.flux_df['phi']
         self.flux_df['N_x1_hi'] = self.flux_df['pred_rate_x1_hi']*self.flux_df['phi']
