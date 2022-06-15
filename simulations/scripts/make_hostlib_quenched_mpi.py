@@ -177,7 +177,7 @@ def run(args):
 
             if len(sfh_df)>0:
                 worker_args.append([sfh_df,args,av_arr,z,tf,s,bc03_logt_float_array,counter])
-        pool_size = 16
+        pool_size = 8
         pool = MyPool(processes=pool_size)
         print('Sending %i jobs'%len(worker_args))
         results =pool.map_async(sed_worker,worker_args)
