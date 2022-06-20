@@ -274,7 +274,7 @@ class Sim(SN_Model):
         args = self.colour_func(args,self.config['SN_colour_model']['params'])
         args = self.x1_func(args,self.config['x1_model']['params'])
         args['mB'],args['alpha_SN'],args['beta_SN'] = self.mb_func(args,self.config['mB_model']['params'])
-        args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.255*(args['mB'][i]) - 7.363)+0.025,np.max([0.003,0.003*(args['mB'][i]-20)]))])
+        args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.395*(args['mB'][i]-1.5) - 10.15)+0.025,np.max([0.003,0.003*(args['mB'][i]-20)]))])
                          for i in range(len(args['mB']))]
 
         args['c_err'] = [np.max([0.02,np.random.normal((0.78007*args['mB_err'][i] +0.00256),0.003)])
