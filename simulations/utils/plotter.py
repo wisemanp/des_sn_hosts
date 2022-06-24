@@ -248,7 +248,7 @@ def plot_x1s(sim,df,des5yr,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,si
 
     ax1.legend(fontsize=16)
 
-    ax1.set_ylabel(r'$\mathrm{SN~stretch}$~(x_1)$',size=20)
+    ax1.set_ylabel(r'$\mathrm{SN~stretch}~(x_1)$',size=20)
 
     ax1.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
     ax2.yaxis.set_minor_locator(ticker.MultipleLocator(0.25))
