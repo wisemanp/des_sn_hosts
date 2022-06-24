@@ -190,7 +190,7 @@ def plot_cs(sim,df,des5yr,):
 def plot_x1s(sim,df,des5yr,scatter_all=False,f=None,ax1=None,ax2=None,nplot=0,sim_colour='c',model_name='Sim',sim_linestyle='-',plot_des=True):
     plt.rcParams['text.usetex'] = True
     if f ==None:
-        f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+        f,(ax1,ax2)=plt.subplots(1,2,figsize=(12,4),sharey=True)
     df['logmass'] = np.log10(df['mass'])
     lcounter=0
     if plot_des:

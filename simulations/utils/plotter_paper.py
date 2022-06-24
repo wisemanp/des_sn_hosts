@@ -181,7 +181,7 @@ def plot_sample_hists(sim,des5yr,label_ext='',return_axes=False,z_cut=0.6):
 
     des5yr  = des5yr[des5yr['SPECZ']<z_cut]
     df = sim.sim_df
-    f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+    f,(axc,axx1)=plt.subplots(1,2,figsize=(12,4),sharey=True)
     df['detections'] =True
     bin_centers,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))
 
