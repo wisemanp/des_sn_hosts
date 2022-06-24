@@ -280,7 +280,7 @@ def plot_model_hists(sim,label_c,label_x1,colour,linestyle,bin_centers_list,f,ax
 def plot_sample_hists_multi(sims,labels,des5yr,plot_data_means = True):
     colours = itertools.cycle(sns.color_palette('colorblind',n_colors=len(sims)))
     linestyles = itertools.cycle(['-','--',':','-.'])
-    f,(axc,axx1)=plt.subplots(1,2,figsize=(12,6.5),sharey=True)
+    f,(axc,axx1)=plt.subplots(1,2,figsize=(12,4),sharey=True)
 
     bin_centers_c,means,stds = get_hist_errs(des5yr,'c',errext='ERR',n=100,bins=np.linspace(-0.3,0.3,20))
 
@@ -289,7 +289,7 @@ def plot_sample_hists_multi(sims,labels,des5yr,plot_data_means = True):
         axc.scatter(bin_centers_c,means,color='m',label='DES5YR',edgecolor='k',linewidth=0.8,zorder=6,s=50)
         axc.errorbar(bin_centers_c,means,yerr=stds,marker=None,linestyle='none',color='m',zorder=5)
     axc.set_ylabel('$N$ SNe',size=20)
-    axc.set_xlabel(r'SN colour $(c)$',size=20)
+    axc.set_xlabel(r'$\mathrm{SN~colour}~(c)$',size=22)
 
     axc.xaxis.set_major_locator(ticker.MultipleLocator(0.1))
     axc.xaxis.set_minor_locator(ticker.MultipleLocator(0.02))
@@ -304,7 +304,7 @@ def plot_sample_hists_multi(sims,labels,des5yr,plot_data_means = True):
     axx1.xaxis.set_major_locator(ticker.MultipleLocator(1))
     axx1.xaxis.set_minor_locator(ticker.MultipleLocator(0.2))
     axx1.yaxis.set_minor_locator(ticker.MultipleLocator(5))
-    axx1.set_xlabel(r'SN stretch $(x_1)$',size=20)
+    axx1.set_xlabel(r'$\mathrm{SN~stretch}~(x_1)$',size=22)
     axx1.tick_params(which='both',direction='in',top=True,right=True,labelsize=16)
 
     for sim,label in zip(sims,labels):
