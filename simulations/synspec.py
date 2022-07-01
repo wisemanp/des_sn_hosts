@@ -410,10 +410,10 @@ class SynSpec():
             mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
             try:
                 model_spec_redshifted = Spectrum(wave=(1 + z) * model_spec_reddened.wave().values * u.AA,flux= model_spec_reddened.flux() * mag_corr / (1 + z),
-                var = np.ones_like(model_spec_reddened.flux())
+                var = np.ones_like(model_spec_reddened.flux()))
             except:
                 model_spec_redshifted = Spectrum(wave=(1 + z) * model_spec_reddened.wave() * u.AA,flux= model_spec_reddened.flux() * mag_corr / (1 + z),
-                var = np.ones_like(model_spec_reddened.flux())
+                var = np.ones_like(model_spec_reddened.flux()))
 
             spec_arr = np.zeros((len(model_spec_redshifted.wave()), 2))
             spec_arr[:, 0] = model_spec_redshifted.wave()
