@@ -404,6 +404,18 @@ class SynSpec():
             spec_arr = np.zeros((len(model_spec_reddened.wave()), 2))
             spec_arr[:, 0] = model_spec_reddened.wave()
             spec_arr[:, 1] = model_spec_reddened.flux()
-            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s.txt' % (
+            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s_rest.txt' % (
+            z, np.log10(mtot), dust['Av'],self.library), spec_arr)
+
+            mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
+            try:
+                model_spec_redshifted = wtf.Spectrum((1 + z) * model_spec_reddened.wave().values * u.AA, model_spec_reddened.flux() * mag_corr / (1 + z))
+            except:
+                model_spec_redshifted = wtf.Spectrum((1 + z) * model_spec_reddened.wave() * u.AA, model_spec_reddened.flux() * mag_corr / (1 + z))
+
+            spec_arr = np.zeros((len(model_spec_redshifted.wave()), 2))
+            spec_arr[:, 0] = model_spec_redshifted.wave()
+            spec_arr[:, 1] = model_spec_redshifted.flux()
+            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s_obs.txt' % (
             z, np.log10(mtot), dust['Av'],self.library), spec_arr)
         return colour, des_fluxes, colours
