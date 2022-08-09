@@ -43,6 +43,7 @@ def measure_steps_nobbc(data,tracer_dict):
         cols = ['name','zcmb','zcmb.err','mb','mb.err','x1','x1.err','c','c.err','P_tracer']
 
         hfit = hubblefit.get_hubblefit(data_m[cols],corr=['x1','c','P_tracer'],use_minuit=False,build=True,verbose=False,cosmo=FlatLambdaCDM(70,0.3))
+        hfit.model.set_cosmo(FlatLambdaCDM(70,0.3))
         hfit.use_minuit=False
         hfit.model.M0_guess=-19
         hfit.model.sigmaint_guess=0.1
@@ -60,6 +61,7 @@ def measure_steps_nobbc(data,tracer_dict):
 
         # Mickael Fit, gamma after
         hfit = hubblefit.get_hubblefit(data_m[cols],corr=['x1','c'],use_minuit=False,build=True,verbose=False)
+        hfit.model.set_cosmo(FlatLambdaCDM(70,0.3))
         hfit.use_minuit=False
         hfit.model.M0_guess=-19
         hfit.model.sigmaint_guess=0.1
