@@ -168,6 +168,8 @@ for tracer in tracer_dict.keys():
   for_wfit.rename(columns={'mu_res_err':'MUERR','zcmb':'zHD'},inplace=True)
   for_wfit = for_wfit[['zHD','MU','MUERR',]]
   for_wfit['VARNAMES:']='SN:'
-  gbmeasureage =for_wfit.groupby(pd.cut(for_wfit['zHD'],bins=zarr+0.02)).apply(my_agg)
-  gbmeasureage['VARNAMES:'] = 'SN:'
-  gbmeasureage.dropna(axis=0)[['VARNAMES:','zHD','MU','MUERR',]].to_csv('/media/data3/wiseman/des/AURA/sims/SNe/wfit/Briday_Measure%s_%i_lowz.FITRES'%(tracer,config['simno']),index=False, sep=' ', quoting=csv.QUOTE_NONE, quotechar="",escapechar=" ")
+  gblo =for_wfit.groupby(pd.cut(for_wfit['zHD'],bins=zarr_lowz+0.02)).apply(my_agg)
+  gbhi =for_wfit.groupby(pd.cut(for_wfit['zHD'],bins=zarr_highz+0.02)).apply(my_agg)
+  gb = gblo.append(gbhi)
+  gb['VARNAMES:'] = 'SN:'
+  gb.dropna(axis=0)[['VARNAMES:','zHD','MU','MUERR',]].to_csv('/media/data3/wiseman/des/AURA/sims/SNe/wfit/Briday_Measure%s_%i_allz.FITRES'%(tracer,config['simno']),index=False, sep=' ', quoting=csv.QUOTE_NONE, quotechar="",escapechar=" ")
