@@ -5,7 +5,7 @@ from des_sn_hosts.simulations import aura
 import hubblefit
 from yaml import safe_load as yload
 
-
+from astropy.cosmology import FlatLambdaCDM
 def stderr(x):
     if len(x)>0:
         print(np.std(x),np.sqrt(len(x)))
