@@ -97,7 +97,7 @@ sim.config['SN_rv_model']['params'] = {'rv_'%hi: config['rv_hi'],
   'rv_%s'%lo: config['rv_lo'],
   'rv_sig_%s'%hi: 1.0,
   'rv_sig_%s'%lo: 1.0,
-  '%s_split': config['rv_tracer']: config['rv_step'],
+  '%s_split'%config['rv_tracer']: config['rv_step'],
   'rv_min': config['rv_min']}
 n_samples=config['n_samples']
 
