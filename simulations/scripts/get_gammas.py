@@ -112,17 +112,20 @@ n_samples=config['n_samples']
 ## Do the simulations
 highz_fn = '/media/data3/wiseman/des/AURA/sims/SNe/Briday/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_quenched_bursty_highz_%i_SN_sim.h5'%config['simno']
 lowz_fn = highz_fn.replace('high','low')
+zarr_lowz = np.arange(0.14,1.2,0.1)
+zarr_highz = np.arange(0.0105,0.14,0.01)
+zarr = np.concatenate([zarr_lowz,zarr_highz])
 if do_sim:
     zs = np.linspace(0.0,1.2,1000)
     zs_cubed = zs**3.
     numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=n_samples)
-    zarr = np.arange(0.14,1.2,0.1)
-    n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr+0.02)
-    sim.sample_SNe(zarr,n_samples_arr,savepath=highz_fn)
-    zarr = np.arange(0.0105,0.14,0.01)
-    n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr+0.02)
 
-    sim.sample_SNe(zarr,n_samples_arr,savepath='/media/data3/wiseman/des/AURA/sims/SNe/Briday/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_quenched_bursty_lowz_%i_SN_sim.h5'%config['simno'])
+    n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr_lowz+0.02)
+    sim.sample_SNe(zarr_lowz,n_samples_arr,savepath=lowz_fn)
+
+    n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr_highz+0.02)
+
+    sim.sample_SNe(zarr_highz,n_samples_arr,savepath=highz_fn)
 
 
 sim.load_sim(lowz_fn)
