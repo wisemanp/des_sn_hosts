@@ -3,6 +3,7 @@ import pandas as pd
 import sys
 from des_sn_hosts.simulations import aura
 import hubblefit
+from yaml import safe_load as yload
 
 
 def stderr(x):
@@ -78,7 +79,9 @@ def my_agg(x):
 
 
 
-config = sys.argv[1]
+conf_path = sys.argv[1]
+with open(conf_path,'r') as f:
+    config =  yload(f)
 sim = aura.Sim(config['sim_config'])
 
 sim.config['mB_model']['params']['age_step']['mag']=config['age_step']
