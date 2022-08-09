@@ -21,59 +21,59 @@ def my_agg(x):
         names = {'MU': np.NaN,'MUERR':np.NaN,'zHD':np.NaN}
     return pd.Series(names, index=['zHD','MU','MUERR'])
 
-    def measure_steps_nobbc(data,tracer_dict):
-        steps,errs = [],[]
-        steps_nogamma,errs_nogamma = [],[]
-        for counter,(tracer,this_tracer_dict) in enumerate(tracer_dict.items()):
-            #print(tracer)
-            tracer_name = this_tracer_dict['tracer_name']
-            ttype = this_tracer_dict['ttype']
-            split = this_tracer_dict['split']
-            ttag = this_tracer_dict['ttag']
-            print(tracer,this_tracer_dict)
-            pop_a = data[data[tracer]<split]
-            pop_b = data[data[tracer]>=split]
+def measure_steps_nobbc(data,tracer_dict):
+    steps,errs = [],[]
+    steps_nogamma,errs_nogamma = [],[]
+    for counter,(tracer,this_tracer_dict) in enumerate(tracer_dict.items()):
+        #print(tracer)
+        tracer_name = this_tracer_dict['tracer_name']
+        ttype = this_tracer_dict['ttype']
+        split = this_tracer_dict['split']
+        ttag = this_tracer_dict['ttag']
+        print(tracer,this_tracer_dict)
+        pop_a = data[data[tracer]<split]
+        pop_b = data[data[tracer]>=split]
 
-            # Mickael Fit, fit gamma
-            data_m = data.rename(columns={'CID':'name','mB':'mb','mB_err':'mb.err','x1ERR':'x1.err','cERR':'c.err','HOST_LOGMASS_ERR':'HOST_LOGMASS.err','zHD':'zcmb','zHDERR':'zcmb.err'})
-            #data_m['HOST_LOGMASS.err']= np.ones_like(data_m['HOST_LOGMASS'])*0.1
-            #data_m['mean_ages.err'] = np.ones_like(data_m['mean_ages'])*50
-            data_m['P_tracer'] = data_m[tracer].apply(lambda x: 1 if x>split else 0)
-            cols = ['name','zcmb','zcmb.err','mb','mb.err','x1','x1.err','c','c.err','P_tracer']
+        # Mickael Fit, fit gamma
+        data_m = data.rename(columns={'CID':'name','mB':'mb','mB_err':'mb.err','x1ERR':'x1.err','cERR':'c.err','HOST_LOGMASS_ERR':'HOST_LOGMASS.err','zHD':'zcmb','zHDERR':'zcmb.err'})
+        #data_m['HOST_LOGMASS.err']= np.ones_like(data_m['HOST_LOGMASS'])*0.1
+        #data_m['mean_ages.err'] = np.ones_like(data_m['mean_ages'])*50
+        data_m['P_tracer'] = data_m[tracer].apply(lambda x: 1 if x>split else 0)
+        cols = ['name','zcmb','zcmb.err','mb','mb.err','x1','x1.err','c','c.err','P_tracer']
 
-            hfit = hubblefit.get_hubblefit(data_m[cols],corr=['x1','c','P_tracer'],use_minuit=False,build=True,verbose=False,cosmo=FlatLambdaCDM(70,0.3))
-            hfit.use_minuit=False
-            hfit.model.M0_guess=-19
-            hfit.model.sigmaint_guess=0.1
-            hfit.model.a1_guess=-0.15
-            hfit.model.a2_guess = 2.5
-            hfit.model.a3_guess = -0.1
-            hfit.fit()
-            gamma_mickael = -1*hfit.model.standardization_coef['a3']
-            steps.append(gamma_mickael )
-            errs.append(0.01)
-            data_m['mu_res'],data_m['mu_res_err'] = hfit.get_hubbleres()
-            data_m['MU'] = data_m['mu_res']+cosmo.distmod(data_m['zcmb']).value
-            tracer_dict[tracer]['HD'] = data_m[['zcmb','MU','mu_res_err']]
+        hfit = hubblefit.get_hubblefit(data_m[cols],corr=['x1','c','P_tracer'],use_minuit=False,build=True,verbose=False,cosmo=FlatLambdaCDM(70,0.3))
+        hfit.use_minuit=False
+        hfit.model.M0_guess=-19
+        hfit.model.sigmaint_guess=0.1
+        hfit.model.a1_guess=-0.15
+        hfit.model.a2_guess = 2.5
+        hfit.model.a3_guess = -0.1
+        hfit.fit()
+        gamma_mickael = -1*hfit.model.standardization_coef['a3']
+        steps.append(gamma_mickael )
+        errs.append(0.01)
+        data_m['mu_res'],data_m['mu_res_err'] = hfit.get_hubbleres()
+        data_m['MU'] = data_m['mu_res']+cosmo.distmod(data_m['zcmb']).value
+        tracer_dict[tracer]['HD'] = data_m[['zcmb','MU','mu_res_err']]
 
 
-            # Mickael Fit, gamma after
-            hfit = hubblefit.get_hubblefit(data_m[cols],corr=['x1','c'],use_minuit=False,build=True,verbose=False)
-            hfit.use_minuit=False
-            hfit.model.M0_guess=-19
-            hfit.model.sigmaint_guess=0.1
-            hfit.model.a1_guess=-0.15
-            hfit.model.a2_guess = 2.5
-            hfit.fit()
-            data_m['mu_res'],data_m['mu_res_err'] = hfit.get_hubbleres()
-            pop_a = data_m[data_m[tracer]<split]
-            pop_b = data_m[data_m[tracer]>=split]
+        # Mickael Fit, gamma after
+        hfit = hubblefit.get_hubblefit(data_m[cols],corr=['x1','c'],use_minuit=False,build=True,verbose=False)
+        hfit.use_minuit=False
+        hfit.model.M0_guess=-19
+        hfit.model.sigmaint_guess=0.1
+        hfit.model.a1_guess=-0.15
+        hfit.model.a2_guess = 2.5
+        hfit.fit()
+        data_m['mu_res'],data_m['mu_res_err'] = hfit.get_hubbleres()
+        pop_a = data_m[data_m[tracer]<split]
+        pop_b = data_m[data_m[tracer]>=split]
 
-            step = np.average(pop_a['mu_res'],weights=pop_a['mu_res_err']) -  np.average(pop_b['mu_res'],weights=pop_b['mu_res_err'])
-            error = np.sqrt((np.sqrt(np.cov(pop_a['mu_res'],aweights=pop_a['mu_res_err']))/np.sqrt(len(pop_a['mu_res'])))**2 + (np.sqrt(np.cov(pop_b['mu_res'],aweights=pop_b['mu_res_err']))/np.sqrt(len(pop_b['mu_res'])))**2)
-            steps_nogamma.append(step)
-            errs_nogamma.append(error)
-        return steps,errs,steps_nogamma,errs_nogamma, tracer_dict
+        step = np.average(pop_a['mu_res'],weights=pop_a['mu_res_err']) -  np.average(pop_b['mu_res'],weights=pop_b['mu_res_err'])
+        error = np.sqrt((np.sqrt(np.cov(pop_a['mu_res'],aweights=pop_a['mu_res_err']))/np.sqrt(len(pop_a['mu_res'])))**2 + (np.sqrt(np.cov(pop_b['mu_res'],aweights=pop_b['mu_res_err']))/np.sqrt(len(pop_b['mu_res'])))**2)
+        steps_nogamma.append(step)
+        errs_nogamma.append(error)
+    return steps,errs,steps_nogamma,errs_nogamma, tracer_dict
 
 
 
