@@ -93,7 +93,7 @@ if config['rv_tracer']=='mass':
 elif config['rv_tracer']=='age':
     hi='young'
     lo='old'
-sim.config['SN_rv_model']['params'] = {'rv_'%hi: config['rv_hi'],
+sim.config['SN_rv_model']['params'] = {'rv_%s'%hi: config['rv_hi'],
   'rv_%s'%lo: config['rv_lo'],
   'rv_sig_%s'%hi: 1.0,
   'rv_sig_%s'%lo: 1.0,
