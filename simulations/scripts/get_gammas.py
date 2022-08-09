@@ -154,9 +154,9 @@ steps,errs,steps_nogamma,errs_nogamma,tracer_dict = measure_steps_nobbc(data,tra
 })
 
 savearr = np.array([steps,errs,steps_nogamma,errs_nogamma])
-np.savetxt('/media/data3/wiseman/des/AURA/sims/SNe/Briday_Steps_%s_lowz.dat'%config['simno'],savearr)
+np.savetxt('/media/data3/wiseman/des/AURA/sims/SNe/Briday_Steps_%s_all.dat'%config['simno'],savearr)
 
-simno=122
+simno = config['simno']
 ztype='all'
 for k,v in tracer_dict.items():
     v['HD'].to_hdf('/media/data3/wiseman/des/AURA/sims/SNe/wfit/HD_%i_%sz.h5'%(simno,ztype),key=k)
