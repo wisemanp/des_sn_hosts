@@ -1,6 +1,9 @@
 import numpy as np
 import pandas as pd
 import sys
+from des_sn_hosts.simulations import aura
+import hubblefit
+
 
 def stderr(x):
     if len(x)>0:
