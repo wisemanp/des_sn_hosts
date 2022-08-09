@@ -6,6 +6,7 @@ import hubblefit
 from yaml import safe_load as yload
 
 from astropy.cosmology import FlatLambdaCDM
+cosmo = FlatLambdaCDM(70,0.3)
 def stderr(x):
     if len(x)>0:
         print(np.std(x),np.sqrt(len(x)))
@@ -80,9 +81,14 @@ def measure_steps_nobbc(data,tracer_dict):
 
 
 conf_path = sys.argv[1]
+
 with open(conf_path,'r') as f:
     config =  yload(f)
 sim = aura.Sim(config['sim_config'])
+do_sim=True
+if len(sys.argv)>2:
+    if sys.argv[2] =='no_sim':
+        do_sim=False
 
 sim.config['mB_model']['params']['age_step']['mag']=config['age_step']
 sim.config['mB_model']['params']['mass_step']['mag']=config['mass_step']
@@ -102,18 +108,19 @@ sim.config['SN_rv_model']['params'] = {'rv_%s'%hi: config['rv_hi'],
 n_samples=config['n_samples']
 
 ## Do the simulations
-
-zs = np.linspace(0.0,1.2,1000)
-zs_cubed = zs**3.
-numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=n_samples)
-zarr = np.arange(0.14,1.2,0.1)
-n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr+0.02)
 highz_fn = '/media/data3/wiseman/des/AURA/sims/SNe/Briday/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_quenched_bursty_highz_%i_SN_sim.h5'%config['simno']
-sim.sample_SNe(zarr,n_samples_arr,savepath=highz_fn)
-zarr = np.arange(0.0105,0.14,0.01)
-n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr+0.02)
 lowz_fn = highz_fn.replace('high','low')
-sim.sample_SNe(zarr,n_samples_arr,savepath='/media/data3/wiseman/des/AURA/sims/SNe/Briday/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_quenched_bursty_lowz_%i_SN_sim.h5'%config['simno'])
+if do_sim:
+    zs = np.linspace(0.0,1.2,1000)
+    zs_cubed = zs**3.
+    numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=n_samples)
+    zarr = np.arange(0.14,1.2,0.1)
+    n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr+0.02)
+    sim.sample_SNe(zarr,n_samples_arr,savepath=highz_fn)
+    zarr = np.arange(0.0105,0.14,0.01)
+    n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr+0.02)
+
+    sim.sample_SNe(zarr,n_samples_arr,savepath='/media/data3/wiseman/des/AURA/sims/SNe/Briday/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_quenched_bursty_lowz_%i_SN_sim.h5'%config['simno'])
 
 
 sim.load_sim(lowz_fn)
