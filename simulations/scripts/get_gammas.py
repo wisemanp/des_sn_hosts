@@ -4,7 +4,7 @@ import sys
 from des_sn_hosts.simulations import aura
 import hubblefit
 from yaml import safe_load as yload
-
+import csv
 from astropy.cosmology import FlatLambdaCDM
 cosmo = FlatLambdaCDM(70,0.3)
 def stderr(x):
