@@ -118,7 +118,7 @@ zarr = np.concatenate([zarr_lowz,zarr_highz])
 if do_sim:
     print('Simming lowz')
     zs = np.linspace(0.0,0.14,1000)
-    zs_cubed = zs**3.
+    zs_cubed = zs_cubed = np.ones_like(zs)#zs**3.
     numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=n_samples)
 
 
@@ -126,7 +126,7 @@ if do_sim:
     print('Lowz with these samples',zarr_lowz,n_samples_arr)
     sim.sample_SNe(zarr_lowz,n_samples_arr,savepath=lowz_fn)
     zs = np.linspace(0.14,1.2,1000)
-    zs_cubed = zs**3.
+    zs_cubed = zs_cubed = np.ones_like(zs)#zs**3.
     numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=n_samples)
     n_samples_arr = sim._get_z_dist(numbers,n=n_samples,frac_low_z=0,zbins=zarr_highz+0.02)
     print('Highz with these samples',zarr_highz,n_samples_arr)
