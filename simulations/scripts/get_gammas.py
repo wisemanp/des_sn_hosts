@@ -112,7 +112,7 @@ n_samples=config['n_samples']
 ## Do the simulations
 highz_fn = '/media/data3/wiseman/des/AURA/sims/SNe/Briday/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_quenched_bursty_highz_%i_SN_sim.h5'%config['simno']
 lowz_fn = highz_fn.replace('high','low')
-zarr_highz = np.arange(0.14,0.5,0.05)
+zarr_highz = np.arange(0.14,0.5,0.04)
 zarr_lowz = np.arange(0.0105,0.14,0.01)
 zarr = np.concatenate([zarr_lowz,zarr_highz])
 if do_sim:
