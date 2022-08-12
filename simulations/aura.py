@@ -281,7 +281,10 @@ class Sim(SN_Model):
                          for i in range(len(args['mB']))]
 
         args['c_noise'] =norm(0,args['c_err']).rvs(size=len(args['c']))
-        args['c'] = args['c'] + args['c_noise']
+        if self.config['c_perfect']:
+            pass
+        else:
+            args['c'] = args['c'] + args['c_noise']
 
         args['x1_err'] = [np.max([0.08,np.random.normal((11.525*args['mB_err'][i] -0.1075 ),0.05)])
                          for i in range(len(args['mB']))]
