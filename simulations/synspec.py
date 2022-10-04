@@ -247,10 +247,10 @@ class SynSpec():
         mag_2 = -2.5 * np.log10(fluxes[:, 1] / vega_zps[flt2])
         return mag_1 - mag_2
 
-    def calculate_colour_wtf(self, spec_list, flt1='U', flt2='R'):
-        filter1 = np.loadtxt(self.filt_dir + 'Bessell%s.dat' % flt1)
+    def calculate_colour_wtf(self, spec_list, flt1='u', flt2='r'):
+        filter1 = np.loadtxt(self.filt_dir + 'sdss%s.dat' % flt1)
         fwave1,fflux1 = filter1[:,0],filter1[:,1]
-        filter2 = np.loadtxt(self.filt_dir + 'Bessell%s.dat' % flt2)
+        filter2 = np.loadtxt(self.filt_dir + 'sdss%s.dat' % flt2)
         fwave2,fflux2 = filter2[:,0],filter2[:,1]
         absmag_corr = 1 / ((10 * u.pc.to(u.cm)) ** 2)
         band1 = wtf.Band_Vega(fwave1, fflux1 * u.erg / u.s / u.AA)
@@ -397,6 +397,10 @@ class SynSpec():
                                       var=np.ones_like(model_spec_reddened.wave()))
         colour = self.calculate_colour_wtf([model_spec_reddened])
         colours = self.get_bands_wtf([model_spec_reddened],band_dict={'Bessell%s'%b:'Vega' for b in ['U','B','V','R','I']})
+        colours_sdss = self.get_bands_wtf([model_spec_reddened],band_dict={'sdss%s'%b:'Vega' for b in ['u','g','r','i','z']})
+        for sdss_colour in sdss_colours:
+            colours = colours.append(sdss_colour)
+
         #print('Here is the colour: ',colour)
         #print('Going go calculate observed flux with this',model_spec_reddened)
         des_fluxes = self.get_bands_wtf([model_spec_reddened],band_dict={'DES_%s'%b:'AB' for b in ['g','r','i','z']},z=z) #extra 1+z for flux densities
