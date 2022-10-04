@@ -1,0 +1,17 @@
+config_path: '/home/wiseman/code/des_sn_hosts/simulations/config/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_two_alpha.yaml'
+alpha_young:
+    lo: 0.05
+    hi: 0.35
+    step: 0.05
+alpha_old:
+    lo: 0.05
+    hi: 0.35
+    step: 0.05
+age_step:
+    lo: 0.0
+    hi: 0.3
+    step: 0.05
+save:
+    dir: 'fix_Rv_lo_cut_mass_twoalpha_age'
+
+n_samples: 150000

@@ -1,0 +1,17 @@
+config_path: '/home/wiseman/code/des_sn_hosts/simulations/config/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14.yaml'
+Rv_lo:
+    lo: 1.5
+    hi: 2.25
+    step: 0.25
+Rv_hi:
+    lo: 3.5
+    hi: 4.00
+    step: 0.25
+age_step:
+    lo: 0.0
+    hi: 0.25
+    step: 0.05
+save:
+    dir: 'age_step_Rv_lo_hicut_test'
+
+n_samples: 10000

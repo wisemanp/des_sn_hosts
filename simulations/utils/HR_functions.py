@@ -160,6 +160,51 @@ def get_red_chisq_interp(low,high,model_c_mids_lo,model_hr_mids_lo,model_c_mids_
     redchisq = get_red_chisq(obs,mod_interp,err)
     return redchisq
 
+def get_red_chisq_interp2(data_c_mids_lo,data_hr_mids_lo,data_hr_errs_lo,data_c_mids_hi,data_hr_mids_hi,data_hr_errs_hi,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi):
+
+    if model_c_mids_lo[0] < data_c_mids_lo[0]:
+        pass
+    else:
+        data_c_mids_lo = data_c_mids_lo[1:]
+        data_hr_mids_lo = data_hr_mids_lo[1:]
+        data_hr_errs_lo = data_hr_errs_lo[1:]
+    if model_c_mids_hi[0] < data_c_mids_hi[0]:
+        pass
+    else:
+
+        data_c_mids_hi = data_c_mids_hi[1:]
+        data_hr_mids_hi = data_hr_mids_hi[1:]
+        data_hr_errs_hi = data_hr_errs_hi[1:]
+    interp_lo = interp1d(np.array(model_c_mids_lo),np.array(model_hr_mids_lo))
+    mod_lo = interp_lo(np.array(data_c_mids_lo))
+    interp_hi = interp1d(np.array(model_c_mids_hi),np.array(model_hr_mids_hi))
+    mod_hi = interp_hi(np.array(data_c_mids_hi))
+
+    obs = np.concatenate([np.array(data_hr_mids_lo),np.array(data_hr_mids_hi)])
+    err = np.concatenate([np.array(data_hr_errs_lo),np.array(data_hr_errs_hi)])
+    mod_interp = np.concatenate([mod_lo,mod_hi])
+    redchisq = get_red_chisq(obs,mod_interp,err)
+    return redchisq
+
+def get_red_chisq_interp_split_multi(data_c_mids_lo,data_hr_mids_lo,data_hr_errs_lo,data_c_mids_hi,data_hr_mids_hi,data_hr_errs_hi,model_c_mids_lo,model_hr_mids_lo,model_c_mids_hi,model_hr_mids_hi):
+    all_obs,all_err,all_mod = [],[],[]
+    for split in splits.keys():
+
+        if split['model_c_mids'][0] < split['data_c_mids'][0]:
+            pass
+        else:
+            split['data_c_mids'] = split['data_c_mids'][1:]
+            split['data_hr_mids'] = split['data_hr_mids'][1:]
+            split['data_hr_errs'] = split['data_hr_errs'][1:]
+
+        interp = interp1d(np.array(split['model_c_mids']),np.array(split['model_hr_mids']))
+        mod = interp(split['data_c_mids'])
+        all_obs = np.concatenate([all_obs,split['data_hr_mids']])
+        all_err = np.concatenate([all_err,split['data_hr_errs']])
+        all_mod = np.concatenate([all_mod,mod])
+    redchisq = get_red_chisq(all_obs,all_mod,all_err)
+    return redchisq
+
 def get_red_chisq_interp_splitx1(obs,model):
     all_obs,all_err,all_mod = [],[],[]
     for key in obs.keys():
@@ -180,6 +225,34 @@ def get_red_chisq_interp_splitx1(obs,model):
         mod = interp(np.array(obs[key]['c']))
         all_obs = np.concatenate([all_obs,np.array(obs[key]['hr'])])
         all_err = np.concatenate([all_err,np.array(obs[key]['hr_err'])])
+        all_mod = np.concatenate([all_mod,mod])
+    redchisq = get_red_chisq(all_obs,all_mod,all_err)
+    return redchisq
+    
+def get_red_chisq_interp_split_multi(splits):
+    all_obs,all_err,all_mod = [],[],[]
+
+    for split in splits.keys():
+        dat = splits[split]
+        while True:
+            if dat['model_c_mids'][0] < dat['data_c_mids'][0]:
+                break
+            else:
+                dat['data_c_mids'] = dat['data_c_mids'][1:]
+                dat['data_hr_mids'] = dat['data_hr_mids'][1:]
+                dat['data_hr_errs'] = dat['data_hr_errs'][1:]
+        while True:
+            if dat['model_c_mids'][-1] > dat['data_c_mids'][-1]:
+                break
+            else:
+                dat['data_c_mids'] = dat['data_c_mids'][:-1]
+                dat['data_hr_mids'] = dat['data_hr_mids'][:-1]
+                dat['data_hr_errs'] = dat['data_hr_errs'][:-1]
+
+        interp = interp1d(np.array(dat['model_c_mids']),np.array(dat['model_hr_mids']))
+        mod = interp(dat['data_c_mids'])
+        all_obs = np.concatenate([all_obs,dat['data_hr_mids']])
+        all_err = np.concatenate([all_err,dat['data_hr_errs']])
         all_mod = np.concatenate([all_mod,mod])
     redchisq = get_red_chisq(all_obs,all_mod,all_err)
     return redchisq

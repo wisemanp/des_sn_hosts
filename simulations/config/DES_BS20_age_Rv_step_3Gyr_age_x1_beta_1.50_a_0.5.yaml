@@ -1,0 +1,71 @@
+
+hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_BC03_z0.15_0.82_av0.00_1.00_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.50.h5
+config:
+  root_dir: /media/data3/wiseman/des/AURA/
+  efficiency_dir: /media/data3/wiseman/des/desdtd/
+
+SN_rv_model:
+  model: age_rv_step
+  params:
+    rv_young: 2.75
+    rv_old: 1.5
+    rv_sig_young: 1.0
+    rv_sig_old: 1.0
+    age_split: 3
+    rv_min: 1.2
+Host_Av_model:
+  model: choose_Av_SN_E_Rv_step
+  params:
+    Rv_mu_low: 2.6
+    Rv_sig_low: 0.5
+    Rv_mu_high: 3.1
+    Rv_sig_high: 0.5
+    Av_sig: 0.5
+    mass_split: 10
+
+SN_E_model:
+  model: E_exp_age
+  params:
+    Tau_low: 0.10
+    Tau_high: 0.14
+    age_split: 3
+
+SN_colour_model:
+  model: c_int_plus_dust
+  params:
+    c_int_type: norm
+    c_int_params:
+      mu: -0.075
+      sig: 0.042
+      e_noise: 0.03
+
+x1_model:
+  model: x1_twogauss_age
+  params:
+    mu_young: 0.
+    sig_young: 0.75
+    mu_old: -1.5
+    sig_old: 0.6
+    age_step_loc: 0.75
+    old_prob: 0.75
+mB_model:
+  model: tripp_rv_popn_alpha_beta
+  params:
+    mu_alpha: 0.22
+    sig_alpha: 0.0001
+    mu_beta: 2.0
+    sig_beta: 0.35
+    M0: -19.375
+    sigma_int: 0.
+    mass_step:
+      mag: 0.0
+      loc: 10
+    age_step:
+      mag: 0.18
+      loc: 0.75
+
+mu_res_fitter:
+  fitter: fit_mu_res_nostep
+  params:
+    fix_alpha: False
+    fix_beta: False

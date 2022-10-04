@@ -1,7 +1,7 @@
-
-hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_BC03_z0.05_0.63_av0.00_1.50_rv_rand_full_age_dists_neb_U-2.00_res_2.h5
+hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_BC03_z0.15_0.85_av0.00_1.00_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.14.h5
 config:
   root_dir: $AURA_DIR
+  efficiency_dir: /media/data3/wiseman/des/desdtd/
 SN_rv_model:
   model: age_rv_linear
   params:
@@ -11,7 +11,7 @@ SN_rv_model:
     rv_sig_high: 1
     age_fix_low: 0.1
     age_fix_high: 10
-
+    rv_min: 1.2
 Host_Av_model:
   model: choose_Av_SN_E_Rv_step
   params:
@@ -21,11 +21,12 @@ Host_Av_model:
     Rv_sig_high: 0.5
     Av_sig: 0.5
     mass_split: 10
+
 SN_E_model:
   model: E_exp_age
   params:
-    Tau_low: 0.1
-    Tau_high: 0.11
+    Tau_low: 0.10
+    Tau_high: 0.14
     age_split: 3
 
 SN_colour_model:
@@ -33,30 +34,29 @@ SN_colour_model:
   params:
     c_int_type: norm
     c_int_params:
-      mu: -0.073
-      sig: 0.043
-      e_noise: 0.035
+      mu: -0.075
+      sig: 0.042
+      e_noise: 0.03
 
 x1_model:
   model: x1_twogauss_age
   params:
-    mu_young: 0.4
-    sig_young: 0.75
-    mu_old: -1.
-    sig_old: 0.75
-    age_step_loc: 0.8
-    old_prob: 0.7
-
+    mu_young: 0.25
+    sig_young: 0.55
+    mu_old: -1.1
+    sig_old: 0.6
+    age_step_loc: 0.75
+    old_prob: 0.75
 mB_model:
   model: tripp_rv_two_beta_popns_age2
   params:
-    alpha: 0.17
-    mu_beta_young: 2
-    sig_beta_young: 0.3
-    mu_beta_old: 2
-    sig_beta_old: 0.3
+    alpha: 0.2
+    mu_beta_young: 2.0
+    sig_beta_young: 0.35
+    mu_beta_old: 2.0
+    sig_beta_old: 0.35
     M0: -19.375
-    sigma_int: 0.06
+    sigma_int: 0.
     mass_step:
       mag: 0
       loc: 1

@@ -1,4 +1,4 @@
-from spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
+from des_sn_hosts.simulations.spectral_utils import load_spectrum, Spectrum, redshift, synphot, rebin_a_spec, NebularLines, NebularContinuum
 from what_the_flux import what_the_flux as wtf
 import numpy as np
 import pandas as pd
@@ -251,7 +251,7 @@ class SynSpec():
         filter1 = np.loadtxt(self.filt_dir + 'Bessell%s.dat' % flt1)
         fwave1,fflux1 = filter1[:,0],filter1[:,1]
         filter2 = np.loadtxt(self.filt_dir + 'Bessell%s.dat' % flt2)
-        fwave2,fflux2 = filter2[:,0],filter21[:,1]
+        fwave2,fflux2 = filter2[:,0],filter2[:,1]
         absmag_corr = 1 / ((10 * u.pc.to(u.cm)) ** 2)
         band1 = wtf.Band_Vega(fwave1, fflux1 * u.erg / u.s / u.AA)
         band2 = wtf.Band_Vega(fwave2, fflux2 * u.erg / u.s / u.AA)
@@ -404,7 +404,21 @@ class SynSpec():
             spec_arr = np.zeros((len(model_spec_reddened.wave()), 2))
             spec_arr[:, 0] = model_spec_reddened.wave()
             spec_arr[:, 1] = model_spec_reddened.flux()
-            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s.txt' % (
+            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s_rest.txt' % (
+            z, np.log10(mtot), dust['Av'],self.library), spec_arr)
+
+            mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
+            try:
+                model_spec_redshifted = Spectrum(wave=(1 + z) * model_spec_reddened.wave().values * u.AA,flux= model_spec_reddened.flux() * mag_corr / (1 + z),
+                var = np.ones_like(model_spec_reddened.flux()))
+            except:
+                model_spec_redshifted = Spectrum(wave=(1 + z) * model_spec_reddened.wave() * u.AA,flux= model_spec_reddened.flux() * mag_corr / (1 + z),
+                var = np.ones_like(model_spec_reddened.flux()))
+
+            spec_arr = np.zeros((len(model_spec_redshifted.wave()), 2))
+            spec_arr[:, 0] = model_spec_redshifted.wave()
+            spec_arr[:, 1] = model_spec_redshifted.flux()
+            np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s_obs.txt' % (
             z, np.log10(mtot), dust['Av'],self.library), spec_arr)
         return colour, des_fluxes, colours
 

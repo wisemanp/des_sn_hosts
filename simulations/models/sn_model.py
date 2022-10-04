@@ -1,9 +1,9 @@
 import numpy as np
 from .dust_models import age_rv_step, mass_rv_step, age_rv_linear, mass_rv_linear, E_exp, E_exp_mass, E_exp_age, random_rv, E_calc, E_from_host_random, E_two_component
 from .colour_models import c_int_asymm, c_int_gauss, c_int_plus_dust
-from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix
+from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix, x1_int_linear_gauss, x1_int_linear_gauss_plus_delta,x1_linear_plus_old,x1_linear_plus_young
 from .host_dust import choose_Av_SN_E_rv_fix, choose_Av_custom, choose_Av_SN_E_Rv_norm, choose_Av_SN_E_Rv_step
-from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta,tripp_rv_two_beta_popns_age2
+from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta,tripp_rv_two_beta_popns_age2,tripp_rv_age_alpha_popn_beta
 class SN_Model():
     def __init__(self):
         '''
@@ -49,6 +49,17 @@ class SN_Model():
         args['x1'] = x1_int_asymm(params['mu'],params['sig_minus'],params['sig_plus'],args['n'])
         return args
 
+    def x1_int_linear_gauss(self,args,params):
+        args['x1'] = x1_int_linear_gauss(args['SN_age'],params['slope'],params['width'],params['offset'])
+        args['prog_age'] = 'Young'
+        return args
+
+    def x1_int_linear_gauss_plus_delta(self,args,params):
+        args['x1'],args['prog_type'] = x1_int_linear_gauss_plus_delta(args['SN_age'],params['slope'],params['width'],params['offset'],params['SD_mean'],params['frac_SD'],params['SD_width'])
+        args['prog_age'] = 'Young'
+
+        return args
+
     def x1_twogauss_fix(self,args,params):
         args['x1'] = x1_twogauss_fix(params['mu_low'],params['sig_low'],params['mu_high'],params['sig_high'],params['frac_low'],args['n'])
         return args
@@ -57,6 +68,16 @@ class SN_Model():
         sampler = x1_twogauss_age(params['mu_old'],params['sig_old'],params['mu_young'],params['sig_young'],params['age_step_loc'],params['old_prob'])
         args['x1'],args['prog_age'] =  sampler.sample(args['SN_age'])
         return args
+    def x1_linear_plus_old(self,args,params):
+        sampler = x1_linear_plus_old(params['slope'],params['width'],params['offset'],params['mu_old'],params['sig_old'],params['age_step_loc'],args['SN_age'],params['old_prob'])
+        args['x1'],args['prog_age'] =  sampler.sample(args['SN_age'])
+        return args
+
+    def x1_linear_plus_young(self,args,params):
+        sampler = x1_linear_plus_young(params['slope'],params['width'],params['offset'],params['mu_young'],params['sig_young'],params['age_step_loc'],args['SN_age'],params['young_prob'])
+        args['x1'],args['prog_age'] =  sampler.sample(args['SN_age'])
+        return args
+
     def choose_Av_SN_E_rv_fix(self,args,params):
         return choose_Av_SN_E_rv_fix(args['Av_grid'],args['E'],params['Rv'],params['Av_sig'])
 
@@ -89,6 +110,11 @@ class SN_Model():
 
     def tripp_rv_two_beta_age(self,args,params):
         return tripp_rv_two_beta_age(params['alpha'],params['beta_young'],params['beta_old'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],args)
+
+    def tripp_rv_age_alpha_popn_beta(self,args,params):
+        return tripp_rv_age_alpha_popn_beta(params['mu_alpha_young'],params['sig_alpha_young'],params['mu_alpha_old'],params['sig_alpha_old'],
+                    params['mu_beta'],params['sig_beta'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],args)
+
 
     def tripp_rv_two_beta_popns_age(self,args,params):
         return tripp_rv_two_beta_popns_age(params['alpha'], params['mu_beta_young'],params['sig_beta_young'], params['mu_beta_old'], params['sig_beta_old'], params['M0'],

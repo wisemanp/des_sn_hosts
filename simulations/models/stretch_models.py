@@ -64,3 +64,96 @@ class x1_twogauss_age():
         else:
             return x1s
 
+
+
+def x1_int_linear_gauss(ages,slope,width=0.5,offset=0):
+    x1s = np.random.normal((float(slope)*np.log10(ages))+float(offset),width)
+    return x1s
+
+def x1_int_linear_gauss_plus_delta(ages,slope,width=0.5,offset=0,SD_mean=0.2,frac_SD=0.2,SD_width=0.25):
+    x1s = np.random.normal((float(slope)*np.log10(ages))+float(offset),width)
+    x1_SD = np.random.normal(SD_mean,SD_width,size=int(len(ages)*frac_SD))
+    inds = np.random.randint(0,len(x1s)-1,size=len(x1_SD))
+    prog_type=np.full(len(x1s),'DD')
+    prog_type[inds] = 'SD'
+    x1s[inds] = x1_SD
+    return x1s, prog_type
+
+class x1_linear_plus_old():
+    '''
+
+    '''
+    def __init__(self,slope,width,offset,mu_old,sig_old,age_step_loc,ages,old_prob=0.5):
+        self._set_norm_old(mu_old,sig_old)
+        self.age_step_loc = age_step_loc
+        self.old_prob = old_prob
+        self.slope= slope
+        self.offset = offset
+        self.width = width
+    def _set_norm_old(self,mu_old,sig_old):
+        self.norm_old = norm(mu_old,sig_old)
+    def _set_norm_linear(self,age):
+        self.norm_linear = norm(float(self.slope)*np.log10(age)+float(self.offset),self.width)
+
+    def sample(self,ages,old_probs=[],return_prog_age=True):
+        if len(old_probs)==0:
+            old_probs = [self.old_prob,1-self.old_prob]
+        x1s = []
+        prog_age_choices = []
+        for counter,age in enumerate(ages):
+            self._set_norm_linear(age)
+            if age > self.age_step_loc:
+
+
+                x1_rand = {'old':self.norm_old.rvs(),'young':self.norm_linear.rvs()}
+                prog_age_choice = np.random.choice(['old','young'],p=old_probs)
+                x1s.append(x1_rand[prog_age_choice])
+            elif age <= self.age_step_loc:
+                prog_age_choice = 'young'
+
+                x1s.append(self.norm_linear.rvs())
+            prog_age_choices.append(prog_age_choice)
+        if return_prog_age:
+            return x1s,prog_age_choices
+        else:
+            return x1s
+
+
+class x1_linear_plus_young():
+    '''
+
+    '''
+    def __init__(self,slope,width,offset,mu_young,sig_young,age_step_loc,ages,young_prob=0.5):
+        self._set_norm_young(mu_young,sig_young)
+        self.age_step_loc = age_step_loc
+        self.young_prob = young_prob
+        self.slope= slope
+        self.offset = offset
+        self.width = width
+    def _set_norm_young(self,mu_young,sig_young):
+        self.norm_young = norm(mu_young,sig_young)
+    def _set_norm_linear(self,age):
+        self.norm_linear = norm(float(self.slope)*np.log10(age)+float(self.offset),self.width)
+
+    def sample(self,ages,young_probs=[],return_prog_age=True):
+        if len(young_probs)==0:
+            young_probs = [self.young_prob,1-self.young_prob]
+        x1s = []
+        prog_age_choices = []
+        for counter,age in enumerate(ages):
+            self._set_norm_linear(age)
+            if age > self.age_step_loc:
+
+
+                x1_rand = {'old':self.norm_linear.rvs(),'young':self.norm_young.rvs()}
+                prog_age_choice = np.random.choice(['young','old'],p=young_probs)
+                x1s.append(x1_rand[prog_age_choice])
+            elif age <= self.age_step_loc:
+                prog_age_choice = 'young'
+
+                x1s.append(self.norm_young.rvs())
+            prog_age_choices.append(prog_age_choice)
+        if return_prog_age:
+            return x1s,prog_age_choices
+        else:
+            return x1s

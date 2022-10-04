@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from dust_extinction.parameter_averages import F19
-from spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH,interpolate_SFH_pegase
-from synspec import SynSpec, phi_t_pl
+from des_sn_hosts.simulations.spectral_utils import load_spectrum, convert_escma_fluxes_to_griz_mags,interpolate_SFH,interpolate_SFH_pegase
+from des_sn_hosts.simulations.synspec import SynSpec, phi_t_pl
 import argparse
 from astropy.cosmology import FlatLambdaCDM
 import warnings
@@ -22,11 +22,15 @@ norm_x1hi = 0.51E-13
 beta_x1lo = -0.79
 norm_x1lo = 1.19E-13
 beta = -1.14
+#beta=-1.5
 dtd_norm = 2.08E-13
 
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-z','--z',help='Redshift',default=0.5,type=str)
+    parser.add_argument('-zl','--zlo',help='Redshift lower end',default=0.15,type=float)
+    parser.add_argument('-zh','--zhi',help='Redshift upper end',default=1.25,type=float)
+    parser.add_argument('-zs','--zstep',help='Redshift step',default=0.15,type=float)
     parser.add_argument('-al','--av_lo',help='Lowest Av',default=0,type=float)
     parser.add_argument('-ah','--av_hi',help='Highest Av',default=1,type=float)
     parser.add_argument('-na','--n_av',help='Av step',default=20,type=int)
@@ -36,6 +40,7 @@ def parser():
     parser.add_argument('-t','--templates',help='Template library to use [BC03, PEGASE]',default='BC03',type=str)
     parser.add_argument('-tf','--templates_fn',help='Filename of templates',type=str,default='None')
     parser.add_argument('-ne','--neb',action='store_true')
+    parser.add_argument('-b','--beta',help='Absolute value of the slope of the DTD',default=1.14,type=float)
     args = parser.parse_args()
     return args
 
@@ -79,7 +84,8 @@ def run(args):
     store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_Qerf_1.1.h5','r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
     results = []
-    z_array = [float(z) for z in args.z.split(',')]
+    #z_array = [float(z) for z in args.z.split(',')]
+    z_array = np.arange(args.zlo,args.zhi,args.zstep)
     if args.av_step_type == 'lin':
         av_arr = np.linspace(args.av_lo,args.av_hi,args.n_av)
     elif args.av_step_type == 'log':
@@ -100,16 +106,18 @@ def run(args):
                 pred_rate_x1hi =np.sum(sfh_df['m_formed']*dtd_x1hi)
                 dtd_x1lo = phi_t_pl(sfh_df['stellar_age']/1000,0.04,beta_x1lo,norm_x1lo)
                 pred_rate_x1lo =np.sum(sfh_df['m_formed']*dtd_x1lo)
-                dtd_total =phi_t_pl(sfh_df['stellar_age']/1000,0.04,beta,dtd_norm)
+                dtd_total =phi_t_pl(sfh_df['stellar_age']/1000,0.04,-1*args.beta,dtd_norm)
                 SN_age_dist = sfh_df['m_formed']*dtd_total
                 pred_rate_total = np.sum(SN_age_dist)
                 ages = sfh_df['stellar_age']/1000
                 mwsa = np.average(sfh_df['stellar_age'],weights=sfh_df['m_formed']/mtot)
-                if mtot>1E+10:
-                    mu_Rv = 2.2
+                if np.log10(mtot)<=9.5:
+                    mu_Rv = 2.61
+                elif 9.5 <np.log10(mtot)<=10.5:
+                    mu_Rv = 2.99
                     #avs_SBL =np.clip(np.random.normal(av_means_mhi(np.log10(mtot)),av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 else:
-                    mu_Rv = 3.5
+                    mu_Rv = 3.47
                     #avs_SBL = np.clip(np.random.normal(av_means_mlo,av_sigma(np.log10(mtot)),size=20),a_min=0,a_max=None)
                 if args.templates == 'BC03':
                     sfh_coeffs_PW21 = interpolate_SFH(sfh_df,mtot,bc03_logt_float_array)
@@ -143,7 +151,7 @@ def run(args):
     #flux_df[['f_g','f_r','f_i','f_z',]] =fuJys
     #flux_df[['mag_g','mag_r','mag_i','mag_z']]=mags
     flux_df['g_r'] = flux_df['m_g'] - flux_df['m_r']
-    flux_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i.h5'%(args.templates,z_array[0],z_array[-1],av_arr[0],av_arr[-1],args.logU,args.time_res),key='main')
+    flux_df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),key='main')
     print("Done!")
 if __name__=="__main__":
     args = parser()

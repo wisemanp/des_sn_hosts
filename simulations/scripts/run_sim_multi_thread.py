@@ -10,13 +10,15 @@ import csv
 import numpy as np
 
 import multiprocessing
+des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
 
+des5yr = des5yr[des5yr['SPECZ']<0.7]
 def load_config(cpath):
     with open(cpath,'r') as f:
         return yload(f)
 
 def prep_df_for_BBC(df):
-    df = df[df['mB']<23.35]
+    df = df[df['mB']<25]
     df = df[(df['x1']<3)&(df['x1']>-3)&(df['c']>-0.3)&(df['c']<0.3)&\
                            (df['x1_err']<1)\
                            &(df['c_err']<0.1)    # uncomment to include a colour error cut
@@ -27,7 +29,7 @@ def prep_df_for_BBC(df):
     df['TYPE'] = 101
     df.rename(columns={'z':'zHD','mB_err':'mBERR','x1_err':'x1ERR','c_err':'cERR',
                              },inplace=True)
-    df = df[df['zHD']>0.15]
+    df = df[df['zHD']>=0.15]
     df['zHDERR'] = 0.0001
     df['zCMB'] = df['zHD']
     df['zCMBERR'] = 0.0001
@@ -67,12 +69,21 @@ def sim_worker(args):
     sim = aura.Sim(pth)
     with open(pth,'r') as f:
         c = yload(f)
-    c['SN_rv_model']['params']['rv_low'] = float(rv_hi)
-    c['SN_rv_model']['params']['rv_high'] = float(rv_lo)
+    if c['SN_rv_model']['model']=='age_rv_step':
+        c['SN_rv_model']['params']['rv_young'] = float(rv_hi)
+        c['SN_rv_model']['params']['rv_old'] = float(rv_lo)
+
+    else:
+        c['SN_rv_model']['params']['rv_low'] = float(rv_hi)
+        c['SN_rv_model']['params']['rv_high'] = float(rv_lo)
     c['mB_model']['params']['age_step']['mag'] = float(age_step)
     sim.config = c
-    n_samples_arr = sim._get_z_dist(des5yr['z'],n=cfg['n_samples'])
-    zarr=[0.05,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65]
+    #n_samples_arr = sim._get_z_dist(des5yr['zHD'],n=cfg['n_samples'])
+    zs = np.linspace(0,1,100)
+    zs_cubed = zs**2.5
+    numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=cfg['n_samples'])
+    zarr = np.arange(0.14,0.84,0.04)
+    n_samples_arr = sim._get_z_dist(numbers,n=cfg['n_samples'],frac_low_z=0.,zbins=zarr+0.02)
 
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'])):
         os.mkdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir']))
@@ -85,8 +96,9 @@ def sim_worker(args):
                             (sim.sim_df['c']<0.3)&(sim.sim_df['x1_err']<1)&\
                             (sim.sim_df['c_err']<0.1)   # uncomment to include a colour error cut
                             ]
-    sim.sim_df = sim.sim_df[sim.sim_df['mB']<23.35]
-
+    sim.sim_df = sim.sim_df[sim.sim_df['mB']<25]
+    sim.sim_df = sim.sim_df[sim.sim_df['eff_mask']==1]
+    sim.sim_df = sim.sim_df[sim.sim_df['z']<=0.7]
     sim.sim_df.to_hdf(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
         '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)),key='sim')
 
