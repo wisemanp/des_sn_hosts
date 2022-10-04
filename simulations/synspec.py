@@ -248,9 +248,9 @@ class SynSpec():
         return mag_1 - mag_2
 
     def calculate_colour_wtf(self, spec_list, flt1='u', flt2='r'):
-        filter1 = np.loadtxt(self.filt_dir + 'sdss%s.dat' % flt1)
+        filter1 = np.loadtxt(self.filt_dir + 'SDSS%s.dat' % flt1)
         fwave1,fflux1 = filter1[:,0],filter1[:,1]
-        filter2 = np.loadtxt(self.filt_dir + 'sdss%s.dat' % flt2)
+        filter2 = np.loadtxt(self.filt_dir + 'SDSS%s.dat' % flt2)
         fwave2,fflux2 = filter2[:,0],filter2[:,1]
         absmag_corr = 1 / ((10 * u.pc.to(u.cm)) ** 2)
         band1 = wtf.Band_Vega(fwave1, fflux1 * u.erg / u.s / u.AA)
@@ -397,7 +397,7 @@ class SynSpec():
                                       var=np.ones_like(model_spec_reddened.wave()))
         colour = self.calculate_colour_wtf([model_spec_reddened])
         colours = self.get_bands_wtf([model_spec_reddened],band_dict={'Bessell%s'%b:'Vega' for b in ['U','B','V','R','I']})
-        colours_sdss = self.get_bands_wtf([model_spec_reddened],band_dict={'sdss%s'%b:'Vega' for b in ['u','g','r','i','z']})
+        colours_sdss = self.get_bands_wtf([model_spec_reddened],band_dict={'SDSS%s'%b:'Vega' for b in ['u','g','r','i','z']})
         for sdss_colour in sdss_colours:
             colours = colours.append(sdss_colour)
 
