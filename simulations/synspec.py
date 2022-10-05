@@ -398,8 +398,7 @@ class SynSpec():
         colour = self.calculate_colour_wtf([model_spec_reddened])
         colours = self.get_bands_wtf([model_spec_reddened],band_dict={'Bessell%s'%b:'Vega' for b in ['U','B','V','R','I']})
         colours_sdss = self.get_bands_wtf([model_spec_reddened],band_dict={'SDSS%s'%b:'Vega' for b in ['u','g','r','i','z']})
-        for sdss_colour in colours_sdss:
-            colours = colours.append(sdss_colour)
+        colours.update(colours_sdss)
 
         #print('Here is the colour: ',colour)
         #print('Going go calculate observed flux with this',model_spec_reddened)
