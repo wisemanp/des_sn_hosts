@@ -142,15 +142,15 @@ def run(args):
                         U_R,fluxes,colours= s.calculate_model_fluxes_pw(z,sfh_coeffs_PW21,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
                                                                 neb=neb,logU=args.logU,mtot=mtot,age=age)
                         obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
-                        U,B,V,R,I = (colours[i] for i in colours.keys())
+                        U,B,V,R,I,sdssu,sdssg,sdssr,sdssi,sdssz = (colours[i] for i in colours.keys())
 
-                        results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I]))
+                        results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,ages,SN_age_dist,pred_rate_total],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I,sdssu,sdssg,sdssr,sdssi,sdssz]))
                 df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
                                                         'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
-                                                        'm_g','m_r','m_i','m_z','U','B','V','R','I'])
+                                                        'm_g','m_r','m_i','m_z','U','B','V','R','I','sdssu','sdssg','sdssr','sdssi','sdssz'])
                 df['g_r'] = df['m_g'] - df['m_r']
 
-                df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
+                df.to_hdf('/media/data3/wiseman/des/AURA/sims/hostlibs/ur/all_model_params_quench_%s_z%.2f_%.2f_av%.2f_%.2f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_sdss_u_r.h5'%(args.templates,args.zlo,args.zhi,av_arr[0],av_arr[-1],args.logU,args.time_res,args.beta),
                     key='%3.0f'%tf)
     print("Done!")
 if __name__=="__main__":
