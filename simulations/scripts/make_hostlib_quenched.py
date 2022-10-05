@@ -27,6 +27,7 @@ dtd_norm = 2.08E-13
 
 def parser():
     parser = argparse.ArgumentParser()
+    parser.add_argument('-i','--input',help='Filename for input SFHs')
     parser.add_argument('-z','--z',help='Redshift',default=0.5,type=str)
     parser.add_argument('-zl','--zlo',help='Redshift lower end',default=0.15,type=float)
     parser.add_argument('-zh','--zhi',help='Redshift upper end',default=1.25,type=float)
@@ -81,7 +82,7 @@ def run(args):
         s = SynSpec(library='PEGASE',template_dir = '/media/data3/wiseman/des/AURA/PEGASE/templates/',neb=args.neb)
 
         neb=args.neb
-    store = pd.HDFStore('/media/data3/wiseman/des/desdtd/SFHs/SFHs_alt_0.5_quenched_all.h5','r')
+    store = pd.HDFStore(args.input,'r')
     ordered_keys = np.sort([int(x.strip('/')) for x in store.keys()])
 
     #z_array = [float(z) for z in args.z.split(',')]
