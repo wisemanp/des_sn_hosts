@@ -41,7 +41,7 @@ for z in tqdm(sim.multi_df.z.unique()):
     else:
         print(z)
 
-        z_df = sim.multi_df.loc['%.3f' % z].copy()
+        z_df = sim.multi_df.loc['%.5f' % z].copy()
 
         z_df['N_total'].replace(0., np.NaN, inplace=True)
         z_df.dropna(subset=['N_total'],inplace=True)
