@@ -135,7 +135,7 @@ for z in tqdm(sim.multi_df.z.unique()):
             new_zdf['SN_age_dist']=age_dists
             # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
 
-            gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total','usdss','gsdss','rsdss','isdss','zsdss']]
+            gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total','sdssu','sdssg','sdssr','sdssi','sdssz']]
 
             sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples] #/new_zdf.loc[i,'SN_age_dist'].sum()
             gals_df['SN_age'] = np.array(sn_ages)
@@ -193,6 +193,6 @@ hostlib_df=hostlib_df[['VARNAMES:','GALID', 'RA','DEC','ZTRUE', 'g_obs', 'r_obs'
             'n0_Sersic','a0_Sersic', 'b0_Sersic', 'a_rot',
             'LOGMASS','LOGMASS_ERR','LOG_SFR', 'LOG_SFR_ERR', 'LOG_sSFR','obs_gr',
        'U', 'B', 'V', 'R', 'I', 'U_R', 'mean_age', 'Av', 'pred_rate_total',
-       'SN_age','usdss','gsdss','rsdss','isdss','zsdss']]
+       'SN_age','sdssu','sdssg','sdssr','sdssi','sdssz']]
 hostlib_df.to_hdf(os.path.join(savedir,'%s_combined.h5'%sys.argv[2]),key='main',index=False)
 hostlib_df.to_csv(os.path.join(savedir,'%s_combined.csv'%sys.argv[2]),)
