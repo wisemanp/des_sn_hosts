@@ -117,7 +117,7 @@ for z in tqdm(sim.multi_df.z.unique()):
                             if z <0.14:
                                 ext = split_z[0]+'z_'+'%.5f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                             else:
-                                ext = split_z[0]+'z_'+'%.3f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
+                                ext = split_z[0]+'z_'+'%.5f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
                             new_fn = os.path.join(os.path.split(sim.config['hostlib_fn'])[0],'SN_ages',ext)
                             sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
                         age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
