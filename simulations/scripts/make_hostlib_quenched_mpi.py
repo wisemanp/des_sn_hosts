@@ -100,16 +100,20 @@ def sed_worker(worker_args):
             #    sfh_coeffs_PW21 = None
             #    template = pd.read_hdf('/media/data3/wiseman/des/AURA/PEGASE/templates_analytic_orig_%i.h5' % tf,
             #                           key='main')
+            galid_string = 'all_model_params_quench_%s_z_%.5f_rv_rand_full_age_dists_neb_U%.2f_res_%i_beta_%.2f_%.1f_%.3f_%.3f'%(args.templates,z,args.logU,args.time_res,args.beta,tf,Av,Rv)
+
+
             U_R,fluxes,colours= s.calculate_model_fluxes_pw(z,sfh_coeffs_PW21,dust={'Av':Av,'Rv':Rv,'delta':'none','law':'CCM89'},
-                                                    neb=args.neb,logU=args.logU,mtot=mtot,age=age)
+                                                    neb=args.neb,logU=args.logU,mtot=mtot,age=age,specsavename=galid_string)
             obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
             U,B,V,R,I,sdssu,sdssg,sdssr,sdssi,sdssz = (colours[i] for i in colours.keys())
 
-            results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,pred_rate_total,tf],obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I,sdssu,sdssg,sdssr,sdssi,sdssz]))
+            results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,pred_rate_total,tf],
+                    obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I,sdssu,sdssg,sdssr,sdssi,sdssz,galid_string]))
 
         df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
                                                 'pred_rate_x1_lo','pred_rate_total','t_f',
-                                                'm_g','m_r','m_i','m_z','U','B','V','R','I','sdssu','sdssg','sdssr','sdssi','sdssz'])
+                                                'm_g','m_r','m_i','m_z','U','B','V','R','I','sdssu','sdssg','sdssr','sdssi','sdssz','galid_spec'])
         #df['g_r'] = df['m_g'] - df['m_r']
 
     except:
