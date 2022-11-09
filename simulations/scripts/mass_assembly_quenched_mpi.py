@@ -237,7 +237,7 @@ def main(args):
         tfs = np.arange(args.tstart,13000,args.early_step)
 
     worker_args = [[args,tf,save_dir] for tf in tfs]
-    pool_size = 16
+    pool_size = 24
     pool = MyPool(processes=pool_size)
     for _ in tqdm(pool.imap_unordered(script_worker,worker_args),total=len(worker_args)):
         pass
