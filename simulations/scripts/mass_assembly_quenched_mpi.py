@@ -80,7 +80,7 @@ def draw_pQ_alt(M,z,f):
 
 
 def pmin_z(z):
-    return np.max([0.03,(1-((z-10)/10)**2)])
+    return 0 #np.max([0.03,(1-((z-10)/10)**2)])
 
 def pQ_Mz_ft(M,z,isq,mqs):
     pq = []
@@ -136,7 +136,7 @@ def fml_t(t):
 
 def sfr_Mz_alt(M,z,isq):
     isqs,pqs = pQ_Mz_ft2(M,z,isq)
-    return pqs * psi_Mz_alt(M,z) + 0.2*np.random.choice([0,1],p=[0.95,0.05])*psi_Mz_alt(M,z), isqs
+    return pqs * psi_Mz_alt(M,z) + 0.05*np.random.choice([0,1],p=[0.95,0.05])*psi_Mz_alt(M,z), isqs
 
 
 def parser():
@@ -224,7 +224,7 @@ def main(args):
     config=yaml.load(open(args.config))
     save_dir = config['rates_root']+'SFHs/'
     if args.test:
-        save_dir=save_dir+'test/'
+        save_dir=save_dir+'test_smaller_bursts/'
     if not os.path.isdir(save_dir):
         os.mkdir(save_dir)
     dt = args.dt
