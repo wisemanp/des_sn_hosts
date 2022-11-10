@@ -152,7 +152,7 @@ def run(args):
                         obs_flux  = list(fluxes.values())#+cosmo.distmod(z).value
                         U,B,V,R,I,sdssu,sdssg,sdssr,sdssi,sdssz = (colours[i] for i in colours.keys())
 
-                        results.append(np.concatenate([[z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,pred_rate_total,tf],
+                        results.append(np.concatenate([z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,pred_rate_total,tf,
                                 obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I,sdssu,sdssg,sdssr,sdssi,sdssz,galid_string]))
                 df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
                                                         'pred_rate_x1_lo','SN_ages','SN_age_dist','pred_rate_total',
