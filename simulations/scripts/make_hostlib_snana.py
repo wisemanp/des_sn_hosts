@@ -51,10 +51,12 @@ for z in tqdm(sim.multi_df.z.unique()):
         #print(z)
         #print('N total min',z_df['N_total'].min())
         #print('Rate min',z_df['pred_rate_total'].min())
+
         if len(z_df)>0:
             z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
 
             z_df['N_SN_int'] = z_df.loc[:,'N_SN_float'].astype(int)
+
 
             # Now we set up some index arrays so that we can sample masses properly
             #mav0_inds = z_df.loc[idx[:, '0.00000', :]].index
@@ -136,7 +138,7 @@ for z in tqdm(sim.multi_df.z.unique()):
             new_zdf['SN_age_dist']=age_dists
             # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
             print(new_zdf.columns)
-            gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total','sdssu','sdssg','sdssr','sdssi','sdssz','galid_spec']]
+            gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total','sdssu','sdssg','sdssr','sdssi','sdssz','galid_spec_float']]
 
             sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples] #/new_zdf.loc[i,'SN_age_dist'].sum()
             gals_df['SN_age'] = np.array(sn_ages)
@@ -167,7 +169,7 @@ hostlib_df['VARNAMES:'] = 'GAL'
 hostlib_df.reset_index(inplace=True)
 hostlib_df.reset_index(inplace=True)
 
-hostlib_df.rename(columns={'index:':'GALID','index':'GALID','m_g':'g_obs','m_r':'r_obs','m_i':'i_obs','m_z':'z_obs','galid_spec':'SPECID_GAL'},inplace=True)
+hostlib_df.rename(columns={'index:':'GALID','index':'GALID','m_g':'g_obs','m_r':'r_obs','m_i':'i_obs','m_z':'z_obs','galid_spec_float':'SPECID_GAL'},inplace=True)
 
 
 field_centres = np.array([[54.2743, -27.1116],
