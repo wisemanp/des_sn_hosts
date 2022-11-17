@@ -45,7 +45,7 @@ for z in tqdm(sim.multi_df.z.unique()):
 
         z_df['N_total'].replace(0., np.NaN, inplace=True)
         z_df.dropna(subset=['N_total'],inplace=True)
-
+        print(z_df.columns)
         #print('#########')
         #print(z)
         #print('N total min',z_df['N_total'].min())
