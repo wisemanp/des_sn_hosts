@@ -134,7 +134,7 @@ for z in tqdm(sim.multi_df.z.unique()):
             new_zdf.sort_values(by='mass',inplace=True)
             new_zdf['SN_age_dist']=age_dists
             # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
-
+            print(new_zdf.columns)
             gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total','sdssu','sdssg','sdssr','sdssi','sdssz','galid_spec']]
 
             sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples] #/new_zdf.loc[i,'SN_age_dist'].sum()
