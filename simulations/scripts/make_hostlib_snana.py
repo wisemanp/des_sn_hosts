@@ -189,7 +189,9 @@ radecs = np.random.uniform(field_centres[fields]-1.5,field_centres[fields]+1.5)
 
 hostlib_df['RA'] = radecs[:,0]
 hostlib_df['DEC'] = radecs[:,1]
-
+hostlib_df['mass'] = np.log10(hostlib_df['mass'])
+hostlib_df['ssfr'] = np.log10(hostlib_df['ssfr'])
+hostlib_df['LOG_SFR'] = np.log10(hostlib_df['LOG_SFR'])
 hostlib_df.rename(columns={'z':'ZTRUE','mass':'LOGMASS','ssfr':'LOG_sSFR'},inplace=True)
 hostlib_df['ZERR'] = 0
 hostlib_df=hostlib_df[['VARNAMES:','GALID', 'RA','DEC','ZTRUE', 'g_obs', 'r_obs', 'i_obs', 'z_obs',
