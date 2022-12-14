@@ -410,7 +410,10 @@ class SynSpec():
             np.savetxt(self.root_dir + 'model_spectra/' + 'z_%.2f_m_%.2f_Av_%.2f_%s_rest.txt' % (
             z, np.log10(mtot), dust['Av'],self.library), spec_arr)
 
-            mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
+            if z>0:
+                mag_corr = 1/((4*np.pi*(self.cosmo.luminosity_distance(z).to(u.cm))**2))
+            else:
+                mag_corr = 0
             try:
                 model_spec_redshifted = Spectrum(wave=(1 + z) * model_spec_reddened.wave().values * u.AA,flux= model_spec_reddened.flux() * mag_corr / (1 + z),
                 var = np.ones_like(model_spec_reddened.flux()))
