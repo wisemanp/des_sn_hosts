@@ -358,7 +358,7 @@ class SynSpec():
             model_neb_wave, model_neb_flux = self.synphot_model_emlines(sfh_coeffs, logU=logU)
             # print(model_neb_wave)
 
-            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave * 10, model_neb_flux / 10, model_spec.wave())
+            model_neb_flux_rebinned = rebin_a_spec(model_neb_wave * 10, model_neb_flux*(1+z), model_spec.wave())
             # self.model_neb = Spectrum(wave=model_spec.wave(),flux=model_neb_flux_rebinned,var = np.ones_like(model_neb_flux_rebinned))
             model_spec = Spectrum(wave=model_spec.wave(), flux=model_spec.flux() + model_neb_flux_rebinned,
                                   var=model_spec.var())
