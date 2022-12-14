@@ -427,7 +427,7 @@ class SynSpec():
             if specsavename==None:
                 specsavename =  'z_%.2f_m_%.2f_Av_%.2f_%s_obs.txt' % (
                 z, np.log10(mtot), dust['Av'],self.library)
-            np.savetxt(self.root_dir + 'model_spectra/' +specsavename, spec_arr)
+            np.savetxt(self.root_dir + 'model_spectra/20221214/' +specsavename, spec_arr)
         return colour, des_fluxes, colours
 
     def calculate_model_fluxes_pw_fixed_SFH(self,templates,z,dust=None,neb=False,logU=-2,mtot=1E+10,savespec=True):
