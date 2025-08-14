@@ -82,13 +82,16 @@ def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
 
     return mean_eff_func,std_eff_func
 
-def interpolate_zdf(zdf,marr):
-    '''Function to iterpolate SFH data frame onto a log-linear mass grid '''
+def interpolate_zdf(zdf, marr):
+    """Function to interpolate SFH data frame onto a log-linear mass grid."""
+    # Ensure 'mass' is numeric, coerce errors to np.nan
+    zdf['mass'] = pd.to_numeric(zdf['mass'], errors='coerce')
 
-    gb =zdf.groupby(pd.cut(zdf['mass'],bins=marr)).agg(np.nanmean)
-    gb.dropna(subset=['mass'],inplace=True)
-    gb.reset_index(drop=True,inplace=True)
+    gb = zdf.groupby(pd.cut(zdf['mass'], bins=marr)).agg(np.nanmean)
+    gb.dropna(subset=['mass'], inplace=True)
+    gb.reset_index(drop=True, inplace=True)
     return gb
+
 def make_z_pdf(zbins, power=2.5):
     """
     Create a normalized probability distribution for SN redshifts.
