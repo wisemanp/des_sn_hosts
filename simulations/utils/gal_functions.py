@@ -84,8 +84,7 @@ def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
 
 def interpolate_zdf(zdf, marr):
     """Interpolate SFH data frame onto a log-linear mass grid, safely handling non-numeric columns."""
-    # Ensure mass is numeric
-    zdf['mass'] = pd.to_numeric(zdf['mass'], errors='coerce')
+    
 
     # Split numeric and non-numeric columns
     numeric_cols = zdf.select_dtypes(include=[np.number]).columns
