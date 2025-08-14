@@ -1,0 +1,17 @@
+config_path: '/home/wiseman/code/des_sn_hosts/simulations/config/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_quenched_bursty_mass_step.yaml'
+Rv_lo:
+    lo: 1.5
+    hi: 2.75
+    step: 0.25
+Rv_hi:
+    lo: 2.5
+    hi: 4.00
+    step: 0.25
+mass_step:
+    lo: 0.0
+    hi: 0.25
+    step: 0.05
+save:
+    dir: 'age_step_Rv_quench_bursts_mass_step_lo_hicut'
+
+n_samples: 25000

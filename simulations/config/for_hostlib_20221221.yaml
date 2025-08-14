@@ -1,11 +1,11 @@
-hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_BC03_z0.0005_1.400_av0.00_1.50_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.14_combined.h5
+hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/20221214/all_model_params_quench_bursts_BC03_z0.0005_1.32000_av0.00_1.50_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.13_combined.h5
 config:
-  root_dir: $AURA_DIR
   efficiency_dir: /media/data3/wiseman/des/desdtd/
+  root_dir: $AURA_DIR
 SN_rv_model:
   model: age_rv_step
   params:
-    rv_young: 3.75
+    rv_young: 2.75
     rv_old: 1.5
     rv_sig_young: 1.0
     rv_sig_old: 1.0
@@ -24,8 +24,8 @@ Host_Av_model:
 SN_E_model:
   model: E_exp_age
   params:
-    Tau_low: 0.12
-    Tau_high: 0.15
+    Tau_low: 0.10
+    Tau_high: 0.14
     age_split: 3
 
 SN_colour_model:
@@ -40,18 +40,16 @@ SN_colour_model:
 x1_model:
   model: x1_twogauss_age
   params:
-    mu_young: 0.22
-    sig_young: 0.61
-    mu_old: -1.
-    sig_old: 0.86
+    mu_young: 0.25
+    sig_young: 0.55
+    mu_old: -1.1
+    sig_old: 0.6
     age_step_loc: 0.75
     old_prob: 0.75
-
-
 mB_model:
   model: tripp_rv_popn_alpha_beta
   params:
-    mu_alpha: 0.21
+    mu_alpha: 0.22
     sig_alpha: 0.0001
     mu_beta: 2.0
     sig_beta: 0.35
@@ -62,10 +60,11 @@ mB_model:
       loc: 10
     age_step:
       mag: 0.0
-      loc: 0.6
+      loc: 0.75
 
 mu_res_fitter:
   fitter: fit_mu_res_nostep
   params:
     fix_alpha: False
     fix_beta: False
+c_perfect: False

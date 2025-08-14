@@ -14,4 +14,4 @@ age_step:
 save:
     dir: 'fix_Rv_lo_cut_mass_twoalpha_age'
 
-n_samples: 150000
+n_samples: 15000

@@ -1,0 +1,17 @@
+config_path: '/home/wiseman/code/des_sn_hosts/simulations/config/DES_BS20_agebias_Rv_age_x1_step.yaml'
+Rv_lo:
+    lo: 3.00
+    hi: 3.00
+    step: 0.1
+Rv_hi:
+    lo: 2.00
+    hi: 2.00
+    step: 0.1
+age_step:
+    lo: 0.0
+    hi: 0.25
+    step: 0.05
+save:
+    dir: 'fix_Rv_BS20like_age_step'
+
+n_samples: 15000

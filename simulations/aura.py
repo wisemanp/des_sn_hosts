@@ -72,7 +72,7 @@ class Sim(SN_Model):
         for z in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),1)]):   # Iterate through the SFHs for galaxies of different final masses
             with pd.HDFStore(fn,'r') as store:
                 df = store['/'+z]
-                full_df = full_df.append(df)
+                full_df = pd.concat([full_df,df])
         for col in full_df.columns:
             try:
                 full_df[col]=full_df[col].astype(float)
@@ -151,7 +151,8 @@ class Sim(SN_Model):
         self.sim_df = pd.DataFrame()
 
         for z,n in zip(z_arr,n_samples_arr):
-            self.sim_df = self.sim_df.append(self._sample_SNe_z(z,n))
+            #print('Doing z',z)
+            self.sim_df = pd.concat([self.sim_df,self._sample_SNe_z(z,n)])
         if save_df:
             if savepath=='default':
                 savepath = self.root_dir +'/sims/SNe/'+ self.save_string +'_SN_sim.h5'
@@ -175,14 +176,15 @@ class Sim(SN_Model):
         z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
 
         z_df['N_SN_int'] = z_df.loc[:,'N_SN_float'].astype(int)
-
+        #print(z_df.columns)
+        z_df.drop(['delta'],axis=1,inplace=True)
         resampled_df = pd.DataFrame()
         marr= np.logspace(6,11.6,100)
         for av in z_df.Av.unique():
             av_df =z_df.loc[idx[:, '%.5f'%av, :]]
-            #print(av_df)
+            #print('Av df',av_df)
             av_df = interpolate_zdf(av_df,marr)
-            resampled_df = resampled_df.append(av_df)
+            resampled_df = pd.concat([resampled_df,av_df])
         #print(resampled_df.columns)
         Av_str = resampled_df['Av'].apply(lambda x: '%.5f'%x)
         mass_str = resampled_df['mass'].apply(lambda x: '%.2f'%x)
@@ -233,6 +235,7 @@ class Sim(SN_Model):
                     age_df.loc[age_inds,'%.2f'%(float(k))] = sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values)
                 age_df.fillna(0,inplace=True)
                 for av in g.Av.unique():
+                    print(len(np.nonzero(np.nanmean(age_df,axis=1))[0]),'is the number of nonzero ages available to pull from')
                     age_dists.append(np.nanmean(age_df,axis=1))
             else:
                 pass
@@ -241,8 +244,13 @@ class Sim(SN_Model):
         new_zdf['SN_age_dist']=age_dists
         # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
         gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total']]
-
+        #Debugging!
+        print(f'Redshift bin: {z}. len of the SN age dist we are sampling from')
+        print(f'drawing {len(m_av0_samples)} samples from from SN ages of len {len(age_grid)}')
+        print(f'SN age options are {age_grid}')
+        print(f'There are {len(m_av0_samples)} galaxies being drawn from') #, with {len(m_av0_samples["m"].unique())} unique galaxies')
         sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples]
+        print(f'there are {len(sn_ages)} SN ages, of which {len(np.unique(sn_ages))} are unique')
         gals_df['SN_age'] = np.array(sn_ages)
         args['Av_grid'] = new_zdf.Av.unique()
         args['mass'] = gals_df.mass.values

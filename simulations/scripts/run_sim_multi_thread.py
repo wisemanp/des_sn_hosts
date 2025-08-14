@@ -79,10 +79,10 @@ def sim_worker(args):
     c['mB_model']['params']['age_step']['mag'] = float(age_step)
     sim.config = c
     #n_samples_arr = sim._get_z_dist(des5yr['zHD'],n=cfg['n_samples'])
-    zs = np.linspace(0,1,100)
+    zs = np.linspace(0,1.22,100)
     zs_cubed = zs**2.5
     numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=cfg['n_samples'])
-    zarr = np.arange(0.14,0.84,0.04)
+    zarr = np.arange(0.18,1.22,0.04)
     n_samples_arr = sim._get_z_dist(numbers,n=cfg['n_samples'],frac_low_z=0.,zbins=zarr+0.02)
 
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'])):
@@ -98,7 +98,7 @@ def sim_worker(args):
                             ]
     sim.sim_df = sim.sim_df[sim.sim_df['mB']<25]
     sim.sim_df = sim.sim_df[sim.sim_df['eff_mask']==1]
-    sim.sim_df = sim.sim_df[sim.sim_df['z']<=0.7]
+    #sim.sim_df = sim.sim_df[sim.sim_df['z']<=0.7]
     sim.sim_df.to_hdf(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
         '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)),key='sim')
 
@@ -118,13 +118,23 @@ if __name__=='__main__':
     cfg = load_config(cpath)
     Rv_lo_grid = np.arange(cfg['Rv_lo']['lo'],cfg['Rv_lo']['hi'],cfg['Rv_lo']['step'])
     Rv_hi_grid = np.arange(cfg['Rv_hi']['lo'],cfg['Rv_hi']['hi'],cfg['Rv_hi']['step'])
+    if len(Rv_lo_grid)==0:
+        Rv_lo_grid = [cfg['Rv_lo']['lo']]
+    if len(Rv_hi_grid)==0:
+        Rv_hi_grid = [cfg['Rv_hi']['lo']]
     age_step_grid = np.arange(cfg['age_step']['lo'],cfg['age_step']['hi'],cfg['age_step']['step'])
-
+    if len(age_step_grid)==0:
+        age_step_grid = [cfg['age_step']['lo']]
+    print('Grids: ')
+    print(Rv_lo_grid)
+    print(Rv_hi_grid)
+    print(age_step_grid)
     args = []
     for rv_lo in Rv_lo_grid:
         for rv_hi in Rv_hi_grid:
             for age_step in age_step_grid:
                 args.append([rv_hi,rv_lo,age_step,cfg])
+    print('Should multi sim these args',args)
     multi_sim(args)
     print('Simulations complete. Now converting to BBC format')
     n=0

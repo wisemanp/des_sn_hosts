@@ -85,7 +85,7 @@ def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
 def interpolate_zdf(zdf,marr):
     '''Function to iterpolate SFH data frame onto a log-linear mass grid '''
 
-    gb =zdf.groupby(pd.cut(zdf['mass'],bins=marr)).agg(np.mean)
+    gb =zdf.groupby(pd.cut(zdf['mass'],bins=marr)).agg(np.nanmean)
     gb.dropna(subset=['mass'],inplace=True)
     gb.reset_index(drop=True,inplace=True)
     return gb

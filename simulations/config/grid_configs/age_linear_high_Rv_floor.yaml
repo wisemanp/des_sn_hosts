@@ -14,4 +14,4 @@ age_step:
 save:
     dir: 'age_linear_Rv_lo_hicut'
 
-n_samples: 50000
+n_samples: 150000

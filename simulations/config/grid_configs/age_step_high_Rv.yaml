@@ -1,4 +1,4 @@
-config_path: '/home/wiseman/code/des_sn_hosts/simulations/config/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14.yaml'
+config_path: '/home/wiseman/code/des_sn_hosts/simulations/config/DES_BS20_age_Rv_step_3Gyr_age_x1_beta_1.14_quenched_bursty.yaml'
 Rv_lo:
     lo: 1.5
     hi: 2.75
