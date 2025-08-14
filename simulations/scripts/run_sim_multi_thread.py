@@ -113,7 +113,7 @@ def sim_worker(args):
     sim.config = c
     #n_samples_arr = sim._get_z_dist(des5yr['zHD'],n=cfg['n_samples'])
     # Derive allowed redshift bins from flux_df keys
-    zarr = np.array(sorted(map(float, sim.flux_df.keys())))
+    zarr = np.sort(sim.flux_df['z'].unique().astype(float))
 
     # Make z^2.5 distribution for these bins
     z_pdf = make_z_pdf(zarr, power=2.5)
