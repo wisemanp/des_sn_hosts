@@ -13,8 +13,7 @@ from astropy.cosmology import FlatLambdaCDM
 from scipy.optimize import minimize
 import time
 from .models.sn_model import SN_Model
-from .utils.gal_functions import schechter, single_schechter, double_schechter, ozdes_efficiency, interpolate_zdf, make_z_pdf
-#from .utils.plotter import *
+from .utils.gal_functions import schechter, ozdes_efficiency, interpolate_zdf
 from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
 import logging
 
@@ -219,7 +218,7 @@ class Sim(SN_Model):
         for mass_bin, g in z_df.groupby(pd.cut(z_df['mass'], bins=marr)):
             logger.debug(f"Processing mass bin: {np.log10(mass_bin.mid)}")
             if len(g) == 0:
-                logger.info(f"Skipping empty mass bin: {np.log10(mass_bin.mid)}")
+                #logger.info(f"Skipping empty mass bin: {np.log10(mass_bin.mid)}")
                 continue
             min_av = g.Av.astype(float).min()
             g_Av_0 = g.loc[idx[:, f"{min_av:.5f}", :]]

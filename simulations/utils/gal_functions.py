@@ -2,6 +2,8 @@
 import numpy as np
 import pandas as pd
 import os
+import warnings
+warnings.simplefilter('ignore', np.RankWarning)
 def double_schechter(logM,logM_star,phi_star_1,alpha_1,phi_star_2,alpha_2):#logM_star,phi_star_1,alpha_1,phi_star_2,alpha_2):
     if phi_star_1<0:
         phi_star_1 = 10**phi_star_1
