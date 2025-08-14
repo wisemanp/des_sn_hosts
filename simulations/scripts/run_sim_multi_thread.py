@@ -1,6 +1,7 @@
 from des_sn_hosts.simulations import aura
 from des_sn_hosts.simulations.utils.plotter import *
 from des_sn_hosts.simulations.utils.plotter_paper import *
+from des_sn_hosts.simulations.utils.gal_functions import make_z_pdf
 from des_sn_hosts.utils.utils import MyPool
 from tqdm import tqdm
 import sys
@@ -8,6 +9,8 @@ from yaml import safe_load as yload
 from yaml import safe_dump as ydump
 import csv
 import numpy as np
+import os
+
 
 import multiprocessing
 des5yr = pd.read_hdf(os.path.join(aura_dir,'data','DES5YR_MV20200701_Hosts20211018_BBC1D.h5'))
@@ -59,31 +62,65 @@ def prep_df_for_BBC(df):
            #'prog_age'
             ]
     return df,columns
+def get_z_bin_counts(zbins, pdf, n_samples):
+    """
+    Draw counts for each redshift bin given a probability density.
+    
+    Parameters
+    ----------
+    zbins : array
+        Allowed redshift bin centers.
+    pdf : array
+        Probability per bin (same length as zbins).
+    n_samples : int
+        Total number of draws.
+    
+    Returns
+    -------
+    counts : array
+        Number of samples per bin (aligned with zbins order).
+    """
+    pdf = np.array(pdf, dtype=float)
+    pdf /= pdf.sum()  # Normalize
+    draws = np.random.choice(zbins, size=n_samples, p=pdf)
+    counts = np.array([np.sum(draws == z) for z in zbins])
+    return counts
+
 
 def sim_worker(args):
 
-    rv_hi,rv_lo,age_step,cfg = [args[i] for i in range(4)]
+    rv_hi, rv_lo, age_step, cfg = args
     pth = cfg['config_path']
     model_config = os.path.split(pth)[-1]
     model_name = model_config.split('.')[0]
+
     sim = aura.Sim(pth)
-    with open(pth,'r') as f:
+
+    with open(pth, 'r') as f:
         c = yload(f)
-    if c['SN_rv_model']['model']=='age_rv_step':
+
+    # Update RV parameters based on model
+    if c['SN_rv_model']['model'] == 'age_rv_step':
         c['SN_rv_model']['params']['rv_young'] = float(rv_hi)
         c['SN_rv_model']['params']['rv_old'] = float(rv_lo)
-
     else:
         c['SN_rv_model']['params']['rv_low'] = float(rv_hi)
         c['SN_rv_model']['params']['rv_high'] = float(rv_lo)
+
+    # Update mB age step
     c['mB_model']['params']['age_step']['mag'] = float(age_step)
+
     sim.config = c
     #n_samples_arr = sim._get_z_dist(des5yr['zHD'],n=cfg['n_samples'])
-    zs = np.linspace(0,1.22,100)
-    zs_cubed = zs**2.5
-    numbers = np.random.choice(zs,p=zs_cubed/np.sum(zs_cubed),size=cfg['n_samples'])
-    zarr = np.arange(0.18,1.22,0.04)
-    n_samples_arr = sim._get_z_dist(numbers,n=cfg['n_samples'],frac_low_z=0.,zbins=zarr+0.02)
+    # Derive allowed redshift bins from flux_df keys
+    zarr = np.array(sorted(map(float, sim.flux_df.keys())))
+
+    # Make z^2.5 distribution for these bins
+    z_pdf = make_z_pdf(zarr, power=2.5)
+
+    # Get counts per bin
+    n_samples_arr = sim._get_z_dist(z_pdf, n=cfg['n_samples'], frac_low_z=0., zbins=zarr)
+
 
     if not os.path.isdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'])):
         os.mkdir(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir']))
@@ -100,7 +137,7 @@ def sim_worker(args):
     sim.sim_df = sim.sim_df[sim.sim_df['eff_mask']==1]
     #sim.sim_df = sim.sim_df[sim.sim_df['z']<=0.7]
     sim.sim_df.to_hdf(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
-        '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)),key='sim')
+        '%s_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)),key='sim')
 
 def multi_sim(args):
 

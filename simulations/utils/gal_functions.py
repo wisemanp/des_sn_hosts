@@ -89,3 +89,23 @@ def interpolate_zdf(zdf,marr):
     gb.dropna(subset=['mass'],inplace=True)
     gb.reset_index(drop=True,inplace=True)
     return gb
+def make_z_pdf(zbins, power=2.5):
+    """
+    Create a normalized probability distribution for SN redshifts.
+
+    Parameters
+    ----------
+    zbins : array-like
+        Allowed redshift bin centers (must match flux_df keys).
+    power : float
+        Exponent for the distribution (z^power).
+
+    Returns
+    -------
+    pdf : np.ndarray
+        Normalized probabilities for each bin.
+    """
+    zbins = np.array(zbins, dtype=float)
+    pdf = zbins**power
+    pdf /= pdf.sum()
+    return pdf

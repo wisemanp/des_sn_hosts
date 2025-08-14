@@ -13,7 +13,7 @@ from astropy.cosmology import FlatLambdaCDM
 from scipy.optimize import minimize
 import time
 from .models.sn_model import SN_Model
-from .utils.gal_functions import schechter, single_schechter, double_schechter, ozdes_efficiency, interpolate_zdf
+from .utils.gal_functions import schechter, single_schechter, double_schechter, ozdes_efficiency, interpolate_zdf, make_z_pdf
 #from .utils.plotter import *
 from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
 
@@ -99,6 +99,66 @@ class Sim(SN_Model):
             self.x1_func.__name__,
             self.mb_func.__name__
         ])
+    def _get_z_dist(self, zsource, n=1000, frac_low_z=0.0, zbins=None):
+        """
+        Get the number of SNe to draw in each redshift bin.
+
+        Parameters
+        ----------
+        zsource : array-like
+            Either:
+            - A normalized PDF for zbins, OR
+            - A continuous or discrete redshift sample to histogram.
+        n : int
+            Total number of SNe to simulate.
+        frac_low_z : float
+            Fraction of SNe to force into the lowest redshift bin.
+        zbins : array-like
+            Allowed redshift bin centers.
+
+        Returns
+        -------
+        counts : np.ndarray
+            Number of SNe per redshift bin, in same order as zbins.
+        """
+        if zbins is None:
+            raise ValueError("zbins must be provided and match flux_df keys.")
+        zbins = np.array(zbins, dtype=float)
+
+        if len(zsource) == len(zbins) and np.isclose(np.sum(zsource), 1.0):
+            # Assume zsource is already a normalized PDF
+            pdf = np.array(zsource, dtype=float)
+        elif not np.all(np.isin(zsource, zbins)):
+            # Continuous input — bin it
+            edges = np.concatenate([
+                [zbins[0] - (zbins[1] - zbins[0]) / 2],
+                (zbins[:-1] + zbins[1:]) / 2,
+                [zbins[-1] + (zbins[-1] - zbins[-2]) / 2]
+            ])
+            hist, _ = np.histogram(zsource, bins=edges)
+            pdf = hist.astype(float)
+            pdf /= pdf.sum()
+        else:
+            # Discrete input of allowed bins
+            unique, counts = np.unique(zsource, return_counts=True)
+            pdf = np.array([counts[unique == z].sum() if z in unique else 0 for z in zbins], dtype=float)
+            pdf /= pdf.sum()
+
+        counts = np.random.multinomial(n, pdf)
+
+        if frac_low_z > 0:
+            low_z_count = int(np.round(frac_low_z * n))
+            counts[0] += low_z_count
+            # Remove from other bins proportionally
+            if counts.sum() > n:
+                excess = counts.sum() - n
+                nonzero_idx = np.where(counts[1:] > 0)[0] + 1
+                for i in nonzero_idx:
+                    take = min(counts[i], int(round(excess * (counts[i] / counts[1:].sum()))))
+                    counts[i] -= take
+                counts[counts < 0] = 0
+
+        return counts
 
     # ----------------------
     # MAIN SAMPLING
