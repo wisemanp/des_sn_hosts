@@ -226,7 +226,7 @@ class Sim(SN_Model):
                 )
 
             age_df.fillna(0, inplace=True)
-            avg_dist = np.nanmean(age_df, axis=1).values
+            avg_dist = np.nanmean(age_df, axis=1)
 
             # Assign to all matching rows
             for idx_key in new_zdf.index[new_zdf['mass'].between(
