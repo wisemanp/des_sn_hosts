@@ -83,11 +83,21 @@ def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
     return mean_eff_func,std_eff_func
 
 def interpolate_zdf(zdf, marr):
-    """Function to interpolate SFH data frame onto a log-linear mass grid."""
-    # Ensure 'mass' is numeric, coerce errors to np.nan
+    """Interpolate SFH data frame onto a log-linear mass grid, safely handling non-numeric columns."""
+    # Ensure mass is numeric
     zdf['mass'] = pd.to_numeric(zdf['mass'], errors='coerce')
 
-    gb = zdf.groupby(pd.cut(zdf['mass'], bins=marr)).agg(np.nanmean)
+    # Split numeric and non-numeric columns
+    numeric_cols = zdf.select_dtypes(include=[np.number]).columns
+    non_numeric_cols = zdf.select_dtypes(exclude=[np.number]).columns
+
+    # Group and take mean only for numeric columns
+    gb = zdf.groupby(pd.cut(zdf['mass'], bins=marr))[numeric_cols].agg(np.nanmean)
+
+    # Optionally, you could also keep the first value of non-numeric columns per bin
+    for col in non_numeric_cols:
+        gb[col] = zdf.groupby(pd.cut(zdf['mass'], bins=marr))[col].first()
+
     gb.dropna(subset=['mass'], inplace=True)
     gb.reset_index(drop=True, inplace=True)
     return gb
