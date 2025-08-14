@@ -217,9 +217,9 @@ class Sim(SN_Model):
 
         # Fill age distributions per mass bin
         for mass_bin, g in z_df.groupby(pd.cut(z_df['mass'], bins=marr)):
-            logger.debug(f"Processing mass bin: {np.log10(mass_bin)}")
+            logger.debug(f"Processing mass bin: {np.log10(mass_bin.mid)}")
             if len(g) == 0:
-                logger.info(f"Skipping empty mass bin: {np.log10(mass_bin)}")
+                logger.info(f"Skipping empty mass bin: {np.log10(mass_bin.mid)}")
                 continue
             min_av = g.Av.astype(float).min()
             g_Av_0 = g.loc[idx[:, f"{min_av:.5f}", :]]
