@@ -30,109 +30,59 @@ idx = pd.IndexSlice
 age_grid = np.arange(0,13.7,0.0005)
 age_grid_index = ['%.4f'%a for a in age_grid]
 class Sim(SN_Model):
-    def __init__(self,conf_path,cosmo='default'):
-        '''
+    """
+    Simulation class for drawing SN samples from a galaxy population.
+    """
 
-        :param fn:
-        :type fn:
-        :param cosmo:
-        :type cosmo:
-        '''
+    def __init__(self, conf_path, cosmo='default'):
         self.config = self._get_config(conf_path)
+
         root_dir = self.config['config']['root_dir']
-        if root_dir[0]=='$':
-            self.root_dir = os.environ.get(root_dir[1:])
-        else:
-            self.root_dir = root_dir
-        self.fig_dir = os.path.join(self.root_dir,'figs/')
+        self.root_dir = os.environ.get(root_dir[1:]) if root_dir.startswith('$') else root_dir
+
+        self.fig_dir = os.path.join(self.root_dir, 'figs/')
         self.eff_dir = self.config['config']['efficiency_dir']
         self.flux_df = self._load_flux_df(self.config['hostlib_fn'])
+
         self._calculate_absolute_rates()
         self._make_multi_index()
-        if cosmo=='default':
-            self.cosmo = FlatLambdaCDM(70,0.3)
-        else:
-            self.cosmo=cosmo
+
+        self.cosmo = FlatLambdaCDM(70, 0.3) if cosmo == 'default' else cosmo
         self._get_funcs()
 
-    def _get_config(self,conf_path):
-        with open(conf_path,'r') as f:
+    # ----------------------
+    # CONFIG & DATA LOADING
+    # ----------------------
+    def _get_config(self, conf_path):
+        with open(conf_path, 'r') as f:
             return yload(f)
-    def _load_flux_df_old(self,fn):
-        '''Deprecated'''
-        with pd.HDFStore(fn) as store:
-            keys=store.keys()
-            if 'main' in keys and len(keys)==1:
-                return pd.read_hdf(fn)
-            else:
-                full_df = pd.DataFrame()
-                if 'main' in keys:
-                    store.remove('main')
-                ordered_keys = np.sort([x for x in store.keys()])
-        for z in tqdm(ordered_keys[::-1][np.arange(0,len(ordered_keys),1)]):   # Iterate through the SFHs for galaxies of different final masses
-            with pd.HDFStore(fn,'r') as store:
-                df = store['/'+z]
-                full_df = pd.concat([full_df,df])
-        for col in full_df.columns:
-            try:
-                full_df[col]=full_df[col].astype(float)
-            except:
-                print(col)
-        return full_df
 
-    def _load_flux_df(self,fn):
-
+    def _load_flux_df(self, fn):
         df = pd.read_hdf(fn)
         for col in df.columns:
             try:
-                df[col]=df[col].astype(float)
-            except:
-                print(col)
+                df[col] = df[col].astype(float)
+            except Exception:
+                print(f"Non-numeric column in flux_df: {col}")
         return df
 
+    # ----------------------
+    # CALCULATIONS
+    # ----------------------
     def _calculate_absolute_rates(self):
-        '''For each simulated galaxy, we calculate the expected rate of SNe Ia by multplying it with the stellar mass density at that stellar mass
-        TODO: Currently this is for the SMF at z=0.5 but should update it to vary with redshift'''
-
-        #phi_star_1=3.96E-3
-        #alpha_1=-0.35
-        #phi_star_2=0.79E-3
-        #alpha_2=-1.47
-        #mstar = 10.66
-        #self.flux_df['phi']= self.flux_df['mass'].apply(lambda x: double_schechter(np.log10(x),mstar,phi_star_1,alpha_1,phi_star_2,alpha_2))
-        self.flux_df['SF'] = (np.repeat([0],len(self.flux_df['ssfr']))) * (np.log10(self.flux_df['ssfr'].values)>-10.0) + (np.repeat([1],len(self.flux_df['ssfr']))) * \
-                        (np.log10(self.flux_df['ssfr'].values)<=-10.)
-        self.flux_df['phi']= self.flux_df[['z','mass','SF']].apply(lambda x: schechter(x[0],np.log10(x[1]),x[2]),axis=1)
-        self.flux_df['N_x1_lo'] = self.flux_df['pred_rate_x1_lo']*self.flux_df['phi']
-        self.flux_df['N_x1_hi'] = self.flux_df['pred_rate_x1_hi']*self.flux_df['phi']
-        self.flux_df['N_total'] = self.flux_df['pred_rate_total']*self.flux_df['phi']
+        self.flux_df['SF'] = ((np.log10(self.flux_df['ssfr'].values) > -10.0).astype(int) == 0).astype(int)
+        self.flux_df['phi'] = self.flux_df[['z', 'mass', 'SF']].apply(
+            lambda x: schechter(x[0], np.log10(x[1]), x[2]), axis=1
+        )
+        self.flux_df['N_x1_lo'] = self.flux_df['pred_rate_x1_lo'] * self.flux_df['phi']
+        self.flux_df['N_x1_hi'] = self.flux_df['pred_rate_x1_hi'] * self.flux_df['phi']
+        self.flux_df['N_total'] = self.flux_df['pred_rate_total'] * self.flux_df['phi']
 
     def _make_multi_index(self):
-        ''' Convert the DataFrame to have a multi-index structure to enable us to easily select only one galaxy for each sample of [redshift, mass, Av]'''
-        z_str = self.flux_df['z'].apply(lambda x: '%.5f'%x)
-        mass_str = self.flux_df['mass'].apply(lambda x: '%.2f'%x)
-        Av_str = self.flux_df['Av'].apply(lambda x: '%.5f'%x)
-        # We now have three levels to the index: z, mass, Av. For any given z and mass, the stellar populations are identical at any Av, but the output fluxes and colours are not.
-        self.multi_df = self.flux_df.set_index([z_str,mass_str,Av_str,])
-
-    def _get_z_dist(self,z_vals,n=25000,frac_low_z=0.2,zbins=[]):
-        '''
-
-        :param z_vals: an array of redshifts that will have the same distribution that you want the simulation to have. This can be observed or simulated data.
-        :type z_vals:
-        :return:
-        :rtype:
-        '''
-        if len(zbins)==0:
-            zbins=[0.125, 0.175, 0.225, 0.275, 0.325, 0.375, 0.425, 0.475, 0.525, 0.575, 0.625,
-                  0.675,0.725,0.775,0.825]
-        counts, bins = np.histogram(z_vals,
-                                    bins=zbins)
-        norm_counts = counts / np.sum(counts)
-        norm_counts = counts / np.sum(counts)
-        n_samples_arr = norm_counts * n
-        n_samples_arr = np.concatenate([[n*frac_low_z], n_samples_arr])
-        return n_samples_arr
+        z_str = self.flux_df['z'].apply(lambda x: f"{x:.5f}")
+        mass_str = self.flux_df['mass'].apply(lambda x: f"{x:.2f}")
+        Av_str = self.flux_df['Av'].apply(lambda x: f"{x:.5f}")
+        self.multi_df = self.flux_df.set_index([z_str, mass_str, Av_str])
 
     def _get_funcs(self):
         self.rv_func = getattr(self, self.config['SN_rv_model']['model'])
@@ -141,170 +91,143 @@ class Sim(SN_Model):
         self.colour_func = getattr(self, self.config['SN_colour_model']['model'])
         self.x1_func = getattr(self, self.config['x1_model']['model'])
         self.mb_func = getattr(self, self.config['mB_model']['model'])
-        self.save_string = self.rv_func.__name__ + '_'+\
-                self.host_Av_func.__name__ + '_' +\
-                self.E_func.__name__ + '_' +\
-                self.colour_func.__name__ + '_' +\
-                self.x1_func.__name__ + '_' +\
-                self.mb_func.__name__
-    def sample_SNe(self,z_arr,n_samples_arr,save_df=True,savepath='default'):
+        self.save_string = "_".join([
+            self.rv_func.__name__,
+            self.host_Av_func.__name__,
+            self.E_func.__name__,
+            self.colour_func.__name__,
+            self.x1_func.__name__,
+            self.mb_func.__name__
+        ])
+
+    # ----------------------
+    # MAIN SAMPLING
+    # ----------------------
+    def sample_SNe(self, z_arr, n_samples_arr, save_df=True, savepath='default'):
         self.sim_df = pd.DataFrame()
+        for z, n in zip(z_arr, n_samples_arr):
+            self.sim_df = pd.concat([self.sim_df, self._sample_SNe_z(z, n)])
 
-        for z,n in zip(z_arr,n_samples_arr):
-            #print('Doing z',z)
-            self.sim_df = pd.concat([self.sim_df,self._sample_SNe_z(z,n)])
         if save_df:
-            if savepath=='default':
-                savepath = self.root_dir +'/sims/SNe/'+ self.save_string +'_SN_sim.h5'
-            self.savepath=savepath
-            self.sim_df.to_hdf(self.savepath,key='sim')
+            if savepath == 'default':
+                savepath = os.path.join(self.root_dir, 'sims', 'SNe', f"{self.save_string}_SN_sim.h5")
+            self.savepath = savepath
+            self.sim_df.to_hdf(self.savepath, key='sim')
 
-    def _sample_SNe_z(self,z,n_samples):
-        #print('*** Sampling %i SNe at redshift %.2f'%(n_samples,z))
+    def _sample_SNe_z(self, z, n_samples):
         if n_samples == 0:
-            return pd.DataFrame(columns=self.sim_df.columns)
-        args = {}
+            return pd.DataFrame()
 
-        args['n'] = int(n_samples)
-        args['distmod'] = self.cosmo.distmod(z).value
+        rng = np.random.default_rng()
+        args = {'n': int(n_samples), 'distmod': self.cosmo.distmod(z).value}
 
-        z_df = self.multi_df.loc['%.5f' % z].copy()
+        # Get galaxies at this redshift
+        z_df = self.multi_df.loc[f"{z:.5f}"].copy()
+        z_df.replace({'N_total': {0.0: np.nan}}, inplace=True)
+        z_df.dropna(subset=['N_total'], inplace=True)
+        z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()
+        z_df['N_SN_int'] = z_df['N_SN_float'].astype(int)
 
-        z_df['N_total'].replace(0., np.NaN, inplace=True)
-        z_df.dropna(subset=['N_total'],inplace=True)
-
-        z_df['N_SN_float'] = z_df['N_total'] / z_df['N_total'].min()  # Normalise the number of SNe so that the most improbable galaxy gets 1
-
-        z_df['N_SN_int'] = z_df.loc[:,'N_SN_float'].astype(int)
-        #print(z_df.columns)
-        z_df.drop(['delta'],axis=1,inplace=True)
+        # Interpolate over masses for each Av
+        marr = np.logspace(6, 11.6, 100)
         resampled_df = pd.DataFrame()
-        marr= np.logspace(6,11.6,100)
         for av in z_df.Av.unique():
-            av_df =z_df.loc[idx[:, '%.5f'%av, :]]
-            #print('Av df',av_df)
-            av_df = interpolate_zdf(av_df,marr)
-            resampled_df = pd.concat([resampled_df,av_df])
-        #print(resampled_df.columns)
-        Av_str = resampled_df['Av'].apply(lambda x: '%.5f'%x)
-        mass_str = resampled_df['mass'].apply(lambda x: '%.2f'%x)
-        new_zdf = resampled_df.set_index([mass_str,Av_str])
-        m_inds = ['%.2f' % m for m in new_zdf['mass'].unique()]
+            av_df = z_df.loc[idx[:, f"{av:.5f}", :]]
+            av_df = interpolate_zdf(av_df, marr)
+            resampled_df = pd.concat([resampled_df, av_df])
 
-        m_rates = []
-        m_rates_float = []
-        for m in m_inds:
-            m_df = new_zdf.loc[m]
-            mav_inds = (m, '%.5f' % (m_df.Av.unique()[0]))
-            #print(new_zdf.loc[mav_inds,'N_SN_int'])
-            m_rates.append(new_zdf.loc[mav_inds,'N_SN_int'])
-            m_rates_float.append(new_zdf.loc[m,'N_SN_float'])
+        # Build new_zdf with empty age dists
+        Av_str = resampled_df['Av'].apply(lambda x: f"{x:.5f}")
+        mass_str = resampled_df['mass'].apply(lambda x: f"{x:.2f}")
+        new_zdf = resampled_df.set_index([mass_str, Av_str])
+        new_zdf['SN_ages'] = [age_grid.copy() for _ in range(len(new_zdf))]
+        new_zdf['SN_age_dist'] = [np.zeros(len(age_grid)) for _ in range(len(new_zdf))]
 
+        # Fill age distributions per mass bin
+        for mass_bin, g in z_df.groupby(pd.cut(z_df['mass'], bins=marr)):
+            if len(g) == 0:
+                continue
+            min_av = g.Av.astype(float).min()
+            g_Av_0 = g.loc[idx[:, f"{min_av:.5f}", :]]
 
-        m_samples = np.random.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
-        # Now we have our masses, but each one needs some reddening. For now, we just select Av at random from the possible Avs in each galaxy
-        # The stellar population arrays are identical no matter what the Av is.
-        m_av0_samples = [(m, '%.5f' % (np.random.choice(new_zdf.loc[m].Av.values))) for m in m_samples]
-        new_zdf['SN_ages'] = [age_grid for i in range(len(new_zdf))]
-        new_zdf['SN_age_dist'] = [np.zeros(len(age_grid)) for i in range(len(new_zdf))]
-
-        age_dists = []
-        for n,g in z_df.groupby(pd.cut(z_df['mass'],bins=marr)):
             age_df = pd.DataFrame(index=age_grid_index)
-            if len(g)>0:
-                min_av = g.Av.astype(float).min()
-                g_Av_0 =  g.loc[idx[:, '%.5f'%min_av, :]]
-                for k in g_Av_0.index.unique():
-                    sub_gb = g_Av_0.loc[k]
-                    if type(sub_gb)==pd.DataFrame:
-                        tf = sub_gb['t_f'].iloc[0]
-                        j =np.random.randint(0,len(sub_gb))
-                        split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
-                        split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
-                        ext = split_z[0]+'z_'+'%.5f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
-                        new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0],'SN_ages',ext)
-                        sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
-                    else:
-                        tf = sub_gb['t_f']
-                        split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
-                        split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
-                        ext = split_z[0]+'z_'+'%.5f_'%z+'rv'+split_rv[1][:-12]+'_%.1f'%tf+'_combined.dat'
-                        new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0],'SN_ages',ext)
-                        sub_gb = pd.read_csv(new_fn,sep=' ',names=['SN_ages','SN_age_dist'])
-                    age_inds = ['%.4f'%a for a in sub_gb['SN_ages']]
-                    age_df.loc[age_inds,'%.2f'%(float(k))] = sub_gb['SN_age_dist'].values/np.nansum( sub_gb['SN_age_dist'].values)
-                age_df.fillna(0,inplace=True)
-                for av in g.Av.unique():
-                    print(len(np.nonzero(np.nanmean(age_df,axis=1))[0]),'is the number of nonzero ages available to pull from')
-                    age_dists.append(np.nanmean(age_df,axis=1))
-            else:
-                pass
-        new_zdf.index.names = ['mass_index','Av_index']
-        new_zdf.sort_values(by='mass',inplace=True)
-        new_zdf['SN_age_dist']=age_dists
-        # Now we sample from our galaxy mass distribution, given the expected rate of SNe at each galaxy mass
-        gals_df = new_zdf.loc[m_av0_samples,['z','mass','ssfr','m_g','m_r','m_i','m_z','U', 'B', 'V', 'R', 'I','U_R','mean_age','Av','pred_rate_total']]
-        #Debugging!
-        print(f'Redshift bin: {z}. len of the SN age dist we are sampling from')
-        print(f'drawing {len(m_av0_samples)} samples from from SN ages of len {len(age_grid)}')
-        print(f'SN age options are {age_grid}')
-        print(f'There are {len(m_av0_samples)} galaxies being drawn from') #, with {len(m_av0_samples["m"].unique())} unique galaxies')
-        sn_ages = [np.random.choice(new_zdf.loc[i,'SN_ages'],p=new_zdf.loc[i,'SN_age_dist']) for i in m_av0_samples]
-        print(f'there are {len(sn_ages)} SN ages, of which {len(np.unique(sn_ages))} are unique')
-        gals_df['SN_age'] = np.array(sn_ages)
+            for k in g_Av_0.index.unique():
+                sub_gb = g_Av_0.loc[k]
+                tf = sub_gb['t_f'].iloc[0] if isinstance(sub_gb, pd.DataFrame) else sub_gb['t_f']
+                split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
+                split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
+                ext = f"{split_z[0]}z_{z:.5f}_rv{split_rv[1][:-12]}_{tf:.1f}_combined.dat"
+                new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0], 'SN_ages', ext)
+                sub_gb = pd.read_csv(new_fn, sep=' ', names=['SN_ages', 'SN_age_dist'])
+                age_inds = [f"{a:.4f}" for a in sub_gb['SN_ages']]
+                age_df.loc[age_inds, f"{float(k):.2f}"] = (
+                    sub_gb['SN_age_dist'].values / np.nansum(sub_gb['SN_age_dist'].values)
+                )
+
+            age_df.fillna(0, inplace=True)
+            avg_dist = np.nanmean(age_df, axis=1).values
+
+            # Assign to all matching rows
+            for idx_key in new_zdf.index[new_zdf['mass'].between(
+                g.mass.min(), g.mass.max(), inclusive='both')]:
+                new_zdf.at[idx_key, 'SN_age_dist'] = avg_dist.copy()
+
+        # Select galaxies & sample ages
+        m_inds = new_zdf.index.get_level_values(0).unique()
+        m_rates = new_zdf.groupby(level=0)['N_SN_int'].first().values
+        m_samples = rng.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
+        m_av0_samples = [(m, f"{rng.choice(new_zdf.loc[m].Av.values):.5f}") for m in m_samples]
+
+        sn_ages = []
+        for m_av in m_av0_samples:
+            probs = new_zdf.loc[m_av, 'SN_age_dist']
+            probs = probs / np.sum(probs) if np.sum(probs) > 0 else np.ones_like(probs) / len(probs)
+            sn_ages.append(rng.choice(new_zdf.loc[m_av, 'SN_ages'], p=probs))
+
+        # Continue with args for light curve parameters
+        gals_df = new_zdf.loc[m_av0_samples]
         args['Av_grid'] = new_zdf.Av.unique()
         args['mass'] = gals_df.mass.values
         args['ssfr'] = gals_df.ssfr.values
-        args['sfr'] = args['mass']*args['ssfr']
+        args['sfr'] = args['mass'] * args['ssfr']
         args['mean_ages'] = gals_df.mean_age.values
         args['SN_age'] = np.array(sn_ages)
-        args['rv'] = self.rv_func(args,self.config['SN_rv_model']['params'])
-        if  self.config['SN_E_model']['model'] in ['E_calc','E_from_host_random']:
+        args['rv'] = self.rv_func(args, self.config['SN_rv_model']['params'])
+
+        if self.config['SN_E_model']['model'] in ['E_calc', 'E_from_host_random']:
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
             args['E'] = self.E_func(args, self.config['SN_E_model']['params'])
         else:
             args['E'] = self.E_func(args, self.config['SN_E_model']['params'])
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
 
+        # Colours & magnitudes
+        args = self.colour_func(args, self.config['SN_colour_model']['params'])
+        args = self.x1_func(args, self.config['x1_model']['params'])
+        args['mB'], args['alpha_SN'], args['beta_SN'] = self.mb_func(args, self.config['mB_model']['params'])
 
-        args['host_Av'] = self.host_Av_func(args,self.config['Host_Av_model']['params'])
-        m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
-        gals_df = new_zdf.loc[m_av_samples_inds]
-        args['U-R'] = gals_df['U'].values - gals_df['R'].values #gal_df['U_R'].values
-        for band in ['g','r','i','z']:
-            args['m_%s'%band] = gals_df['m_%s'%band].values
-
-        mean_eff_func,std_eff_func = ozdes_efficiency(self.eff_dir)
-        spec_eff = mean_eff_func(args['m_r'])
-        spec_eff_std = std_eff_func(args['m_r'])
-        effs = np.clip(np.random.normal(spec_eff,spec_eff_std),a_min=0,a_max=1)
-        args['eff_mask'] = [np.random.choice([0,1],p=[1-effs[i],effs[i]]) for i in range(len(effs))]
-        args = self.colour_func(args,self.config['SN_colour_model']['params'])
-        args = self.x1_func(args,self.config['x1_model']['params'])
-        args['mB'],args['alpha_SN'],args['beta_SN'] = self.mb_func(args,self.config['mB_model']['params'])
-        args['mB_err'] =[np.max([0.025,np.random.normal(10**(0.395*(args['mB'][i]-1.5) - 10.15)+0.025,np.max([0.003,0.003*(args['mB'][i]-20)]))])
-                         for i in range(len(args['mB']))]
-
-        args['c_err'] = [np.max([0.02,np.random.normal((0.78007*args['mB_err'][i] +0.00256),0.003)])
-                         for i in range(len(args['mB']))]
-
-        args['c_noise'] =norm(0,args['c_err']).rvs(size=len(args['c']))
-        if self.config['c_perfect']:
-            pass
-        else:
+        # Errors and noise
+        args['mB_err'] = [
+            np.max([0.025, np.random.normal(10**(0.395*(mB-1.5) - 10.15) + 0.025,
+                                            np.max([0.003, 0.003*(mB-20)]))])
+            for mB in args['mB']
+        ]
+        args['c_err'] = [np.max([0.02, np.random.normal((0.78007*err + 0.00256), 0.003)])
+                         for err in args['mB_err']]
+        args['c_noise'] = norm(0, args['c_err']).rvs(size=len(args['c']))
+        if not self.config['c_perfect']:
             args['c'] = args['c'] + args['c_noise']
 
-        args['x1_err'] = [np.max([0.08,np.random.normal((11.525*args['mB_err'][i] -0.1075 ),0.05)])
-                         for i in range(len(args['mB']))]
-        args['x1_noise'] =norm(0,args['x1_err']).rvs(size=len(args['x1']))
+        args['x1_err'] = [np.max([0.08, np.random.normal((11.525*err - 0.1075), 0.05)])
+                          for err in args['mB_err']]
+        args['x1_noise'] = norm(0, args['x1_err']).rvs(size=len(args['x1']))
         args['x1_int'] = args['x1'].copy()
         args['x1'] = args['x1'] + args['x1_noise']
-        #C = np.cov([args['mB'],args['x1'],args['c']])
+        args['cov_mB_x1'], args['cov_mB_c'], args['cov_x1_c'] = 0, 0, 0
 
-        args['cov_mB_x1'],args['cov_mB_c'],args['cov_x1_c'] = 0,0,0 #Set covariance off-diagonal terms to 0 for now #C[0,1],C[0,2],C[1,2]
-        self.args = args
-        args['distmod'] = np.ones_like(args['c'])*args['distmod']
+        args['distmod'] = np.ones_like(args['c']) * args['distmod']
         del args['Av_grid']
+
         z_sim_df = pd.DataFrame(args)
         z_sim_df['z'] = z
         return z_sim_df
