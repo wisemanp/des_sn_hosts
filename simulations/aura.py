@@ -193,6 +193,7 @@ class Sim(SN_Model):
         resampled_df = pd.DataFrame()
         for av in z_df.Av.unique():
             av_df = z_df.loc[idx[:, f"{av:.5f}", :]]
+            print(av_df)
             av_df = interpolate_zdf(av_df, marr)
             resampled_df = pd.concat([resampled_df, av_df])
 
