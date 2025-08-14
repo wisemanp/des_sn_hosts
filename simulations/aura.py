@@ -217,9 +217,9 @@ class Sim(SN_Model):
 
         # Fill age distributions per mass bin
         for mass_bin, g in z_df.groupby(pd.cut(z_df['mass'], bins=marr)):
-            logger.debug(f"Processing mass bin: {mass_bin}")
+            logger.debug(f"Processing mass bin: {np.log10(mass_bin)}")
             if len(g) == 0:
-                logger.info(f"Skipping empty mass bin: {mass_bin}")
+                logger.info(f"Skipping empty mass bin: {np.log10(mass_bin)}")
                 continue
             min_av = g.Av.astype(float).min()
             g_Av_0 = g.loc[idx[:, f"{min_av:.5f}", :]]
@@ -282,6 +282,7 @@ class Sim(SN_Model):
         else:
             args['E'] = self.E_func(args, self.config['SN_E_model']['params'])
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
+        m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
         gals_df = new_zdf.loc[m_av_samples_inds] #re-assign so that we end up with dust-attenuated U-R colours.
         args['U-R'] = gals_df['U'].values - gals_df['R'].values #gal_df['U_R'].values
         for band in ['g','r','i','z']:
