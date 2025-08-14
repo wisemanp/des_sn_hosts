@@ -16,6 +16,7 @@ from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, single_schechter, double_schechter, ozdes_efficiency, interpolate_zdf, make_z_pdf
 #from .utils.plotter import *
 from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
+import logging
 
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
@@ -29,6 +30,14 @@ idx = pd.IndexSlice
 
 age_grid = np.arange(0,13.7,0.0005)
 age_grid_index = ['%.4f'%a for a in age_grid]
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,  # Use DEBUG for more verbosity
+    format='%(asctime)s %(levelname)s %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 class Sim(SN_Model):
     """
     Simulation class for drawing SN samples from a galaxy population.
@@ -63,7 +72,7 @@ class Sim(SN_Model):
             try:
                 df[col] = df[col].astype(float)
             except Exception:
-                print(f"Non-numeric column in flux_df: {col}")
+                logger.warning(f"Non-numeric column in flux_df: {col}")
         return df
 
     # ----------------------
@@ -176,12 +185,14 @@ class Sim(SN_Model):
 
     def _sample_SNe_z(self, z, n_samples):
         if n_samples == 0:
+            logger.info(f"No SNe to sample at z={z:.5f}")
             return pd.DataFrame()
 
         rng = np.random.default_rng()
         args = {'n': int(n_samples), 'distmod': self.cosmo.distmod(z).value}
 
         # Get galaxies at this redshift
+        logger.debug(f"Sampling SNe at z={z:.5f} with n_samples={n_samples}")
         z_df = self.multi_df.loc[f"{z:.5f}"].copy()
         z_df.replace({'N_total': {0.0: np.nan}}, inplace=True)
         z_df.dropna(subset=['N_total'], inplace=True)
@@ -192,6 +203,7 @@ class Sim(SN_Model):
         marr = np.logspace(6, 11.6, 100)
         resampled_df = pd.DataFrame()
         for av in z_df.Av.unique():
+            logger.debug(f"Interpolating Av={av:.5f}")
             av_df = z_df.loc[idx[:, f"{av:.5f}", :]]
             av_df = interpolate_zdf(av_df, marr)
             resampled_df = pd.concat([resampled_df, av_df])
@@ -205,7 +217,9 @@ class Sim(SN_Model):
 
         # Fill age distributions per mass bin
         for mass_bin, g in z_df.groupby(pd.cut(z_df['mass'], bins=marr)):
+            logger.debug(f"Processing mass bin: {mass_bin}")
             if len(g) == 0:
+                logger.info(f"Skipping empty mass bin: {mass_bin}")
                 continue
             min_av = g.Av.astype(float).min()
             g_Av_0 = g.loc[idx[:, f"{min_av:.5f}", :]]
@@ -218,7 +232,12 @@ class Sim(SN_Model):
                 split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
                 ext = f"{split_z[0]}z_{z:.5f}_rv{split_rv[1][:-12]}_{tf:.1f}_combined.dat"
                 new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0], 'SN_ages', ext)
-                sub_gb = pd.read_csv(new_fn, sep=' ', names=['SN_ages', 'SN_age_dist'])
+                logger.debug(f"Reading SN age file: {new_fn}")
+                try:
+                    sub_gb = pd.read_csv(new_fn, sep=' ', names=['SN_ages', 'SN_age_dist'])
+                except Exception as e:
+                    logger.error(f"Failed to read {new_fn}: {e}")
+                    continue
                 age_inds = [f"{a:.4f}" for a in sub_gb['SN_ages']]
                 age_df.loc[age_inds, f"{float(k):.2f}"] = (
                     sub_gb['SN_age_dist'].values / np.nansum(sub_gb['SN_age_dist'].values)
@@ -235,6 +254,7 @@ class Sim(SN_Model):
         # Select galaxies & sample ages
         m_inds = new_zdf.index.get_level_values(0).unique()
         m_rates = new_zdf.groupby(level=0)['N_SN_int'].first().values
+        logger.debug(f"Sampling galaxy masses: {m_inds}")
         m_samples = rng.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
         m_av0_samples = [(m, f"{rng.choice(new_zdf.loc[m].Av.values):.5f}") for m in m_samples]
 
@@ -242,7 +262,9 @@ class Sim(SN_Model):
         for m_av in m_av0_samples:
             probs = new_zdf.loc[m_av, 'SN_age_dist']
             probs = probs / np.sum(probs) if np.sum(probs) > 0 else np.ones_like(probs) / len(probs)
-            sn_ages.append(rng.choice(new_zdf.loc[m_av, 'SN_ages'], p=probs))
+            sn_age = rng.choice(new_zdf.loc[m_av, 'SN_ages'], p=probs)
+            sn_ages.append(sn_age)
+            logger.debug(f"Sampled SN age for {m_av}: {sn_age}")
 
         # Continue with args for light curve parameters
         gals_df = new_zdf.loc[m_av0_samples]
@@ -299,6 +321,7 @@ class Sim(SN_Model):
 
         z_sim_df = pd.DataFrame(args)
         z_sim_df['z'] = z
+        logger.info(f"Finished sampling SNe at z={z:.5f}, n={n_samples}")
         return z_sim_df
 
     def load_sim(self,path):
