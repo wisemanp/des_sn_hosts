@@ -260,7 +260,16 @@ class Sim(SN_Model):
         else:
             args['E'] = self.E_func(args, self.config['SN_E_model']['params'])
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
-
+        gals_df = new_zdf.loc[m_av_samples_inds] #re-assign so that we end up with dust-attenuated U-R colours.
+        args['U-R'] = gals_df['U'].values - gals_df['R'].values #gal_df['U_R'].values
+        for band in ['g','r','i','z']:
+            args['m_%s'%band] = gals_df['m_%s'%band].values
+        # Efficiencies
+        mean_eff_func,std_eff_func = ozdes_efficiency(self.eff_dir)
+        spec_eff = mean_eff_func(args['m_r'])
+        spec_eff_std = std_eff_func(args['m_r'])
+        effs = np.clip(np.random.normal(spec_eff,spec_eff_std),a_min=0,a_max=1)
+        args['eff_mask'] = [np.random.choice([0,1],p=[1-effs[i],effs[i]]) for i in range(len(effs))]
         # Colours & magnitudes
         args = self.colour_func(args, self.config['SN_colour_model']['params'])
         args = self.x1_func(args, self.config['x1_model']['params'])
