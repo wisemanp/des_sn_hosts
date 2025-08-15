@@ -58,7 +58,7 @@ if __name__ == '__main__':
     df[cols].to_csv(bbc_path, index=False, sep=' ', quoting=csv.QUOTE_NONE, quotechar="", escapechar=" ")
 
     # Save parameter map for reference
-    param_map = {'model_name': model_name, 'config_path': pth}
-    pickle.dump(param_map, open(os.path.join(save_dir, 'param_name_map.pkl'), 'wb'))
+    #param_map = {'model_name': model_name, 'config_path': pth}
+    #pickle.dump(param_map, open(os.path.join(save_dir, 'param_name_map.pkl'), 'wb'))
 
     print(f"Simulation complete. Results saved to {save_dir}")
