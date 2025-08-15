@@ -55,6 +55,8 @@ def schechter(z,logM,SF):
 def ozdes_efficiency(dir='/media/data3/wiseman/des/desdtd/efficiencies/'):
     import numpy.polynomial.polynomial as poly
     from scipy.interpolate import interp1d
+    import warnings
+    warnings.simplefilter('ignore', np.RankWarning)
     fs = ['C12','X12','S12','E12','C3','X3']
     ys = ['123','4','5']
     efficiencies = {}
