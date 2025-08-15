@@ -30,7 +30,7 @@ def add_galage_grad(mean_ages,slope=0,intercept=0.0):
     return slope * mean_ages + intercept
 
 
-def add_SNage_grad(SN_age,slope=0,intercept=0.0):
+def add_SN_age_grad(SN_age,slope=0,intercept=0.0):
     """
     Adds a gradient based on the mean ages of galaxies.
     
