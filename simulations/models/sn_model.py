@@ -123,3 +123,7 @@ class SN_Model():
     def tripp_rv_two_beta_popns_age2(self,args,params):
         return tripp_rv_two_beta_popns_age2(params['alpha'], params['mu_beta_young'],params['sig_beta_young'], params['mu_beta_old'], params['sig_beta_old'], params['M0'],
                                      params['sigma_int'], params['mass_step'], params['age_step'],args)
+    
+    def tripp_rv_agebias_popn_alpha_beta(self,args,params):
+        return tripp_rv_agebias_popn_alpha_beta(params['mu_alpha'],params['sig_alpha'],params['mu_beta'],params['sig_beta'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],params['galage_grad'],params['SNage_grad'],args)
+    
