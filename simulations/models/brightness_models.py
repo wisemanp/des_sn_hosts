@@ -1,6 +1,6 @@
 from scipy.stats import norm
 import numpy as np
-from ..utils.HR_functions import add_age_step, add_mass_step
+from ..utils.HR_functions import add_age_step, add_mass_step, add_galage_grad, add_SN_age_grad
 
 
 def tripp(alpha,beta,M0,sigma_int,mass_step,age_step,args):
@@ -43,6 +43,15 @@ def tripp_rv_popn_alpha_beta(mu_alpha,sig_alpha,mu_beta,sig_beta,M0,sigma_int,ma
     beta = norm(mu_beta, sig_beta).rvs(size=len(args['c']))
     return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + beta*args['c_int'] - alpha*args['x1'] + (args['rv']+1)*args['E'] + \
            add_mass_step(np.log10(args['mass']),mass_step['mag'],mass_step['loc']) + add_age_step(args['SN_age'],age_step['mag'],age_step['loc']),   alpha,  beta
+
+def tripp_rv_agebias_popn_alpha_beta(mu_alpha,sig_alpha,mu_beta,sig_beta,M0,sigma_int,mass_step,age_step,galage_grad,SNage_grad,args):
+    alpha = norm(mu_alpha,sig_alpha).rvs(size=len(args['c']))
+    beta = norm(mu_beta, sig_beta).rvs(size=len(args['c']))
+    return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + beta*args['c_int'] - alpha*args['x1'] + (args['rv']+1)*args['E'] + \
+           add_mass_step(np.log10(args['mass']),mass_step['mag'],mass_step['loc']) + add_age_step(args['SN_age'],age_step['mag'],age_step['loc']) + \
+            add_galage_grad(args['mean_ages']/1000,galage_grad['slope'],galage_grad['intercept']) + \
+                add_SN_age_grad(args['SN_age'],SNage_grad['slope'],SNage_grad['intercept']),   alpha,  beta
+
 
 def tripp_rv_age_alpha_popn_beta(mu_alpha_young,sig_alpha_young,mu_alpha_old,sig_alpha_old,
                                         mu_beta,sig_beta,M0,sigma_int,mass_step,age_step,args):

@@ -9,6 +9,48 @@ def add_age_step(age,mag=0.1,loc=1):
 def add_age_step_choice(age,mag=0.1):
     return ((age=='old') * mag*-0.5) + ((age=='young')* mag*0.5)
 
+def add_galage_grad(mean_ages,slope=0,intercept=0.0):
+    """
+    Adds a gradient based on the mean ages of galaxies.
+    
+    Parameters
+    ----------
+    mean_ages : array-like
+        Mean ages of galaxies in Gyr.
+    slope : float, optional
+        Slope of the gradient, default is 0.
+    intercept : float, optional
+        Intercept of the gradient, default is 0.0 mag/Gyr.
+    
+    Returns
+    -------
+    array-like
+        Adjusted mean ages with the gradient applied.
+    """
+    return slope * mean_ages + intercept
+
+
+def add_SNage_grad(SN_age,slope=0,intercept=0.0):
+    """
+    Adds a gradient based on the mean ages of galaxies.
+    
+    Parameters
+    ----------
+    SN_age : array-like
+        SN progenitor age in Gyr.
+    slope : float, optional
+        Slope of the gradient, default is 0.
+    intercept : float, optional
+        Intercept of the gradient, default is 0.0 mag/Gyr.
+    
+    Returns
+    -------
+    array-like
+        Adjusted mean ages with the gradient applied.
+    """
+    return slope * SN_age + intercept
+
+
 def fit_mass_step(logM,mag=0.1,loc=10):
     return ((logM>loc) * mag*-0.5) + ((logM<loc)* mag*0.5)
 
