@@ -3,6 +3,7 @@ hostlib_fn: /media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_
 config:
   root_dir: $AURA_DIR
   efficiency_dir: /media/data3/wiseman/des/desdtd/
+n_samples: 1000
 SN_rv_model:
   model: age_rv_step
   params:
