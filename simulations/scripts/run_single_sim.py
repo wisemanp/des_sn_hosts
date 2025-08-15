@@ -22,8 +22,8 @@ if __name__ == '__main__':
     model_config = os.path.split(cpath)[-1]
     model_name = model_config.split('.')[0]
 
-    sim = aura.Sim(cfg)
-    with open(pth, 'r') as f:
+    sim = aura.Sim(cpath)
+    with open(cpath, 'r') as f:
         c = yload(f)
 
     # Optionally update config parameters here if needed
