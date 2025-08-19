@@ -183,7 +183,7 @@ if __name__=='__main__':
         for rv_hi in Rv_hi_grid:
             for age_step in age_step_grid:
                 df = pd.read_hdf(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',cfg['save']['dir'],
-                    '%s_test_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)))
+                    '%s_SN_sim_%.2f_%.2f_%.2f.h5'%(model_name,rv_lo,rv_hi,age_step)))
                 df,cols = prep_df_for_BBC(df)
                 df[cols].to_csv(os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/',
                         cfg['save']['dir'],'FITOPT%03d.FITRES'%n),

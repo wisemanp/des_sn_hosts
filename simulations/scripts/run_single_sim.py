@@ -35,8 +35,12 @@ if __name__ == '__main__':
 
     save_dir = os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/', cfg['save']['dir'])
     os.makedirs(save_dir, exist_ok=True)
+    receive_dir = os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/from_BBC/', cfg['save']['dir'])
+    os.makedirs(receive_dir, exist_ok=True)
 
     save_filename = f"{model_name}_SN_sim.h5"
+    #if cfg['save']['make_midway']:
+
     save_path = os.path.join(save_dir, save_filename)
 
     sim.sample_SNe(zarr, n_samples_arr, savepath=save_path)
