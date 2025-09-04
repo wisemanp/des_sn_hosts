@@ -251,8 +251,9 @@ class Sim(SN_Model):
                 new_zdf.at[idx_key, 'SN_age_dist'] = avg_dist.copy()
 
         # Select galaxies & sample ages
-        m_inds = new_zdf.index.get_level_values(0).unique()
-        m_rates = new_zdf.groupby(level=0)['N_SN_int'].first().values
+        m_rates_s = new_zdf.groupby(level=0, sort=False)['N_SN_int'].mean()
+        m_inds = m_rates_s.index
+        m_rates = m_rates_s.values
         logger.debug(f"Sampling galaxy masses: {m_inds}")
         m_samples = rng.choice(m_inds, p=m_rates / np.sum(m_rates), size=int(n_samples))
         m_av0_samples = [(m, f"{rng.choice(new_zdf.loc[m].Av.values):.5f}") for m in m_samples]
