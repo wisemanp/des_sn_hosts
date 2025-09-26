@@ -224,7 +224,7 @@ def main(args):
     config=yaml.load(open(args.config))
     save_dir = config['rates_root']+'SFHs/'
     if args.test:
-        save_dir=save_dir+'test_smaller_bursts/'
+        save_dir=save_dir+'high_z/'
     if not os.path.isdir(save_dir):
         os.mkdir(save_dir)
     dt = args.dt
