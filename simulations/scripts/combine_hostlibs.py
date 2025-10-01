@@ -24,7 +24,7 @@ for col in full_df.columns:
 
 #fn = '/media/data3/wiseman/des/AURA/sims/hostlibs/all_model_params_quench_bursts_BC03_z0.14000_1.26000_av0.00_1.50_rv_rand_full_age_dists_neb_U-2.00_res_2_beta_1.14_combined.h5'
 
-fn = os.path.join(dirname,basename,'_combined.h5')
+fn = os.path.join(dirname,basename+'_combined.h5')
 print('Should save to %s'%fn)
 full_df.to_hdf(fn,key='main')
 for fn in tqdm(glob.glob(os.path.join(dirname,'SN_ages/*'))):
