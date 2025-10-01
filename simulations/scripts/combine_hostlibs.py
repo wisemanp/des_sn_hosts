@@ -14,7 +14,7 @@ basename = sys.argv[2]
 full_df = pd.DataFrame()
 for fn in tqdm(glob.glob(os.path.join(dirname,basename+'*.h5'))):
     df = pd.read_hdf(fn)
-    full_df = full_df.append(df)
+    full_df = pd.concat([full_df, df])
 
 for col in full_df.columns:
     try:
