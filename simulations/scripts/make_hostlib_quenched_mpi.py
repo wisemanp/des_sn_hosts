@@ -10,6 +10,7 @@ from astropy.cosmology import FlatLambdaCDM
 import warnings
 from astropy.utils.exceptions import AstropyWarning
 from tables import NaturalNameWarning
+import os
 warnings.filterwarnings('ignore', category=NaturalNameWarning)
 
 np.seterr(all='ignore')
@@ -111,9 +112,22 @@ def sed_worker(worker_args):
             results.append([z,mtot,ssfr,mwsa,Av,Rv,delta,U_R[0],pred_rate_x1hi,pred_rate_x1lo,pred_rate_total,tf,
                     obs_flux[0],obs_flux[1],obs_flux[2],obs_flux[3],U,B,V,R,I,sdssu,sdssg,sdssr,sdssi,sdssz,galid_string])
 
+        ages_gyr = sfh_iter_df['stellar_age'].values / 1000.0
+        m_formed = sfh_iter_df['m_formed'].values.astype(float)
+
+        # Sidecar SFH storage (per-host file)
+        sfh_dir = '/media/data3/wiseman/des/AURA/sims/hostlibs/20221214/SFH/'
+        os.makedirs(sfh_dir, exist_ok=True)
+        sfh_key = f"sfh_z{z:.5f}_tf{tf:.1f}_seed{counter}.npz"
+        np.savez_compressed(os.path.join(sfh_dir, sfh_key), ages_gyr=ages_gyr, m_formed=m_formed)
+
+        # When building rows, include a reference to the SFH file
+        # results.append([...existing fields..., galid_string, sfh_key])
+        # and extend the DataFrame columns list with 'sfh_key'
+
         df = pd.DataFrame(results,columns=['z','mass','ssfr','mean_age','Av','Rv','delta','U_R','pred_rate_x1_hi',
                                                 'pred_rate_x1_lo','pred_rate_total','t_f',
-                                                'm_g','m_r','m_i','m_z','U','B','V','R','I','sdssu','sdssg','sdssr','sdssi','sdssz','galid_spec'])
+                                                'm_g','m_r','m_i','m_z','U','B','V','R','I','sdssu','sdssg','sdssr','sdssi','sdssz','galid_spec', 'sfh_key'])
         #df['g_r'] = df['m_g'] - df['m_r']
 
     except:
