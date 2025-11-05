@@ -242,6 +242,12 @@ class Sim(SN_Model):
                         sub_row0 = sub_row.iloc[0]
                     else:
                         sub_row0 = sub_row
+                    # grab t_f early in case we need legacy .dat fallback
+                    tf = None
+                    try:
+                        tf = float(sub_row0.get('t_f', np.nan))
+                    except Exception:
+                        tf = None
                     # Use baked SN ages unless recompute is explicitly requested
                     if (not self.config.get('force_recompute_dtd', False)) and \
                        ('SN_ages' in sub_row0 and 'SN_age_dist' in sub_row0):
@@ -259,7 +265,7 @@ class Sim(SN_Model):
                 if used:
                     continue
 
-                # Recompute from SFH arrays if available (no SNANA fallback)
+                # Recompute from SFH arrays if available 
                 try:
                     if 'SFH_ages' in sub_row0 and 'SFH_m_formed' in sub_row0:
                         sfh_ages = np.asarray(sub_row0['SFH_ages'], dtype=float)
@@ -292,6 +298,26 @@ class Sim(SN_Model):
                             used = True
                 except Exception as e:
                     logger.warning(f"Could not recompute SN-age from SFH for index {k}: {e}")
+
+                # Legacy fallback: read .dat files if neither baked nor SFH recompute worked
+                if not used and tf is not None and np.isfinite(tf):
+                    try:
+                        hostlib_base = os.path.basename(self.config['hostlib_fn'])
+                        split_z = hostlib_base.split('z')
+                        split_rv = hostlib_base.split('rv')
+                        ext = f"{split_z[0]}z_{z:.5f}_rv{split_rv[1][:-12]}_{tf:.1f}_combined.dat"
+                        sn_dir = os.path.join(os.path.dirname(self.config['hostlib_fn']), 'SN_ages')
+                        new_fn = os.path.join(sn_dir, ext)
+                        logger.debug(f"Fallback to legacy .dat SN-age file: {new_fn}")
+                        sub = pd.read_csv(new_fn, sep=' ', names=['SN_ages', 'SN_age_dist'])
+                        age_inds = [f"{a:.4f}" for a in sub['SN_ages']]
+                        vals = sub['SN_age_dist'].values.astype(float)
+                        s = np.nansum(vals)
+                        probs = (vals / s) if s > 0 and np.isfinite(s) else np.zeros_like(vals)
+                        age_df.loc[age_inds, f"{float(k):.2f}"] = probs
+                        used = True
+                    except Exception as e:
+                        logger.warning(f"Legacy .dat SN-age read failed for index {k}: {e}")
 
                 if not used:
                     # Leave zeros; downstream nanmean over columns will handle it
