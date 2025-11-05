@@ -40,10 +40,12 @@ logger = logging.getLogger(__name__)
 class Sim(SN_Model):
     """
     Simulation class for drawing SN samples from a galaxy population.
+
+    Accepts either a path to a YAML config file or an in-memory dict.
     """
 
-    def __init__(self, conf_path, cosmo='default'):
-        self.config = self._get_config(conf_path)
+    def __init__(self, conf, cosmo='default'):
+        self.config = self._get_config(conf)
 
         root_dir = self.config['config']['root_dir']
         self.root_dir = os.environ.get(root_dir[1:]) if root_dir.startswith('$') else root_dir
@@ -61,9 +63,16 @@ class Sim(SN_Model):
     # ----------------------
     # CONFIG & DATA LOADING
     # ----------------------
-    def _get_config(self, conf_path):
-        with open(conf_path, 'r') as f:
-            return yload(f)
+    def _get_config(self, conf):
+        # conf can be a path (str) or a pre-loaded dict
+        if isinstance(conf, dict):
+            return conf
+        if isinstance(conf, str):
+            if not os.path.exists(conf):
+                raise FileNotFoundError(f"Config path not found: {conf}")
+            with open(conf, 'r') as f:
+                return yload(f)
+        raise TypeError("conf must be a dict or a path to a YAML config file")
 
     def _load_flux_df(self, fn):
         df = pd.read_hdf(fn)
@@ -225,22 +234,68 @@ class Sim(SN_Model):
 
             age_df = pd.DataFrame(index=age_grid_index)
             for k in g_Av_0.index.unique():
-                sub_gb = g_Av_0.loc[k]
-                tf = sub_gb['t_f'].iloc[0] if isinstance(sub_gb, pd.DataFrame) else sub_gb['t_f']
-                split_z = os.path.split(self.config['hostlib_fn'])[1].split('z')
-                split_rv = os.path.split(self.config['hostlib_fn'])[1].split('rv')
-                ext = f"{split_z[0]}z_{z:.5f}_rv{split_rv[1][:-12]}_{tf:.1f}_combined.dat"
-                new_fn = os.path.join(os.path.split(self.config['hostlib_fn'])[0], 'SN_ages', ext)
-                logger.debug(f"Reading SN age file: {new_fn}")
+                sub_row = g_Av_0.loc[k]
+                # Prefer baked columns if present in hostlib
+                used = False
                 try:
-                    sub_gb = pd.read_csv(new_fn, sep=' ', names=['SN_ages', 'SN_age_dist'])
+                    if isinstance(sub_row, pd.DataFrame):
+                        sub_row0 = sub_row.iloc[0]
+                    else:
+                        sub_row0 = sub_row
+                    # Use baked SN ages unless recompute is explicitly requested
+                    if (not self.config.get('force_recompute_dtd', False)) and \
+                       ('SN_ages' in sub_row0 and 'SN_age_dist' in sub_row0):
+                        ages_arr = np.asarray(sub_row0['SN_ages'], dtype=float)
+                        dist_arr = np.asarray(sub_row0['SN_age_dist'], dtype=float)
+                        if ages_arr.size and dist_arr.size and ages_arr.size == dist_arr.size:
+                            dist_norm = np.nansum(dist_arr)
+                            probs = (dist_arr / dist_norm) if dist_norm > 0 and np.isfinite(dist_norm) else np.zeros_like(dist_arr)
+                            age_inds = [f"{a:.4f}" for a in ages_arr]
+                            age_df.loc[age_inds, f"{float(k):.2f}"] = probs
+                            used = True
                 except Exception as e:
-                    logger.error(f"Failed to read {new_fn}: {e}")
+                    logger.debug(f"Baked SN-age not usable for index {k}: {e}")
+
+                if used:
                     continue
-                age_inds = [f"{a:.4f}" for a in sub_gb['SN_ages']]
-                age_df.loc[age_inds, f"{float(k):.2f}"] = (
-                    sub_gb['SN_age_dist'].values / np.nansum(sub_gb['SN_age_dist'].values)
-                )
+
+                # Recompute from SFH arrays if available (no SNANA fallback)
+                try:
+                    if 'SFH_ages' in sub_row0 and 'SFH_m_formed' in sub_row0:
+                        sfh_ages = np.asarray(sub_row0['SFH_ages'], dtype=float)
+                        sfh_m = np.asarray(sub_row0['SFH_m_formed'], dtype=float)
+                        if sfh_ages.size and sfh_m.size and sfh_ages.size == sfh_m.size:
+                            # DTD config
+                            dtd_cfg = self.config.get('DTD', {'model': 'power_law', 'params': {'beta': 1.14, 'norm': 2.08e-13}})
+                            dtd_model = dtd_cfg.get('model', 'power_law')
+                            dtd_params = dtd_cfg.get('params', {})
+                            try:
+                                from des_sn_hosts.simulations.utils.dtd import compute_age_dist
+                                dtd_vals = compute_age_dist(sfh_ages, model=dtd_model, **dtd_params)
+                            except Exception as e:
+                                logger.error(f"DTD compute failed (model={dtd_model}) for index {k}: {e}")
+                                dtd_vals = np.zeros_like(sfh_ages)
+                            dist = sfh_m * dtd_vals
+                            # Map onto the simulation age grid
+                            dist = np.nan_to_num(dist, nan=0.0, posinf=0.0, neginf=0.0)
+                            try:
+                                # age_grid is the target grid (in Gyr). Ensure monotonic for interp.
+                                order = np.argsort(sfh_ages)
+                                probs_grid = np.interp(age_grid, sfh_ages[order], dist[order], left=0.0, right=0.0)
+                            except Exception:
+                                # Fallback: if interpolation fails, try nearest via indexing trick
+                                probs_grid = np.zeros_like(age_grid)
+                            norm = float(np.nansum(probs_grid))
+                            probs_grid = (probs_grid / norm) if norm > 0 and np.isfinite(norm) else np.zeros_like(probs_grid)
+                            age_inds = [f"{a:.4f}" for a in age_grid]
+                            age_df.loc[age_inds, f"{float(k):.2f}"] = probs_grid
+                            used = True
+                except Exception as e:
+                    logger.warning(f"Could not recompute SN-age from SFH for index {k}: {e}")
+
+                if not used:
+                    # Leave zeros; downstream nanmean over columns will handle it
+                    logger.warning("No SN age distribution available; leaving zeros for this bin.")
 
             age_df.fillna(0, inplace=True)
             avg_dist = np.nanmean(age_df, axis=1)
