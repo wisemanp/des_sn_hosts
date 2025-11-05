@@ -388,7 +388,7 @@ class Sim(SN_Model):
         args['c_err'] = [np.max([0.02, np.random.normal((0.78007*err + 0.00256), 0.003)])
                          for err in args['mB_err']]
         args['c_noise'] = stats.norm(0, args['c_err']).rvs(size=len(args['c']))
-        if not self.config['c_perfect']:
+        if not bool(self.config.get('c_perfect', False)):
             args['c'] = args['c'] + args['c_noise']
 
         args['x1_err'] = [np.max([0.08, np.random.normal((11.525*err - 0.1075), 0.05)])
