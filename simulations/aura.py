@@ -291,8 +291,8 @@ class Sim(SN_Model):
                             except Exception:
                                 # Fallback: if interpolation fails, try nearest via indexing trick
                                 probs_grid = np.zeros_like(age_grid)
-                            norm = float(np.nansum(probs_grid))
-                            probs_grid = (probs_grid / norm) if norm > 0 and np.isfinite(norm) else np.zeros_like(probs_grid)
+                            sum_probs = float(np.nansum(probs_grid))
+                            probs_grid = (probs_grid / sum_probs) if sum_probs > 0 and np.isfinite(sum_probs) else np.zeros_like(probs_grid)
                             age_inds = [f"{a:.4f}" for a in age_grid]
                             age_df.loc[age_inds, f"{float(k):.2f}"] = probs_grid
                             used = True
@@ -387,13 +387,13 @@ class Sim(SN_Model):
         ]
         args['c_err'] = [np.max([0.02, np.random.normal((0.78007*err + 0.00256), 0.003)])
                          for err in args['mB_err']]
-        args['c_noise'] = norm(0, args['c_err']).rvs(size=len(args['c']))
+        args['c_noise'] = stats.norm(0, args['c_err']).rvs(size=len(args['c']))
         if not self.config['c_perfect']:
             args['c'] = args['c'] + args['c_noise']
 
         args['x1_err'] = [np.max([0.08, np.random.normal((11.525*err - 0.1075), 0.05)])
                           for err in args['mB_err']]
-        args['x1_noise'] = norm(0, args['x1_err']).rvs(size=len(args['x1']))
+        args['x1_noise'] = stats.norm(0, args['x1_err']).rvs(size=len(args['x1']))
         args['x1_int'] = args['x1'].copy()
         args['x1'] = args['x1'] + args['x1_noise']
         args['cov_mB_x1'], args['cov_mB_c'], args['cov_x1_c'] = 0, 0, 0
