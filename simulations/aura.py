@@ -486,6 +486,7 @@ class Sim(SN_Model):
 
         # Continue with args for light curve parameters
         gals_df = new_zdf.loc[m_av0_samples]
+        args['z'] = np.full(gals_df.shape[0], float(z), dtype=float)
         args['Av_grid'] = new_zdf.Av.unique()
         args['mass'] = gals_df.mass.values
         args['ssfr'] = gals_df.ssfr.values

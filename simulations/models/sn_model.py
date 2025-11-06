@@ -3,7 +3,12 @@ from .dust_models import age_rv_step, mass_rv_step, age_rv_linear, mass_rv_linea
 from .colour_models import c_int_asymm, c_int_gauss, c_int_plus_dust
 from .stretch_models import x1_int_asymm, x1_twogauss_age, x1_twogauss_fix, x1_int_linear_gauss, x1_int_linear_gauss_plus_delta,x1_linear_plus_old,x1_linear_plus_young
 from .host_dust import choose_Av_SN_E_rv_fix, choose_Av_custom, choose_Av_SN_E_Rv_norm, choose_Av_SN_E_Rv_step
-from .brightness_models import tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age, tripp_rv_popn_alpha_beta,tripp_rv_two_beta_popns_age2,tripp_rv_age_alpha_popn_beta,tripp_rv_agebias_popn_alpha_beta
+from .brightness_models import (
+    tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age,
+    tripp_rv_popn_alpha_beta, tripp_rv_two_beta_popns_age2,
+    tripp_rv_age_alpha_popn_beta, tripp_rv_agebias_popn_alpha_beta,
+    tripp_rv_popn_alpha_beta_z_lin,
+)
 class SN_Model():
     def __init__(self):
         '''
@@ -126,4 +131,4 @@ class SN_Model():
     
     def tripp_rv_agebias_popn_alpha_beta(self,args,params):
         return tripp_rv_agebias_popn_alpha_beta(params['mu_alpha'],params['sig_alpha'],params['mu_beta'],params['sig_beta'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],params['galage_grad'],params['SNage_grad'],args)
-    
+
