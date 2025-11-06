@@ -529,7 +529,7 @@ class Sim(SN_Model):
             if not cols:
                 cols = list(self.eff_lookup.keys())
             # Randomly choose one curve per SN in this field cohort
-            rnd_idx = np.random.integers(0, len(cols)-1, size=sel.sum())
+            rnd_idx = rng.integers(0, len(cols), size=sel.sum())
             for j, i_sn in enumerate(np.where(sel)[0]):
                 col = cols[rnd_idx[j]]
                 fn = self.eff_lookup[col]
