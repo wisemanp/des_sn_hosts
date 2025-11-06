@@ -16,6 +16,8 @@ from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, ozdes_efficiency, interpolate_zdf
 from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
 import logging
+from scipy.interpolate import interp1d
+import fnmatch
 
 np.seterr(all='ignore')
 warnings.simplefilter('ignore', category=AstropyWarning)
@@ -59,6 +61,141 @@ class Sim(SN_Model):
 
         self.cosmo = FlatLambdaCDM(70, 0.3) if cosmo == 'default' else cosmo
         self._get_funcs()
+
+        # NEW: init efficiencies and fields once
+        self._init_efficiency_lookup()
+        self._init_fields()
+
+    # NEW: one-time efficiency initialization (reads full eff_df; no averaging)
+    def _init_efficiency_lookup(self):
+        """
+        Initialize efficiency interpolators from a precomputed HDF5 table (full eff_df),
+        or fall back to ozdes_efficiency() as a last resort. Supports per-field column sets.
+        Config examples:
+          efficiency:
+            table: /path/to/eff_table.h5
+            key: eff            # optional, defaults to 'eff'
+            patterns:           # optional glob patterns per field to select columns
+              shallow: ["C12_*", "X12_*", "S12_*", "E12_*"]
+              deep:    ["C3_*", "X3_*"]
+          fields:
+            shallow:
+              prob: 0.7
+              eff_columns: ["C12_Y123","X12_Y123"]   # optional explicit list overrides patterns
+            deep:
+              prob: 0.3
+        """
+        self.eff_lookup = {}            # column -> interp1d over mag
+        self.eff_columns_by_field = {}  # field -> list of eff_df columns
+
+        eff_cfg = self.config.get('efficiency', {})
+        table_path = eff_cfg.get('table', None)
+        key = eff_cfg.get('key', 'eff')
+
+        if table_path and os.path.exists(table_path):
+            try:
+                eff_df = pd.read_hdf(table_path, key=key)
+                # Use index if named 'mag', else a 'mag' column
+                if 'mag' in eff_df.columns:
+                    mags = eff_df['mag'].values.astype(float)
+                    eff_df = eff_df.drop(columns=['mag'])
+                else:
+                    mags = eff_df.index.values.astype(float)
+
+                # Build an interpolator per column (bounded to endpoints)
+                for col in eff_df.columns:
+                    y = np.asarray(eff_df[col].values, dtype=float)
+                    # sanitize
+                    y = np.clip(y, 0.0, 1.0)
+                    self.eff_lookup[col] = interp1d(
+                        mags, y, kind='linear', bounds_error=False,
+                        fill_value=(y[0], y[-1])
+                    )
+                logger.info(f"Loaded efficiency table '{key}' from {table_path} with {len(self.eff_lookup)} curves.")
+
+                # Map columns to fields using explicit lists or glob patterns
+                patterns = eff_cfg.get('patterns', {})
+                if self.config.get('fields'):
+                    for fname, fcfg in self.config['fields'].items():
+                        cols = fcfg.get('eff_columns', None)
+                        if cols:
+                            selected = [c for c in cols if c in self.eff_lookup]
+                        else:
+                            pats = patterns.get(fname, [])
+                            matched = []
+                            for pat in pats:
+                                matched.extend(fnmatch.filter(list(self.eff_lookup.keys()), pat))
+                            selected = sorted(set(matched))
+                        # If nothing matched, default to all columns to avoid empty
+                        if not selected:
+                            selected = list(self.eff_lookup.keys())
+                            logger.warning(f"No efficiency columns matched for field '{fname}'. Using all columns.")
+                        self.eff_columns_by_field[fname] = selected
+                else:
+                    # Single global bucket uses all columns
+                    self.eff_columns_by_field['global'] = list(self.eff_lookup.keys())
+
+                return
+            except Exception as e:
+                logger.warning(f"Failed loading precomputed efficiency table: {e}. Falling back to ozdes_efficiency().")
+
+        # Legacy fallback: single global OZDES efficiency (mean/std)
+        try:
+            mean_eff_func, std_eff_func = ozdes_efficiency(self.eff_dir)
+            # Wrap them to look like our per-column interpolators (std kept separate via config if needed)
+            self.eff_lookup['global_mean'] = mean_eff_func
+            self.eff_columns_by_field['global'] = ['global_mean']
+            logger.info("Initialized global OZDES efficiency (legacy).")
+        except Exception as e:
+            logger.error(f"Could not initialize detection efficiency: {e}")
+            # Safe constant zero function
+            self.eff_lookup['global_mean'] = lambda m: np.zeros_like(np.atleast_1d(m), float)
+            self.eff_columns_by_field['global'] = ['global_mean']
+
+    # NEW: simple field setup
+    def _init_fields(self):
+        """
+        Configure fields and their selection probabilities and noise model.
+        Example config:
+          fields:
+            shallow:
+              prob: 0.7
+              eff_field: shallow
+              noise:
+                mB_err_scale: 1.0
+                c_err_floor: 0.02
+                x1_err_floor: 0.08
+            deep:
+              prob: 0.3
+              eff_field: deep
+              noise:
+                mB_err_scale: 0.9
+                c_err_floor: 0.015
+                x1_err_floor: 0.07
+        """
+        self.fields_cfg = self.config.get('fields', None)
+        if self.fields_cfg:
+            names = list(self.fields_cfg.keys())
+            probs = np.array([self.fields_cfg[n].get('prob', 1.0) for n in names], float)
+            probs = probs / probs.sum() if probs.sum() > 0 else np.ones_like(probs) / len(probs)
+            self._field_names = names
+            self._field_probs = probs
+            logger.info(f"Initialized fields: {names} with probs {probs}.")
+        else:
+            self._field_names = ['global']
+            self._field_probs = np.array([1.0])
+
+    # helper to get proper eff funcs for a given field
+    def _eff_fns_for_field(self, field_name):
+        """
+        Return list of eff column names assigned to this field.
+        """
+        if field_name in self.eff_columns_by_field:
+            return self.eff_columns_by_field[field_name]
+        if 'global' in self.eff_columns_by_field:
+            return self.eff_columns_by_field['global']
+        # Fallback: all available
+        return list(self.eff_lookup.keys())
 
     # ----------------------
     # CONFIG & DATA LOADING
@@ -364,16 +501,43 @@ class Sim(SN_Model):
             args['E'] = self.E_func(args, self.config['SN_E_model']['params'])
             args['host_Av'] = self.host_Av_func(args, self.config['Host_Av_model']['params'])
         m_av_samples_inds = [[m_samples[i],'%.5f'%(args['host_Av'][i])] for i in range(len(args['host_Av']))]
-        gals_df = new_zdf.loc[m_av_samples_inds] #re-assign so that we end up with dust-attenuated U-R colours.
-        args['U-R'] = gals_df['U'].values - gals_df['R'].values #gal_df['U_R'].values
-        for band in ['g','r','i','z']:
-            args['m_%s'%band] = gals_df['m_%s'%band].values
-        # Efficiencies
-        mean_eff_func,std_eff_func = ozdes_efficiency(self.eff_dir)
-        spec_eff = mean_eff_func(args['m_r'])
-        spec_eff_std = std_eff_func(args['m_r'])
-        effs = np.clip(np.random.normal(spec_eff,spec_eff_std),a_min=0,a_max=1)
-        args['eff_mask'] = [np.random.choice([0,1],p=[1-effs[i],effs[i]]) for i in range(len(effs))]
+        gals_df = new_zdf.loc[m_av_samples_inds]  # ensure same length as other vectors
+        # Add z per SN so brightness models can use it
+        args['z'] = np.full(len(gals_df), float(z), dtype=float)
+
+        # Restore per-SN colours/mags from the dust-attenuated selection
+        # Needed for efficiency lookup (m_r) and for downstream analyses (U-R)
+        if {'U','R'}.issubset(gals_df.columns):
+            args['U-R'] = gals_df['U'].values - gals_df['R'].values
+        for band in ['g', 'r', 'i', 'z']:
+            if f"m_{band}" in gals_df.columns:
+                args[f"m_{band}"] = gals_df[f"m_{band}"].values
+
+        # --- Field assignment and efficiencies (using preloaded eff_df interpolators) ---
+        # Assign a field label to each SN
+        fields = np.random.choice(self._field_names, size=len(args['m_r']), p=self._field_probs)
+        args['field'] = fields
+
+        # Evaluate detection efficiencies per SN without averaging across fields
+        effs = np.zeros_like(args['m_r'], dtype=float)
+        chosen_eff_cols = np.empty(len(args['m_r']), dtype=object)
+
+        for fname in np.unique(fields):
+            sel = (fields == fname)
+            cols = self._eff_fns_for_field(fname)  # list of eff_df columns for this field
+            if not cols:
+                cols = list(self.eff_lookup.keys())
+            # Randomly choose one curve per SN in this field cohort
+            rnd_idx = np.random.integers(0, len(cols)-1, size=sel.sum())
+            for j, i_sn in enumerate(np.where(sel)[0]):
+                col = cols[rnd_idx[j]]
+                fn = self.eff_lookup[col]
+                effs[i_sn] = np.clip(fn(args['m_r'][i_sn]), 0.0, 1.0)
+                chosen_eff_cols[i_sn] = col
+
+        args['eff_col'] = chosen_eff_cols.tolist()
+        args['eff_mask'] = [np.random.choice([0, 1], p=[1 - effs[i], effs[i]]) for i in range(len(effs))]
+
         # Colours & magnitudes
         args = self.colour_func(args, self.config['SN_colour_model']['params'])
         args = self.x1_func(args, self.config['x1_model']['params'])

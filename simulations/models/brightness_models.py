@@ -86,3 +86,34 @@ def tripp_rv_two_beta_popns_age2(alpha,mu_beta_young,sig_beta_young,mu_beta_old,
         'x1']) + (args['rv'] + 1) * args['E'] + \
            add_mass_step(np.log10(args['mass']), mass_step['mag'], mass_step['loc']) + add_age_step(
         args['SN_age'], age_step['mag'], age_step['loc']), alpha, beta
+
+def tripp_rv_popn_alpha_beta_z_lin(mu_alpha, sig_alpha, mu_beta, sig_beta,
+                                   M0, sigma_int, mass_step, age_step,
+                                   gamma_z, z_ref, args):
+    """
+    Tripp-like model with redshift-evolving absolute magnitude:
+      M0(z) = M0 + gamma_z * (z - z_ref)
+
+    Params:
+      mu_alpha, sig_alpha, mu_beta, sig_beta, M0, sigma_int, mass_step, age_step
+      gamma_z: slope of M0 evolution per unit z
+      z_ref: reference redshift for zero evolution offset
+    """
+    n = len(args['c'])
+    z_arr = np.asarray(args.get('z', np.zeros(n)), dtype=float)
+    M0_z = M0 + gamma_z * (z_arr - z_ref)
+
+    alpha = norm(mu_alpha, sig_alpha).rvs(size=n)
+    beta = norm(mu_beta, sig_beta).rvs(size=n)
+
+    mB = (
+        M0_z
+        + args['distmod']
+        + norm(0, sigma_int).rvs(size=n)
+        + beta * np.array(args['c_int'])
+        - alpha * np.array(args['x1'])
+        + (np.array(args['rv']) + 1) * np.array(args['E'])
+        + add_mass_step(np.log10(args['mass']), mass_step['mag'], mass_step['loc'])
+        + add_age_step(args['SN_age'], age_step['mag'], age_step['loc'])
+    )
+    return mB, alpha, beta
