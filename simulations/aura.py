@@ -65,6 +65,7 @@ class Sim(SN_Model):
         # NEW: init efficiencies and fields once
         self._init_efficiency_lookup()
         self._init_fields()
+        self._init_redshift_distribution()
 
     # NEW: one-time efficiency initialization (reads full eff_df; no averaging)
     def _init_efficiency_lookup(self):
@@ -184,6 +185,52 @@ class Sim(SN_Model):
         else:
             self._field_names = ['global']
             self._field_probs = np.array([1.0])
+
+    # NEW: redshift distribution initialization
+    def _init_redshift_distribution(self):
+        """
+        Initialize redshift bins (self.zarr) and a probability distribution (self.z_pdf)
+        from config. Supported config patterns:
+          redshift:
+            bins: [0.05, 0.10, 0.15, ...]          # explicit list
+            or: { z_lo: 0.05, z_hi: 1.20, z_step: 0.05 }
+            pdf:
+              type: power_law
+              power: 2.5
+            # OR
+              type: custom
+              weights: [0.1, 0.2, 0.3, ...]       # same length as bins
+        Fallback: infer bins from flux_df['z'] and use power_law with power=2.5
+        """
+        rz_cfg = self.config.get('redshift', {})
+        # Build zarr
+        if 'bins' in rz_cfg:
+            zarr = np.array(rz_cfg['bins'], dtype=float)
+        elif {'z_lo','z_hi','z_step'}.issubset(rz_cfg.keys()):
+            zarr = np.arange(rz_cfg['z_lo'], rz_cfg['z_hi'] + rz_cfg['z_step']/2.0, rz_cfg['z_step'], dtype=float)
+        else:
+            # Fallback from flux_df
+            try:
+                zarr = np.sort(self.flux_df['z'].unique().astype(float))
+            except Exception:
+                zarr = np.array([0.05, 0.10, 0.15], dtype=float)
+        # Build pdf
+        pdf_cfg = rz_cfg.get('pdf', {'type': 'power_law', 'power': 2.5})
+        pdf_type = pdf_cfg.get('type', 'power_law')
+        if pdf_type == 'custom':
+            weights = np.array(pdf_cfg.get('weights', []), dtype=float)
+            if len(weights) != len(zarr) or weights.sum() <= 0:
+                logger.warning("Invalid custom redshift weights; reverting to power_law.")
+                pdf_type = 'power_law'
+        if pdf_type == 'power_law':
+            power = float(pdf_cfg.get('power', 2.5))
+            weights = zarr ** power
+        weights = np.clip(weights, a_min=0, a_max=None)
+        norm = weights.sum()
+        z_pdf = (weights / norm) if norm > 0 else np.ones_like(weights) / len(weights)
+        self.zarr = zarr
+        self.z_pdf = z_pdf
+        logger.info(f"Initialized redshift grid of {len(zarr)} bins; pdf type={pdf_type}.")
 
     # helper to get proper eff funcs for a given field
     def _eff_fns_for_field(self, field_name):
