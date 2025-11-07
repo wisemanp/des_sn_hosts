@@ -31,7 +31,7 @@ def tripp(alpha,beta,M0,sigma_int,mass_step,age_step,args):
     :return:
     :rtype:
     '''
-    return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + beta*args['c'] - alpha*args['x1'] +\
+    return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + beta*np.array(args['c']) - alpha*np.array(args['x1']) +\
            add_mass_step(np.log10(args['mass']),mass_step['mag'],mass_step['loc']) + add_age_step(np.log10(args['age']),age_step['mag'],age_step['loc'])
 
 def tripp_rv(alpha,beta,M0,sigma_int,mass_step,age_step,args):
