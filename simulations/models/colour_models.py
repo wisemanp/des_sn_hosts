@@ -1,9 +1,9 @@
 from scipy.stats import norm
 from .distributions import asymmetric_gaussian
+import numpy as np
 
 
-
-def c_int_gauss(mu,sig,n=1):
+def c_int_gauss(args,mu,sig,):
     '''
 
     :param mu:
@@ -13,9 +13,11 @@ def c_int_gauss(mu,sig,n=1):
     :return:
     :rtype:
     '''
-    return norm(mu,sig).rvs(size=n)
+    n = args['n']
+    args['c'] = norm(mu,sig).rvs(size=n)
+    return args
 
-def c_int_asymm(mu,sig_minus,sig_plus,n=1):
+def c_int_asymm(args, mu,sig_minus,sig_plus,):
     '''
 
     :param mu:
@@ -27,10 +29,12 @@ def c_int_asymm(mu,sig_minus,sig_plus,n=1):
     :return:
     :rtype:
     '''
+    n = args['n']
     cs = []
     for i in range(n):
         cs.append(asymmetric_gaussian(mu,sig_minus,sig_plus))
-    return np.array(cs)
+    args['c'] = np.array(cs)
+    return args
 
 def c_int_plus_dust(args,c_int_type,c_int_params):
     '''
@@ -43,11 +47,10 @@ def c_int_plus_dust(args,c_int_type,c_int_params):
     :rtype:
     '''
     if c_int_type=='norm':
-        c_ints = c_int_gauss(c_int_params['mu'],c_int_params['sig'],n=len(args['E']))
+        args = c_int_gauss(args, c_int_params['mu'],c_int_params['sig'],)
     elif c_int_type=='asymm':
-        c_ints = c_int_asymm(c_int_params['mu'],c_int_params['sig_minus'],c_int_params['sig_plus'],n=len(args['E']))
-
-    args['c'] = args['E']+c_ints
+        args = c_int_asymm(args, c_int_params['mu'],c_int_params['sig_minus'],c_int_params['sig_plus'],)
+    args['c_int'] = args['c'].copy()
+    args['c'] = args['E']+args['c_ints']
     
-    args['c_int'] = c_ints
     return args
