@@ -7,7 +7,7 @@ from .brightness_models import (
     tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age,
     tripp_rv_popn_alpha_beta, tripp_rv_two_beta_popns_age2,
     tripp_rv_age_alpha_popn_beta, tripp_rv_agebias_popn_alpha_beta,
-    tripp_rv_popn_alpha_beta_z_lin,
+    tripp_rv_popn_alpha_beta_z_lin,tripp_no_scatter
 )
 class SN_Model():
     def __init__(self):
@@ -106,7 +106,9 @@ class SN_Model():
 
     def tripp(self,args,params):
         return tripp(params['alpha'],params['beta'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],args)
-
+    def tripp_no_scatter(self,args,params):
+        return tripp_no_scatter(params['alpha'],params['beta'],params['M0'],args)
+    
     def tripp_rv(self,args,params):
         return tripp_rv(params['alpha'],params['beta'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],args)
 

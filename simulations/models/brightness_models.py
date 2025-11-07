@@ -34,6 +34,11 @@ def tripp(alpha,beta,M0,sigma_int,mass_step,age_step,args):
     return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + beta*np.array(args['c']) - alpha*np.array(args['x1']) +\
            add_mass_step(np.log10(args['mass']),mass_step['mag'],mass_step['loc']) + add_age_step(np.log10(args['SN_age']),age_step['mag'],age_step['loc']), alpha, beta
 
+def tripp_no_scatter(alpha,beta,M0,args):
+
+    return M0 + args['distmod'] + beta*np.array(args['c']) - alpha*np.array(args['x1']), alpha, beta
+
+
 def tripp_rv(alpha,beta,M0,sigma_int,mass_step,age_step,args):
     return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + beta*args['c_int'] - alpha*args['x1'] + (args['rv']+1)*args['E'] + \
            add_mass_step(np.log10(args['mass']),mass_step['mag'],mass_step['loc']) + add_age_step(args['SN_age'],age_step['mag'],age_step['loc']),    alpha, beta
