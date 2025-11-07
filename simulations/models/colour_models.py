@@ -53,6 +53,6 @@ def c_int_plus_dust(args,c_int_type,c_int_params):
     elif c_int_type=='asymm':
         args = c_int_asymm(args, c_int_params['mu'],c_int_params['sig_minus'],c_int_params['sig_plus'],)
     args['c_int'] = args['c'].copy()
-    args['c'] = args['E']+args['c_ints']
+    args['c'] = args['E']+args['c_int']
     
     return args
