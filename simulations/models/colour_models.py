@@ -15,6 +15,7 @@ def c_int_gauss(args,mu,sig,):
     '''
     n = args['n']
     args['c'] = norm(mu,sig).rvs(size=n)
+    args['c_int'] = args['c'].copy()
     return args
 
 def c_int_asymm(args, mu,sig_minus,sig_plus,):
@@ -34,6 +35,7 @@ def c_int_asymm(args, mu,sig_minus,sig_plus,):
     for i in range(n):
         cs.append(asymmetric_gaussian(mu,sig_minus,sig_plus))
     args['c'] = np.array(cs)
+    args['c_int'] = args['c'].copy()
     return args
 
 def c_int_plus_dust(args,c_int_type,c_int_params):
