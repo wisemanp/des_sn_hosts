@@ -14,7 +14,6 @@ from scipy.optimize import minimize
 import time
 from .models.sn_model import SN_Model
 from .utils.gal_functions import schechter, ozdes_efficiency, interpolate_zdf
-from .utils.gal_functions import make_z_pdf  # added import
 from .utils.HR_functions import get_mu_res_step, get_mu_res_nostep, chisq_mu_res_nostep, chisq_mu_res_step,chisq_mu_res_nostep_old
 import logging
 from scipy.interpolate import interp1d
@@ -657,97 +656,67 @@ class Sim(SN_Model):
 
     def get_redshift_sample_counts(self, n_total, frac_low_z=0.0):
         """
-        Return integer counts per redshift bin summing to n_total.
-
-        Uses self.zarr if present, else unique sorted z from flux_df.
-        Builds a PDF with make_z_pdf(power = config['z_power'] or 2.5).
-        Optionally enforces a fraction (frac_low_z) of total samples below a
-        low-z threshold (config['low_z_max'] default 0.1), allocating those first.
+        Return integer counts per redshift bin summing to n_total, using the
+        redshift PDF prepared in _init_redshift_distribution (self.zarr/self.z_pdf).
+        Optionally enforce a fraction (frac_low_z) below low_z_max (default 0.1).
         """
-        # Determine redshift bin array
-        if hasattr(self, 'zarr') and self.zarr is not None:
-            zarr = np.asarray(self.zarr, dtype=float)
-        else:
-            zarr = np.sort(self.flux_df['z'].unique().astype(float))
+        # Ensure redshift grid/PDF are initialized
+        if not hasattr(self, 'zarr') or self.zarr is None or not hasattr(self, 'z_pdf') or self.z_pdf is None:
+            self._init_redshift_distribution()
 
-        power = self.config.get('z_power', 2.5)
-        base_pdf = make_z_pdf(zarr, power=power).astype(float)
-
-        # Normalize base PDF
-        base_pdf /= base_pdf.sum()
+        zarr = np.asarray(self.zarr, dtype=float)
+        pdf = np.asarray(self.z_pdf, dtype=float)
+        pdf = np.clip(pdf, 0.0, None)
+        s = pdf.sum()
+        pdf = (pdf / s) if s > 0 else np.ones_like(pdf) / len(pdf)
 
         n_total = int(n_total)
         if n_total <= 0:
             raise ValueError("n_total must be > 0")
 
-        # If no low-z fraction requested, simple allocation
-        if frac_low_z <= 0.0:
-            counts = np.floor(base_pdf * n_total).astype(int)
-            # Adjust remainder
-            deficit = n_total - counts.sum()
+        def allocate_counts(pdf_part, n_target):
+            cf = pdf_part * n_target
+            c = np.floor(cf).astype(int)
+            deficit = n_target - c.sum()
             if deficit > 0:
-                # distribute remaining counts to bins with largest fractional residuals
-                residuals = (base_pdf * n_total) - counts
-                for idx in np.argsort(residuals)[::-1][:deficit]:
-                    counts[idx] += 1
+                resid = cf - c
+                for idx in np.argsort(resid)[::-1][:deficit]:
+                    c[idx] += 1
+            return c
+
+        if frac_low_z <= 0.0:
+            counts = allocate_counts(pdf, n_total)
             return counts
 
-        # Low-z handling
+        # Split into low/high-z as requested
         low_z_max = self.config.get('low_z_max', 0.1)
         low_mask = zarr < low_z_max
+        if low_mask.sum() == 0:
+            # No bins qualify; fall back to full allocation
+            return allocate_counts(pdf, n_total)
+
         n_low_target = int(round(n_total * frac_low_z))
         n_high_target = n_total - n_low_target
 
-        # Build separate PDFs
-        pdf_low = base_pdf[low_mask]
-        pdf_high = base_pdf[~low_mask]
+        pdf_low = pdf[low_mask]
+        pdf_high = pdf[~low_mask]
+        # Normalize each partition (guard against zero-sum)
+        pdf_low = (pdf_low / pdf_low.sum()) if pdf_low.sum() > 0 else np.zeros_like(pdf_low)
+        pdf_high = (pdf_high / pdf_high.sum()) if pdf_high.sum() > 0 else np.zeros_like(pdf_high)
 
-        # Normalize (avoid zero division)
-        if pdf_low.sum() == 0 and n_low_target > 0:
-            raise ValueError("Requested low-z fraction but no bins satisfy low_z_max.")
-        if pdf_low.sum() > 0:
-            pdf_low /= pdf_low.sum()
-        if pdf_high.sum() > 0:
-            pdf_high /= pdf_high.sum()
+        counts = np.zeros_like(pdf, dtype=int)
+        counts[low_mask] = allocate_counts(pdf_low, n_low_target)
+        counts[~low_mask] = allocate_counts(pdf_high, n_high_target)
 
-        counts = np.zeros_like(base_pdf, dtype=int)
-
-        # Allocate low-z
-        low_counts_float = pdf_low * n_low_target
-        low_counts = np.floor(low_counts_float).astype(int)
-        low_deficit = n_low_target - low_counts.sum()
-        if low_deficit > 0:
-            low_resid = low_counts_float - low_counts
-            for idx in np.argsort(low_resid)[::-1][:low_deficit]:
-                low_counts[idx] += 1
-        counts[low_mask] = low_counts
-
-        # Allocate high-z
-        high_counts_float = pdf_high * n_high_target
-        high_counts = np.floor(high_counts_float).astype(int)
-        high_deficit = n_high_target - high_counts.sum()
-        if high_deficit > 0:
-            high_resid = high_counts_float - high_counts
-            for rel_idx in np.argsort(high_resid)[::-1][:high_deficit]:
-                # Map relative index back to global
-                global_idx = np.flatnonzero(~low_mask)[rel_idx]
-                high_counts[rel_idx] += 1
-                counts[global_idx] = high_counts[rel_idx]
-        # Fill remaining high counts
-        counts[~low_mask] = high_counts
-
-        # Final adjustment if rounding drifted
+        # Final correction for any rounding drift
         final_deficit = n_total - counts.sum()
         if final_deficit != 0:
-            # Add/remove counts starting from largest fractional need
-            total_float = base_pdf * n_total
-            residuals = total_float - counts
-            order = np.argsort(residuals)[::-1] if final_deficit > 0 else np.argsort(residuals)
+            target = (pdf * n_total) - counts
+            order = np.argsort(target)[::-1] if final_deficit > 0 else np.argsort(target)
             step = 1 if final_deficit > 0 else -1
             for idx in order:
                 if final_deficit == 0:
                     break
-                # Prevent negative
                 if step < 0 and counts[idx] == 0:
                     continue
                 counts[idx] += step
