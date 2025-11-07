@@ -36,7 +36,7 @@ def tripp(alpha,beta,M0,sigma_int,mass_step,age_step,args):
 
 def tripp_no_scatter(alpha,beta,M0,args):
 
-    return M0 + args['distmod'] + beta*np.array(args['c']) - alpha*np.array(args['x1']), alpha, beta
+    return M0 + args['distmod'] + beta*np.array(args['c_int']) - alpha*np.array(args['x1']), alpha, beta
 
 
 def tripp_rv(alpha,beta,M0,sigma_int,mass_step,age_step,args):
