@@ -96,7 +96,7 @@ class SN_Model():
         return choose_Av_custom(args['Av_grid'],params['dist'],args['n'])
 
     def c_int_gauss(self,args,params):
-        return c_int_gauss(params['mu'],params['sig'],args['n'])
+        return c_int_gauss(args, params['mu'],params['sig'],)
 
     def c_int_asymm(self,args,params):
         return c_int_asymm(params['mu'],params['sig_minus'],params['sig_plus'],args['n'])
