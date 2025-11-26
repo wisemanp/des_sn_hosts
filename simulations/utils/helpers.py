@@ -12,7 +12,7 @@ def prep_df_for_BBC(df):
     df['TYPE'] = 101
     df.rename(columns={'z':'zHD','mB_err':'mBERR','x1_err':'x1ERR','c_err':'cERR',
                              },inplace=True)
-    df = df[df['zHD']>=0.15]
+    #df = df[df['zHD']>=0.15]
     df['zHDERR'] = 0.0001
     df['zCMB'] = df['zHD']
     df['zCMBERR'] = 0.0001
