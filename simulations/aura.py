@@ -656,22 +656,14 @@ class Sim(SN_Model):
 
     def get_redshift_sample_counts(self, n_total, frac_low_z=None, low_z_max=0.14):
         """
-        Return integer counts per redshift bin summing to n_total.
-
-        - Evenly allocate frac_low_z*n_total across bins with z < low_z_max.
-        - Allocate the remainder across bins with z >= low_z_max using self.z_pdf.
-
-        If frac_low_z is None, read from config['redshift']['frac_low_z'] (default 0.0).
+        Allocate counts across redshift:
+          - Evenly across the galaxy file's low-z bins (z < low_z_max) from flux_df.
+          - Using self.z_pdf across self.zarr for z >= low_z_max.
+        The returned counts array is aligned with self.zarr (length = len(self.zarr)).
         """
         # Ensure redshift grid/PDF are initialized
         if not hasattr(self, 'zarr') or self.zarr is None or not hasattr(self, 'z_pdf') or self.z_pdf is None:
             self._init_redshift_distribution()
-
-        zarr = np.asarray(self.zarr, dtype=float)
-        pdf = np.asarray(self.z_pdf, dtype=float)
-        pdf = np.clip(pdf, 0.0, None)
-        s = pdf.sum()
-        pdf = (pdf / s) if s > 0 else np.ones_like(pdf) / len(pdf)
 
         # Read frac_low_z from config if not provided
         if frac_low_z is None:
@@ -682,34 +674,56 @@ class Sim(SN_Model):
         if n_total <= 0:
             raise ValueError("n_total must be > 0")
 
-        # Masks
-        low_mask = zarr < float(low_z_max)
-        high_mask = ~low_mask
+        zarr = np.asarray(self.zarr, dtype=float)
+        pdf = np.asarray(self.z_pdf, dtype=float)
+        pdf = np.clip(pdf, 0.0, None)
+        pdf_sum = pdf.sum()
+        pdf = (pdf / pdf_sum) if pdf_sum > 0 else np.ones_like(pdf) / len(pdf)
 
         counts = np.zeros_like(zarr, dtype=int)
 
-        # Even allocation to low-z bins
-        n_low_target = int(round(n_total * frac_low_z))
-        n_high_target = n_total - n_low_target
-
-        n_low_bins = int(low_mask.sum())
-        if n_low_target > 0 and n_low_bins > 0:
-            base = n_low_target // n_low_bins
-            rem = n_low_target - base * n_low_bins
-            # distribute remainder to first 'rem' low-z bins
-            counts[low_mask] = base
-            if rem > 0:
-                low_idxs = np.where(low_mask)[0]
-                counts[low_idxs[:rem]] += 1
-
-        # High-z allocation using self.z_pdf restricted to high bins
-        if n_high_target > 0 and high_mask.sum() > 0:
-            pdf_high = pdf[high_mask]
-            pdf_high_sum = pdf_high.sum()
-            if pdf_high_sum > 0:
-                pdf_high /= pdf_high_sum
+        # 1) Low-z bins from galaxy file (flux_df), evenly allocated
+        low_count = int(round(n_total * frac_low_z))
+        if low_count > 0:
+            if not hasattr(self, 'flux_df') or self.flux_df is None or 'z' not in self.flux_df.columns:
+                logger.warning("Requested low-z allocation from galaxy file, but flux_df/z not available; assigning low-z fraction to first zarr bin.")
+                counts[0] += low_count
             else:
-                pdf_high = np.ones_like(pdf_high) / pdf_high.size
+                # Use unique sorted galaxy z bins < low_z_max
+                gal_z = np.asarray(self.flux_df['z'], dtype=float)
+                gal_low_bins = np.sort(np.unique(gal_z[gal_z < float(low_z_max)]))
+                if gal_low_bins.size == 0:
+                    logger.warning(f"Requested low-z allocation (frac_low_z={frac_low_z}) but no galaxy bins < {low_z_max}; assigning to first zarr bin.")
+                    counts[0] += low_count
+                else:
+                    # Evenly distribute over galaxy low-z bins, then map to nearest self.zarr bin
+                    base = low_count // gal_low_bins.size
+                    rem = low_count - base * gal_low_bins.size
+                    # Build per-gal-bin counts
+                    gal_counts = np.full(gal_low_bins.size, base, dtype=int)
+                    if rem > 0:
+                        gal_counts[:rem] += 1
+                    # Map each galaxy low-z bin to nearest self.zarr bin and add
+                    idx_map = np.searchsorted(zarr, gal_low_bins, side='left')
+                    # Correct mapping to nearest bin (consider left/right)
+                    for i, z_g in enumerate(gal_low_bins):
+                        j = idx_map[i]
+                        if j == 0:
+                            target = 0
+                        elif j >= zarr.size:
+                            target = zarr.size - 1
+                        else:
+                            # choose closer of j-1 or j
+                            target = j - 1 if abs(z_g - zarr[j - 1]) <= abs(zarr[j] - z_g) else j
+                        counts[target] += gal_counts[i]
+
+        # 2) High-z allocation across self.zarr using self.z_pdf
+        high_mask = zarr >= float(low_z_max)
+        n_high_target = n_total - counts.sum()
+        if n_high_target > 0 and high_mask.any():
+            pdf_high = pdf[high_mask]
+            s_high = pdf_high.sum()
+            pdf_high = (pdf_high / s_high) if s_high > 0 else np.ones_like(pdf_high) / pdf_high.size
 
             target_float = pdf_high * n_high_target
             counts_high = np.floor(target_float).astype(int)
@@ -718,13 +732,11 @@ class Sim(SN_Model):
                 resid = target_float - counts_high
                 for idx in np.argsort(resid)[::-1][:rem_high]:
                     counts_high[idx] += 1
-
             counts[high_mask] += counts_high
 
-        # Final correction in case of rounding drift
+        # Final drift correction if rounding leaves mismatch
         drift = n_total - counts.sum()
         if drift != 0:
-            # Adjust starting with bins with largest residual need (use full pdf)
             target_full = pdf * n_total
             residuals = target_full - counts
             order = np.argsort(residuals)[::-1] if drift > 0 else np.argsort(residuals)
