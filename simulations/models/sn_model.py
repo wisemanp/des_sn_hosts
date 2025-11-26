@@ -7,7 +7,7 @@ from .brightness_models import (
     tripp, tripp_rv, tripp_rv_two_beta_age, tripp_rv_two_beta_popns_age,
     tripp_rv_popn_alpha_beta, tripp_rv_two_beta_popns_age2,
     tripp_rv_age_alpha_popn_beta, tripp_rv_agebias_popn_alpha_beta,
-    tripp_rv_popn_alpha_beta_z_lin,tripp_no_scatter
+    tripp_rv_popn_alpha_beta_z_lin,tripp_no_scatter, tripp_rv_agebias_fix_alpha_beta
 )
 class SN_Model():
     def __init__(self):
@@ -133,7 +133,14 @@ class SN_Model():
     
     def tripp_rv_agebias_popn_alpha_beta(self,args,params):
         return tripp_rv_agebias_popn_alpha_beta(params['mu_alpha'],params['sig_alpha'],params['mu_beta'],params['sig_beta'],params['M0'],params['sigma_int'],params['mass_step'],params['age_step'],params['galage_grad'],params['SNage_grad'],args)
-
+    def tripp_agetripp_rv_agebias_fix_alpha_beta(self, args, params):
+        return tripp_rv_agebias_fix_alpha_beta(
+            params['mu_alpha'], params['mu_beta'],
+            params['M0'], params['sigma_int'],
+            params['mass_step'], params['age_step'],
+            params['galage_grad'], params['SNage_grad'],
+            args
+        )
     def tripp_rv_popn_alpha_beta_z_lin(self, args, params):
         return tripp_rv_popn_alpha_beta_z_lin(
             params['mu_alpha'], params['sig_alpha'],
