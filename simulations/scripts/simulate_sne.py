@@ -37,16 +37,13 @@ def main():
         raise ValueError("Total n-samples not provided. Pass -n or set n_samples in the config.")
     n_total = int(n_total)
 
-    # Build per-z allocation from sim's redshift distribution
-    try:
-        n_samples_arr = sim.get_redshift_sample_counts(n_total, frac_low_z=sim.config.get('frac_low_z', 0.0))
-        zarr = sim.zarr
-    except AttributeError:
-        # Fallback: infer from flux_df if Sim doesn't yet expose redshift setup
-        from des_sn_hosts.simulations.utils.gal_functions import make_z_pdf
-        zarr = np.sort(sim.flux_df['z'].unique().astype(float))
-        z_pdf = make_z_pdf(zarr, power=2.5)
-        n_samples_arr = sim._get_z_dist(z_pdf, n=n_total, frac_low_z=0.0, zbins=zarr)
+    # Read frac_low_z from config (defaults to 0.0 if absent)
+    frac_low_z = float(sim.config.get('redshift', {}).get('frac_low_z', 0.0))
+
+    # Build the schedule: low-z from multi_df (<0.16) allocated evenly; high-z from zarr/pdf
+    z_arr, n_samples_arr = sim.build_redshift_schedule(n_total, frac_low_z=frac_low_z, low_z_max=0.16)
+    low_mask = z_arr < 0.16
+    logger.info(f"Redshift schedule: {len(z_arr)} points; total={n_samples_arr.sum()}, low-z={n_samples_arr[low_mask].sum()}, high-z={n_samples_arr[~low_mask].sum()}")
 
     # Output directories (for_BBC / from_BBC) and filenames (lifted from run_single_sim.py)
     save_dir = os.path.join('/media/data3/wiseman/des/AURA/sims/SNe/for_BBC/', cfg['save']['dir'])
@@ -58,8 +55,8 @@ def main():
     save_filename = f"{model_name}_SN_sim.h5"
     save_path = os.path.join(save_dir, save_filename)
 
-    logger.info(f"Simulating {n_total} SNe across {len(zarr)} z-bins -> {save_path}")
-    sim.sample_SNe(zarr, n_samples_arr, savepath=save_path)
+    logger.info(f"Simulating {n_total} SNe across {len(z_arr)} scheduled redshifts -> {save_path}")
+    sim.sample_SNe(z_arr, n_samples_arr, savepath=save_path)
 
     # Apply same filters as run_single_sim.py
     sim.sim_df = sim.sim_df[(sim.sim_df['x1'] < 3) & (sim.sim_df['x1'] > -3) &
