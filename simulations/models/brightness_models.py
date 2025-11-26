@@ -49,6 +49,12 @@ def tripp_rv_popn_alpha_beta(mu_alpha,sig_alpha,mu_beta,sig_beta,M0,sigma_int,ma
     return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + beta*args['c_int'] - alpha*args['x1'] + (args['rv']+1)*args['E'] + \
            add_mass_step(np.log10(args['mass']),mass_step['mag'],mass_step['loc']) + add_age_step(args['SN_age'],age_step['mag'],age_step['loc']),   alpha,  beta
 
+def tripp_agebias_fix_alpha_beta(mu_alpha,mu_beta,M0,sigma_int,mass_step,age_step,galage_grad,SNage_grad,args):
+    return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + mu_beta*args['c_int'] - mu_alpha*args['x1'] + \
+           add_mass_step(np.log10(args['mass']),mass_step['mag'],mass_step['loc']) + add_age_step(args['SN_age'],age_step['mag'],age_step['loc']) + \
+            add_galage_grad(args['mean_ages']/1000,galage_grad['slope'],galage_grad['intercept']) + \
+                add_SN_age_grad(args['SN_age'],SNage_grad['slope'],SNage_grad['intercept']),  mu_alpha,mu_beta
+
 def tripp_rv_agebias_fix_alpha_beta(mu_alpha,mu_beta,M0,sigma_int,mass_step,age_step,galage_grad,SNage_grad,args):
     return M0 + args['distmod'] + norm(0,sigma_int).rvs(size=len(args['c'])) + mu_beta*args['c_int'] - mu_alpha*args['x1'] + (args['rv']+1)*args['E'] + \
            add_mass_step(np.log10(args['mass']),mass_step['mag'],mass_step['loc']) + add_age_step(args['SN_age'],age_step['mag'],age_step['loc']) + \
