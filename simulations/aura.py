@@ -820,7 +820,8 @@ class Sim(SN_Model):
         # Concatenate final schedule
         z_arr = np.concatenate([z_low, z_high])
         n_samples_arr = np.concatenate([counts_low, counts_high])
-
+        logger.info(z_arr)
+        logger.info(n_samples_arr)
         # Final correction if rounding drifted
         drift = n_total - n_samples_arr.sum()
         if drift != 0 and z_high.size > 0:
