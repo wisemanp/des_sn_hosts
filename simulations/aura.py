@@ -750,3 +750,89 @@ class Sim(SN_Model):
                 drift -= step
 
         return counts
+
+    def build_redshift_schedule(self, n_total, frac_low_z=None, low_z_max=0.16):
+        """
+        Construct the simulation schedule (z_arr, n_samples_arr):
+          - Low-z (z < low_z_max): use galaxy redshifts from multi_df, allocate evenly.
+          - High-z (z >= low_z_max): use self.zarr/self.z_pdf.
+        Returns:
+          z_arr: array of redshifts to simulate (low first, then high)
+          n_samples_arr: integer counts per redshift (same length as z_arr)
+        """
+        # Ensure redshift grid/PDF are initialized
+        if not hasattr(self, 'zarr') or self.zarr is None or not hasattr(self, 'z_pdf') or self.z_pdf is None:
+            self._init_redshift_distribution()
+
+        # Read frac_low_z from config if not provided
+        if frac_low_z is None:
+            frac_low_z = float(self.config.get('redshift', {}).get('frac_low_z', 0.0))
+        frac_low_z = max(0.0, min(1.0, float(frac_low_z)))
+
+        n_total = int(n_total)
+        if n_total <= 0:
+            raise ValueError("n_total must be > 0")
+
+        # --- Low-z directly from galaxy (multi_df) ---
+        try:
+            gal_z_str = self.multi_df.index.get_level_values(0).unique()
+            gal_z = np.array([float(zs) for zs in gal_z_str], dtype=float)
+            low_mask = gal_z < float(low_z_max)
+            low_z_bins = np.sort(gal_z[low_mask])
+        except Exception as e:
+            logger.warning(f"Could not read low-z bins from multi_df: {e}")
+            low_z_bins = np.array([], dtype=float)
+
+        n_low_target = int(round(n_total * frac_low_z))
+        z_low = low_z_bins
+        if n_low_target > 0 and z_low.size > 0:
+            base = n_low_target // z_low.size
+            rem = n_low_target - base * z_low.size
+            counts_low = np.full(z_low.size, base, dtype=int)
+            if rem > 0:
+                counts_low[:rem] += 1
+        else:
+            counts_low = np.zeros(z_low.size, dtype=int)
+
+        # --- High-z from zarr/pdf ---
+        z_high = np.asarray(self.zarr, dtype=float)
+        high_mask = z_high >= float(low_z_max)
+        z_high = z_high[high_mask]
+
+        pdf = np.asarray(self.z_pdf, dtype=float)
+        pdf = np.clip(pdf, 0.0, None)
+        pdf = pdf / pdf.sum() if pdf.sum() > 0 else np.ones_like(pdf) / len(pdf)
+        pdf_high = pdf[high_mask]
+        pdf_high = pdf_high / pdf_high.sum() if pdf_high.sum() > 0 else np.ones_like(pdf_high) / pdf_high.size
+
+        n_high_target = n_total - counts_low.sum()
+        if n_high_target > 0 and z_high.size > 0:
+            target_float = pdf_high * n_high_target
+            counts_high = np.floor(target_float).astype(int)
+            rem = n_high_target - counts_high.sum()
+            if rem > 0:
+                resid = target_float - counts_high
+                for idx in np.argsort(resid)[::-1][:rem]:
+                    counts_high[idx] += 1
+        else:
+            counts_high = np.zeros(z_high.size, dtype=int)
+
+        # Concatenate final schedule
+        z_arr = np.concatenate([z_low, z_high])
+        n_samples_arr = np.concatenate([counts_low, counts_high])
+
+        # Final correction if rounding drifted
+        drift = n_total - n_samples_arr.sum()
+        if drift != 0 and z_high.size > 0:
+            # Adjust in high-z using pdf_high preference
+            order = np.argsort(pdf_high)[::-1] if drift > 0 else np.argsort(pdf_high)
+            step = 1 if drift > 0 else -1
+            for i in order:
+                if drift == 0:
+                    break
+                if step < 0 and n_samples_arr[z_low.size + i] == 0:
+                    continue
+                n_samples_arr[z_low.size + i] += step
+                drift -= step
+
+        return z_arr, n_samples_arr
